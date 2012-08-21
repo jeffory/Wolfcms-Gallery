@@ -19,7 +19,7 @@ Plugin::setInfos(array(
    	'license'     => 'Commerical',
 	'author'      => 'Keith McGahey',
     'website'     => 'http://www.keithmcgahey.com/',
-    'update_url'  => 'http://www.keithmcgahey.com/',
+    // 'update_url'  => 'http://www.keithmcgahey.com/',
     'require_wolf_version' => '0.5.5'
 ));
 
