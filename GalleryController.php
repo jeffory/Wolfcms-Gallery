@@ -10,18 +10,53 @@ if (!defined('IN_CMS')) { exit(); }
  *
  * @author Keith McGahey
  */
+class GalleryController extends PluginController
+{
+	/**
+     * Checks if a user is logged in (used in backend functions), if not redirects them to the login screen
+     *
+     * @return void
+     **/
+    private static function _checkPermission()
+    {
+        AuthUser::load();
 
-class GalleryController extends PluginController {
-
-    public function __construct() {
-        $this->setLayout('backend');
+        if (!AuthUser::isLoggedIn())
+            redirect(get_url('login'));
     }
 
-    public function index() {
-        $this->documentation();
+    /**
+     *  Constructor: includes models, determines layout
+     *
+     * @return void
+     **/
+    public function __construct()
+    {
+        $this->title = 'Gallery';
+
+        // self::enable();
+
+        if (defined('CMS_BACKEND'))
+        {
+            self::_checkPermission();
+            $this->setLayout('backend');
+        }
+        else
+        {
+            $this->setLayout('');	/* TODO: Should be the name of the layout going to be used */
+        }
     }
 
-    function settings() {
-        $this->display('gallery/views/settings', Plugin::getAllSettings('gallery'));
+	/**
+     * Admin settings tab
+     *
+     * @return void
+     **/
+    function settings()
+    {
+        $this->display(
+        	'gallery/views/settings',
+        	Plugin::getAllSettings('gallery')
+        	);
     }
 }
