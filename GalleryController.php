@@ -35,7 +35,7 @@ class GalleryController extends PluginController
         $this->title = 'Gallery';
 
         // self::enable();
-        Gallery::createTables();
+        //Gallery::createTables();
 
         if (defined('CMS_BACKEND'))
         {
@@ -48,6 +48,15 @@ class GalleryController extends PluginController
         }
     }
 
+    /**
+     * Set function for admin tab
+     *
+     * @return void\
+     **/
+    public function index()
+    {
+        $this->settings();
+    }
 
 	/**
      * blah
@@ -56,6 +65,7 @@ class GalleryController extends PluginController
      **/
     public function test()
     {
+        echo 'Creating tables...';
         Gallery::createTables();
     }
 
@@ -70,5 +80,36 @@ class GalleryController extends PluginController
         	'gallery/views/settings',
         	Plugin::getAllSettings('gallery')
         	);
+    }
+
+    /**
+     * WolfCMS display hack/fix
+     * 
+     * I'm not sure how this came about, I wrote this a very long time ago, but the plugin fails without it.
+     * 
+     * @param boolean part
+     * @param boolean inherit
+     *
+     * @return mixed returns content or false if content isn't available
+     **/
+    public function content($part=false, $inherit=false)
+    {
+        return (!$part) ? $this->content : false;
+    }
+    
+    /**
+     * WolfCMS frontend view filepath fix
+     *
+     * Differentiates between the frontend and backend to give a correct path to views
+     *
+     * @param string View id
+     * @param string Variables for in the View.
+     * @param boolean Exit PHP process when done?
+     *
+     * @return mixed Rendered content or nothing when $exit is true.
+     **/
+    public function display($view, $vars=array(), $exit=true)
+    {
+        parent::display((defined('CMS_BACKEND') ? '/' : '../../plugins/'). $view, $vars, $exit);
     }
 }
