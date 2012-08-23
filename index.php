@@ -11,8 +11,12 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 
+define('GAL_ID', 'gallery');
+define('GAL_ROOT', PLUGINS_URI.'gallery');
+define('GAL_URL', '/gallery');
+
 Plugin::setInfos(array(
-    'id'          => 'wolfcms-gallery',
+    'id'          => 'gallery',
     'title'       => __('Gallery'),
     'description' => __('Adds a simple and easy to use gallery to a website.'),
     'version'     => '1.0',
@@ -23,4 +27,10 @@ Plugin::setInfos(array(
     'require_wolf_version' => '0.5.5'
 ));
 
-Plugin::addController('gallery', __('Gallery'), 'administrator', false);
+AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS);
+Plugin::addController(GAL_ID, __('Gallery'), 'administrator', false);
+
+Dispatcher::addRoute(array(
+    GAL_URL. '(|/)'           => '/plugin/gallery/test',
+    GAL_URL. '/test'          => '/plugin/gallery/test',
+));

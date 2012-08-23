@@ -35,6 +35,7 @@ class GalleryController extends PluginController
         $this->title = 'Gallery';
 
         // self::enable();
+        Gallery::createTables();
 
         if (defined('CMS_BACKEND'))
         {
@@ -43,8 +44,19 @@ class GalleryController extends PluginController
         }
         else
         {
-            $this->setLayout('');	/* TODO: Should be the name of the layout going to be used */
+            $this->setLayout('Wolf');	/* TODO: Should be the name of the layout going to be used */
         }
+    }
+
+
+	/**
+     * blah
+     *
+     * @return void
+     **/
+    public function test()
+    {
+        Gallery::createTables();
     }
 
 	/**
@@ -52,7 +64,7 @@ class GalleryController extends PluginController
      *
      * @return void
      **/
-    function settings()
+    public function settings()
     {
         $this->display(
         	'gallery/views/settings',
