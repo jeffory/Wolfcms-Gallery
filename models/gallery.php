@@ -39,8 +39,8 @@ class Gallery extends Record
 	 * @var array
 	 **/
 	public static $database_datatypes = array(
-		'int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float', 'double', 'decimal' 										// Numbers
-		'date', 'datetime', 'timestamp', 'time', 'year'																			// Time
+		'int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float', 'double', 'decimal', 										// Numbers
+		'date', 'datetime', 'timestamp', 'time', 'year',																		// Time
 		'char', 'varchar', 'blob', 'text', 'tinyblob', 'tinytext', 'mediumblob', 'mediumtext','longblob', 'longtext', 'enum'	// Strings
 		);
 
@@ -50,7 +50,7 @@ class Gallery extends Record
 	 * @var array
 	 **/
 	public static $database_columndefs = array(
-		'AUTO_INCREMENT'
+		'AUTO_INCREMENT', 'PRIMARY KEY', 'NOT NULL'
 		);
 
 	/**
@@ -65,12 +65,16 @@ class Gallery extends Record
 					'AUTO_INCREMENT',
 					'PRIMARY KEY'
 				)
-			)
+			),
 		self::CATEGORY_TABLE => array(
 			'id' => array(
 					'int(16)',
 					'AUTO_INCREMENT',
 					'PRIMARY KEY'
+				),
+			'category_name' => array(
+					'varchar(256)',
+					'NOT NULL'
 				)
 			)
 		);
@@ -82,53 +86,59 @@ class Gallery extends Record
 	 **/
 	static public function createTables()
 	{
-		var $SQL;
-		var $table_primary_key;
+		$SQL = '';
+		$table_primary_key = '';
 
-		foreach ($database_schema as $table_name => $table_details)
+		foreach (self::$database_schema as $table_name => $table_details)
 		{
 			if (isset($table_name) && !empty($table_name))
 			{
-				$SQL = "CREATE TABLE IF NOT EXISTS `$table_name` (\n";
+				// Add the table prefix, if any, to the table name
+				$table_name = TABLE_PREFIX. $table_name;
+
+				$SQL .= "CREATE TABLE IF NOT EXISTS `$table_name` (\n";
 				$table_primary_key = null;
 
 				foreach ($table_details as $column_name => $column_details)
 				{
-					$SQL .= "`$column_name`";
+					$SQL .= "  `$column_name`";
 
 					foreach ($column_details as $column_detail)
 					{
-						switch ($column_detail) {
-							// Check for a valid column datatype
-							case preg_match("/$(". implode('|', self::database_datatypes). ")/i", $column_detail):
+						// Check for a valid column datatype
+						if (preg_match("/^(". implode('|', self::$database_datatypes). ")/i", $column_detail))
+						{
+							$SQL .= ' '. $column_detail;
+						}
+						// Check for a valid column definition
+						elseif (preg_match("/^(". implode('|', self::$database_columndefs). ")/i", $column_detail))
+						{
+							if (preg_match('/PRIMARY KEY/i', $column_detail))
+							{
+								$table_primary_key = $column_name;
+							}
+							else
+							{
 								$SQL .= ' '. $column_detail;
-								break;
-
-							// Check for a valid column definition
-							case preg_match("/$(". implode('|', self::database_columndefs). ")/i", $column_detail):
-								switch ($column_detail) {
-									case 'PRIMARY KEY':
-										$table_primary_key = $column_name;
-										break;
-									case else:
-										$SQL .= ' '. $column_detail;
-										break;
-								} // END switch for column definition details
-						} // END switch for column detail
+							}
+						}
 					} // END foreach column detail in column
+					$SQL .= ",\n";
 				} // END foreach column in table
 
 				if (isset($table_primary_key))
 				{
 					$SQL .= "PRIMARY KEY (`$table_primary_key`)\n";
 				}
-				$SQL .= ';';
+				$SQL = trim($SQL). ";\n\n";
 			}
 			else
 			{
 				throw new Exception('No table name specified on database schema.');
 			}
 		} // END foreach table in schema
+
+		echo '<pre>'. $SQL. '</pre>';
 	}
 
 	/**
