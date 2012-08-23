@@ -50,7 +50,7 @@ class Gallery extends Record
 	 * @var array
 	 **/
 	public static $database_columndefs = array(
-		'AUTO_INCREMENT', 'PRIMARY KEY', 'NOT NULL'
+		'AUTO_INCREMENT', 'PRIMARY KEY', 'NOT NULL', 'DEFAULT', 'ON UPDATE'
 		);
 
 	/**
@@ -64,6 +64,30 @@ class Gallery extends Record
 					'int(16)',
 					'AUTO_INCREMENT',
 					'PRIMARY KEY'
+				),
+			'name' => array(
+					'varchar(256)',
+					'NOT NULL'
+				),
+			'code' => array(
+					'varchar(256)'
+				),
+			'description' => array(
+					'text',
+					'NOT NULL'
+				),
+			'image_url' => array(
+					'varchar(256)',
+					'NOT NULL'
+				),
+			'date_uploaded' => array(
+					'TIMESTAMP',
+					'DEFAULT CURRENT_TIMESTAMP'
+				),
+			'date_modified' => array(
+					'TIMESTAMP',
+					'DEFAULT CURRENT_TIMESTAMP',
+					'ON UPDATE CURRENT_TIMESTAMP'
 				)
 			),
 		self::CATEGORY_TABLE => array(
@@ -72,7 +96,7 @@ class Gallery extends Record
 					'AUTO_INCREMENT',
 					'PRIMARY KEY'
 				),
-			'category_name' => array(
+			'category' => array(
 					'varchar(256)',
 					'NOT NULL'
 				)
