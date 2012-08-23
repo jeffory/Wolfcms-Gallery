@@ -80,7 +80,7 @@ class Gallery extends Record
 					'varchar(256)',
 					'NOT NULL'
 				),
-			'date_uploaded' => array(
+			'date_created' => array(
 					'TIMESTAMP',
 					'DEFAULT CURRENT_TIMESTAMP'
 				),
