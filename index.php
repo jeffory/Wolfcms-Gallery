@@ -27,7 +27,7 @@ Plugin::setInfos(array(
     'require_wolf_version' => '0.5.5'
 ));
 
-AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS);
+AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS);      // Loads files locally but not on a production server
 Plugin::addController(GAL_ID, __('Gallery'), 'administrator', false);
 
 Dispatcher::addRoute(array(
