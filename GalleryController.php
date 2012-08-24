@@ -35,8 +35,10 @@ class GalleryController extends PluginController
         $this->title = 'Gallery';
 
         // self::enable();
-        //Gallery::createTables();
-
+        if (!class_exists('Gallery')) {
+            require_once(PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS. 'gallery.php');
+        }
+        
         if (defined('CMS_BACKEND'))
         {
             self::_checkPermission();
@@ -65,6 +67,9 @@ class GalleryController extends PluginController
      **/
     public function test()
     {
+        echo 'Deleting tables...';
+        Gallery::deleteTables();
+
         echo 'Creating tables...';
         Gallery::createTables();
     }
