@@ -50,7 +50,29 @@ class Gallery extends Record
 	 * @var array
 	 **/
 	public static $database_columndefs = array(
-		'AUTO_INCREMENT', 'PRIMARY KEY', 'NOT NULL', 'DEFAULT', 'ON UPDATE'
+		'AUTO_INCREMENT', 'PRIMARY KEY', 'NOT NULL', 'NULL', 'DEFAULT', 'ON UPDATE'
+		);
+
+	/**
+	 * Predefined SQL column rules and their conditions
+	 *
+	 * @var array
+	 **/
+	public static $database_columnrules = array(
+		'id' => array(
+				'details' => array(
+					'int(16)',
+					'NOT NULL',
+					'AUTO_INCREMENT',
+					'PRIMARY KEY'
+				)
+			),
+		'created' => array(
+			'append' => "\nCREATE TRIGGER `{%table_name%}_creation` BEFORE INSERT ON `{%table_name%}` FOR EACH ROW SET NEW.{%column_name%} = NOW();"
+			),
+		'modified' => array(
+			'append' => "\nCREATE TRIGGER `{%table_name%}_modification` BEFORE UPDATE ON `{%table_name%}` FOR EACH ROW SET NEW.{%column_name%} = NOW();"
+			),
 		);
 
 	/**
@@ -60,12 +82,7 @@ class Gallery extends Record
 	 **/
 	public static $database_schema = array(
 		self::ITEMS_TABLE => array(
-			'id' => array(
-					'int(16)',
-					'NOT NULL',
-					'AUTO_INCREMENT',
-					'PRIMARY KEY'
-				),
+			'id',
 			'name' => array(
 					'varchar(255)',
 					'NOT NULL'
@@ -89,12 +106,7 @@ class Gallery extends Record
 				)
 			),
 		self::CATEGORY_TABLE => array(
-			'id' => array(
-					'int(16)',
-					'NOT NULL',
-					'AUTO_INCREMENT',
-					'PRIMARY KEY'
-				),
+			'id',
 			'category' => array(
 					'varchar(255)',
 					'NOT NULL'
@@ -114,6 +126,7 @@ class Gallery extends Record
 
 		foreach (self::$database_schema as $table_name => $table_details)
 		{
+			$SQL = '';
 			$extra_SQL = '';
 
 			if (isset($table_name) && !empty($table_name))
@@ -125,18 +138,44 @@ class Gallery extends Record
 
 				foreach ($table_details as $column_name => $column_details)
 				{
+					// If an array has no values the key becomes the index (integer) and the value is then changed to the original key, this switches it back
+					if (is_int($column_name))
+					{
+						$column_name = $column_details;
+						$column_details = array();
+					}
+					
 					$SQL .= "  `$column_name`";
 
-					// Create any triggers or additional functions based off column names
-					if ($column_name == 'created')
+					// Check for column rules
+					foreach (self::$database_columnrules as $column_match => $column_rules)
 					{
-						$extra_SQL .= "\nCREATE TRIGGER `{$table_name}_creation` BEFORE INSERT ON `{$table_name}` FOR EACH ROW SET NEW.{$column_name} = NOW();";
-					}
-					elseif ($column_name == 'modified')
-					{
-						$extra_SQL .= "\nCREATE TRIGGER `{$table_name}_modified` BEFORE UPDATE ON `{$table_name}` FOR EACH ROW SET NEW.{$column_name} = NOW();";
-					}
+						if (preg_match('/'. $column_match. '/i', $column_name))
+						{
+							foreach ($column_rules as $column_rule => $column_ruleset)
+							{
+								switch ($column_rule)
+								{
+									case 'details':
+										$column_details = $column_ruleset;
+										break;
+									
+									case 'append':
+										$replacement_vars = array(
+											'{%table_name%}' => $table_name,
+											'{%column_name%}' => $column_name,
+											);
 
+										$extra_SQL .= str_replace(array_keys($replacement_vars), array_values($replacement_vars), $column_ruleset);
+										break;
+
+									default:
+										# code...
+										break;
+								}
+							}
+						}
+					}
 
 					foreach ($column_details as $column_detail)
 					{
@@ -165,16 +204,15 @@ class Gallery extends Record
 				{
 					$SQL .= "  PRIMARY KEY (`$table_primary_key`)\n";
 				}
-				$SQL = trim($SQL). "\n);\n". $extra_SQL. "\n\n";
+				$SQL = trim($SQL). "\n);\n". $extra_SQL;
+				self::execSQL($SQL);
+				echo "<pre>\n". $SQL. "</pre>\n";
 			}
 			else
 			{
 				throw new Exception('No table name specified on database schema.');
 			}
 		} // END foreach table in schema
-
-		echo '<pre>'. $SQL. '</pre>';
-		self::execSQL($SQL);
 	}
 
 	/**
@@ -194,9 +232,8 @@ class Gallery extends Record
 
 				$SQL .= "DROP TABLE IF EXISTS `$table_name`;\n\n";
 			}
+			self::execSQL($SQL);
 		}
-		echo '<pre>'. $SQL. '</pre>';
-		self::execSQL($SQL);
 	}
 
 
@@ -233,11 +270,13 @@ class Gallery extends Record
 
 			if ($result = $pdo->query($sql_query))
 			{
-				$errored = $result->errorCode();
+				$errored = $result->errorInfo();
+
+				print_r($sql_query);
 
 				// if ($errored)
 				// {
-				//     throw new Exception('Unable to run SQL query. "'. $sql_query. '"<br>'. 'Error: "'. $errored. ': '. $result->errorInfo. '"');
+				//     throw new Exception('Unable to run SQL query. "'. $sql_query. '"<br>'. 'Error: "'. $errored. ': '. $result->errorInfo(). '"');
 				// }
 				// else
 				// {
@@ -246,7 +285,7 @@ class Gallery extends Record
 			}
 			else
 			{
-				throw new Exception('Unable to run SQL query. "'. (!empty($sql_query) ? $sql_query : $orig_query). '"<br>'. (!empty($result->errorInfo) ? ('Error: "'. $result->errorInfo. '"') : 'No error returned!' ));
+				throw new Exception('Unable to run SQL query. "'. (!empty($sql_query) ? $sql_query : $orig_query). '"<br>'. (@!empty($result->errorInfo) ? ('Error: "'. @$result->errorInfo. '"') : 'No error returned!' ));
 				return false;
 			}
 
