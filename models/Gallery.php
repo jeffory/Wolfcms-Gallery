@@ -27,6 +27,13 @@ class Gallery extends Record
 	const CATEGORY_TABLE = 'gallery_cat';
 
 	/**
+	 * Gallery category database table name
+	 *
+	 * @const string
+	 **/
+	const ITEMS_CATEGORY_TABLE = 'gallery_item_cat';
+
+	/**
 	 * Argument character for SQL queries
 	 *
 	 * @const string
@@ -82,34 +89,48 @@ class Gallery extends Record
 	 **/
 	public static $database_schema = array(
 		self::ITEMS_TABLE => array(
-			'id',
+			'id' => array(
+				'type' => 'num_id'
+				),
 			'name' => array(
-					'varchar(255)',
-					'NOT NULL'
+				'type' => 'string',
+				'validation' => '',
+				'allowempty' => false
 				),
 			'code' => array(
-					'varchar(255)'
+				'type' => 'string',
+				'validation' => '',
+				'allowempty' => false,
+				'maxlength' => 8
 				),
 			'description' => array(
-					'text',
-					'NOT NULL'
+				'type' => 'text',
+				'allowempty' => true
 				),
 			'image_url' => array(
-					'varchar(255)',
-					'NOT NULL'
+				'type' => 'string',
+				'allowempty' => true
 				),
 			'created' => array(
-					'DATETIME',
+				'type' => 'datetime',
 				),
 			'modified' => array(
-					'DATETIME',
+				'type' => 'datetime',
 				)
 			),
 		self::CATEGORY_TABLE => array(
 			'id',
 			'category_name' => array(
-					'varchar(255)',
-					'NOT NULL'
+				'type' => 'string',
+				'allowempty' => false
+				)
+			),
+		self::ITEMS_CATEGORY_TABLE => array(
+			'item_id' => array(
+				'type' => 'num_id'
+				),
+			'category_id' => array(
+				'type' => 'num_id'
 				)
 			)
 		);
@@ -132,10 +153,11 @@ class Gallery extends Record
 			if (isset($table_name) && !empty($table_name))
 			{
 				$table_name = TABLE_PREFIX. $table_name;	// Add the table prefix, if any, to the table name
-
+				
 				$SQL .= "CREATE TABLE IF NOT EXISTS `$table_name` (\n";
 				$table_primary_key = null;
 
+				// eg. $table_details = [id] => Array([type] => num_id), [name] => Array([type] => string, [validation] => null, [empty] => null...)
 				foreach ($table_details as $column_name => $column_details)
 				{
 					// If an array has no values the key becomes the index (integer) and the value is then changed to the original key, this switches it back
@@ -147,57 +169,81 @@ class Gallery extends Record
 					
 					$SQL .= "  `$column_name`";
 
-					// Check for column rules
-					foreach (self::$database_columnrules as $column_match => $column_rules)
+					// die(print_r($column_details));
+
+					foreach ($column_details as $column_option => $column_value)
 					{
-						if (preg_match('/'. $column_match. '/i', $column_name))
+						if ($column_option == 'type')
 						{
-							foreach ($column_rules as $column_rule => $column_ruleset)
+							if ($column_value == 'string')
 							{
-								switch ($column_rule)
-								{
-									case 'details':
-										$column_details = $column_ruleset;
-										break;
-									
-									case 'append':
-										$replacement_vars = array(
-											'{%table_name%}' => $table_name,
-											'{%column_name%}' => $column_name,
-											);
-
-										$extra_SQL .= str_replace(array_keys($replacement_vars), array_values($replacement_vars), $column_ruleset);
-										break;
-
-									default:
-										# code...
-										break;
-								}
-							}
-						}
-					}
-
-					foreach ($column_details as $column_detail)
-					{
-						// Check for a valid column datatype
-						if (preg_match("/^(". implode('|', self::getSupportedDatatypes()). ")/i", $column_detail))
-						{
-							$SQL .= ' '. $column_detail;
-						}
-						// Check for a valid column definition
-						elseif (preg_match("/^(". implode('|', self::$database_columndefs). ")/i", $column_detail))
-						{
-							if (preg_match('/PRIMARY KEY/i', $column_detail))
-							{
-								$table_primary_key = $column_name;
+								$SQL .= ' varchar';
 							}
 							else
 							{
-								$SQL .= ' '. $column_detail;
+
 							}
 						}
-					} // END foreach column detail in column
-					$SQL .= ",\n";
+						elseif ($column_option == 'maxlength') {
+							
+						}
+						elseif ($column_option == 'allowempty')
+						{
+							
+						}
+					}
+
+				// 	// Check for column rules
+				// 	foreach (self::$database_columnrules as $column_match => $column_rules)
+				// 	{
+				// 		if (preg_match('/'. $column_match. '/i', $column_name))
+				// 		{
+				// 			foreach ($column_rules as $column_rule => $column_ruleset)
+				// 			{
+				// 				switch ($column_rule)
+				// 				{
+				// 					case 'details':
+				// 						$column_details = $column_ruleset;
+				// 						break;
+									
+				// 					case 'append':
+				// 						$replacement_vars = array(
+				// 							'{%table_name%}' => $table_name,
+				// 							'{%column_name%}' => $column_name,
+				// 							);
+
+				// 						$extra_SQL .= str_replace(array_keys($replacement_vars), array_values($replacement_vars), $column_ruleset);
+				// 						break;
+
+				// 					default:
+				// 						# code...
+				// 						break;
+				// 				}
+				// 			}
+				// 		}
+				// 	}
+
+				// 	foreach ($column_details as $column_detail)
+				// 	{
+				// 		// Check for a valid column datatype
+				// 		if (preg_match("/^(". implode('|', self::getSupportedDatatypes()). ")/i", $column_detail))
+				// 		{
+				// 			$SQL .= ' '. $column_detail;
+				// 		}
+				// 		// Check for a valid column definition
+				// 		elseif (preg_match("/^(". implode('|', self::$database_columndefs). ")/i", $column_detail))
+				// 		{
+				// 			if (preg_match('/PRIMARY KEY/i', $column_detail))
+				// 			{
+				// 				$table_primary_key = $column_name;
+				// 			}
+				// 			else
+				// 			{
+				// 				$SQL .= ' '. $column_detail;
+				// 			}
+				// 		}
+				// 	} // END foreach column detail in column
+				// 	$SQL .= ",\n";
 				} // END foreach column in table
 
 				if (isset($table_primary_key))
@@ -206,7 +252,7 @@ class Gallery extends Record
 				}
 				$SQL = trim($SQL). "\n);\n". $extra_SQL;
 				self::execSQL($SQL);
-				//echo "<pre>\n". $SQL. "</pre>\n";
+				echo "<pre>\n". $SQL. "</pre>\n";
 			}
 			else
 			{
@@ -311,7 +357,7 @@ class Gallery extends Record
 
 			if ($result = $pdo->query($sql_query))
 			{
-				$errored = $result->errorInfo();
+				$errored = $pdo->errorInfo();
 
 				//print_r($sql_query);
 
@@ -324,10 +370,14 @@ class Gallery extends Record
 				return $result;
 				// }
 			}
+			elseif ($error = $pdo->errorInfo())
+			{
+				throw new Exception('Unable to run SQL query:<br>"'. (!empty($sql_query) ? $sql_query : $orig_query). '"<br><br>'. (@!empty($error[2]) ? ('Error:<br>'. @$error[2]) : 'No error message!' ));
+				return false;
+			}
 			else
 			{
-				throw new Exception('Unable to run SQL query. "'. (!empty($sql_query) ? $sql_query : $orig_query). '"<br>'. (@!empty($result->errorInfo) ? ('Error: "'. @$result->errorInfo. '"') : 'No error returned!' ));
-				return false;
+				throw new Exception('Unknown error while executing:<br>"'. (!empty($sql_query) ? $sql_query : $orig_query));
 			}
 
 		}
