@@ -13,108 +13,130 @@ if (!defined('IN_CMS')) { exit(); }
 class GalleryController extends PluginController
 {
 	/**
-     * Checks if a user is logged in (used in backend functions), if not redirects them to the login screen
-     *
-     * @return void
-     **/
-    private static function _checkPermission()
-    {
-        AuthUser::load();
+	 * Checks if a user is logged in (used in backend functions), if not redirects them to the login screen
+	 *
+	 * @return void
+	 **/
+	private static function _checkPermission()
+	{
+		AuthUser::load();
 
-        if (!AuthUser::isLoggedIn())
-            redirect(get_url('login'));
-    }
-
-    /**
-     *  Constructor: includes models, determines layout
-     *
-     * @return void
-     **/
-    public function __construct()
-    {
-        $this->title = 'Gallery';
-
-        // self::enable();
-        if (!class_exists('Gallery')) {
-            require_once(PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS. 'gallery.php');
-        }
-        
-        if (defined('CMS_BACKEND'))
-        {
-            self::_checkPermission();
-            $this->setLayout('backend');
-        }
-        else
-        {
-            $this->setLayout('Wolf');	/* TODO: Should be the name of the layout going to be used */
-        }
-    }
-
-    /**
-     * Set function for admin tab
-     *
-     * @return void\
-     **/
-    public function index()
-    {
-        $this->settings();
-    }
+		if (!AuthUser::isLoggedIn())
+			redirect(get_url('login'));
+	}
 
 	/**
-     * blah
+	 *  Constructor: includes models, determines layout
+	 *
+	 * @return void
+	 **/
+	public function __construct()
+	{
+		$this->title = 'Gallery';
+
+		// self::enable();
+
+		if (defined('CMS_BACKEND'))
+		{
+			self::_checkPermission();
+			$this->setLayout('backend');
+		}
+		else
+		{
+			$this->setLayout('Hamlins');	/* TODO: Should be the name of the layout going to be used */
+		}
+	}
+
+	/**
+     * Run on enabling plugin 
      *
      * @return void
      **/
-    public function test()
+    static public function enable()
     {
-        echo 'Deleting tables...';
         Gallery::deleteTables();
-
-        echo 'Creating tables...';
         Gallery::createTables();
     }
 
 	/**
-     * Admin settings tab
+	 * Set function for admin tab
+	 *
+	 * @return void
+	 **/
+	public function index()
+	{
+		$this->settings();
+	}
+
+	/**
+	 * Admin settings tab
+	 *
+	 * @return void
+	 **/
+	public function settings()
+	{
+		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_ID. '/views/sidebar'));
+
+		$this->display(
+			GAL_ID. "/views/settings",
+			Plugin::getAllSettings(GAL_ID)
+			);
+	}
+
+	/**
+	 * Set function for admin tab
+	 *
+	 * @return void
+	 **/
+	public function add()
+	{
+
+
+		$this->display(
+			GAL_URL. "/views/add-item",
+			array('item_fields' => Gallery::getTableStructure(Gallery::ITEMS_TABLE))
+			);
+	}
+
+	/**
+     * Uninstalling plugin, delete associated tables 
      *
      * @return void
      **/
-    public function settings()
+    static public function uninstall()
     {
-        $this->display(
-        	'gallery/views/settings',
-        	Plugin::getAllSettings('gallery')
-        	);
+        Gallery::deleteTables();
     }
 
-    /**
-     * WolfCMS display hack/fix
-     * 
-     * I'm not sure how this came about, I wrote this a very long time ago, but the plugin fails without it.
-     * 
-     * @param boolean part
-     * @param boolean inherit
-     *
-     * @return mixed returns content or false if content isn't available
-     **/
-    public function content($part=false, $inherit=false)
-    {
-        return (!$part) ? $this->content : false;
-    }
-    
-    /**
-     * WolfCMS frontend view filepath fix
-     *
-     * Differentiates between the frontend and backend to give a correct path to views
-     *
-     * @param string View id
-     * @param string Variables for in the View.
-     * @param boolean Exit PHP process when done?
-     *
-     * @return mixed Rendered content or nothing when $exit is true.
-     **/
-    public function display($view, $vars=array(), $exit=true)
-    {
-        parent::display((defined('CMS_BACKEND') ? '/' : '../../plugins/'). $view, $vars, $exit);
-    }
+	/**
+	 * WolfCMS display hack/fix
+	 * 
+	 * I'm not sure how this came about, I wrote this a very long time ago, but the plugin fails without it.
+	 * 
+	 * @param boolean part
+	 * @param boolean inherit
+	 *
+	 * @return mixed returns content or false if content isn't available
+	 **/
+	public function content($part=false, $inherit=false)
+	{
+		return (!$part) ? $this->content : false;
+	}
+	
+	/**
+	 * WolfCMS frontend view filepath fix
+	 *
+	 * Differentiates between the frontend and backend to give a correct path to views
+	 *
+	 * @param string View id
+	 * @param string Variables for in the View.
+	 * @param boolean Exit PHP process when done?
+	 * 
+	 *
+	 * @return mixed Rendered content or nothing when $exit is true.
+	 **/
+	public function display($view, $vars=array(), $exit=true)
+	{
+		parent::display((defined('CMS_BACKEND') ? '/' : '../../plugins/'). ltrim($view, '/'), $vars, $exit);
+	}
 }
