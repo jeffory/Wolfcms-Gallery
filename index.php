@@ -2,6 +2,8 @@
 /* Security measure */
 if (!defined('IN_CMS')) { exit(); }
 
+// For printing constants easily in strings
+
 /**
  * Simple, easy to setup and use gallery plugin for WolfCMS
  *
@@ -24,13 +26,20 @@ Plugin::setInfos(array(
 	'author'      => 'Keith McGahey',
     'website'     => 'http://www.keithmcgahey.com/',
     // 'update_url'  => 'http://www.keithmcgahey.com/',
-    'require_wolf_version' => '0.5.5'
+    'require_wolf_version' => '0.7.3'
 ));
 
-AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS);      // Loads files locally but not on a production server
-Plugin::addController(GAL_ID, __('Gallery'), 'administrator', false);
+Plugin::addController(GAL_ID, __('Gallery'), 'administrator', true);
+AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models');      // Sometimes doesn't load?
+
+// Load the model if the autoloader failed to (Note the second argument to prevent the autoloader from trying and failing again)
+if (class_exists('Gallery', false))
+{
+    AutoLoader::addFile('Gallery', PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS. 'Gallery.php');
+}
 
 Dispatcher::addRoute(array(
     GAL_URL. '(|/)'           => '/plugin/gallery/test',
     GAL_URL. '/test'          => '/plugin/gallery/test',
 ));
+
