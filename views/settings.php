@@ -11,7 +11,7 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 ?>
-<h1><?php echo __('Settings'); ?></h1>
+<h1><?php echo __('Gallery settings'); ?></h1>
 <p>
 <?php echo __('Display settings page here!'); ?>
 </p>
