@@ -42,4 +42,12 @@ if (!defined('IN_CMS')) { exit(); }
 	</a>
 </p>
 
+<?php if (DEBUG): ?>
+<p class='button'>
+	<a href="<?php echo BASE_URI. 'plugin/'. GAL_ID ?>/clearall">
+		<img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
+		Clear all data!
+	</a>
+</p>
+<?php endif; ?>
 </div>
