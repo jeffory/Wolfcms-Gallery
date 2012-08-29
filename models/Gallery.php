@@ -50,8 +50,9 @@ class Gallery extends Record
 	 *   validation - for validating form fields generated from table
 	 *   allowempty - (true/false) null/not null, also if the field is optional in forms
 	 *   maxlength - (number) table column size, form maxlength
-	 *   userinput - (true/false) if the field allows user input, ie. if it shows in forms
+	 *   userinput - (default: true, true/false) if the field allows user input, ie. if it shows in forms
 	 *   pkey - primary key in table
+	 *   special - currently reserved for the controller setting a value for the model
 	 *
 	 * TODO: Run this through a function to add default values, eg. strings: maxlength => 255
 	 * Then it can be used in forms and validation.
@@ -88,6 +89,12 @@ class Gallery extends Record
 				'type' => 'file',
 				'allowempty' => true,
 				'caption' => 'Image'
+				),
+			'image_type' => array(
+				'type' => 'string',
+				'allowempty' => true,
+				'userinput' => false,
+				'special' => true
 				),
 			'thumbnail' => array(
 				'type' => 'file',
@@ -315,16 +322,23 @@ class Gallery extends Record
 	 *
 	 * @return void
 	 **/
-	static public function addItem($data, $table)
+	static public function addItem($data)
 	{
 		echo '<pre>';
 		print_r($data);
-		echo '</pre>';
-
-		foreach ($database_schema[self::ITEMS_TABLE] as $column_name => $column_details)
+		
+		foreach (self::$database_schema[self::ITEMS_TABLE] as $column_name => $column_details)
 		{
-
+			if (@$column_details['userinput'] === true || !isset($column_details['userinput']) || @$column_details['special'] === true)
+			{
+				if (isset($data[$column_name]))
+				{
+					echo $column_name. ' ';
+				}
+			}
 		}
+
+		echo '</pre>';
 	}
 
 	/**
