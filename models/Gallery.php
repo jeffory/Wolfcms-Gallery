@@ -51,31 +51,43 @@ class Gallery extends Record
 				'type' => 'integer',
 				'maxlength' => 8,
 				'pkey' => true,
+				'userinput' => false
 				),
 			'name' => array(
 				'type' => 'string',
 				'validation' => '',
-				'allowempty' => false
+				'allowempty' => false,
+				'caption' => 'Item name'
 				),
 			'code' => array(
 				'type' => 'string',
 				'validation' => '',
 				'allowempty' => false,
-				'maxlength' => 8
+				'maxlength' => 8,
+				'caption' => 'Product code'
 				),
 			'description' => array(
 				'type' => 'text',
-				'allowempty' => true
+				'allowempty' => true,
+				'caption' => 'Description'
 				),
-			'image_url' => array(
-				'type' => 'string',
-				'allowempty' => true
+			'image' => array(
+				'type' => 'file',
+				'allowempty' => true,
+				'caption' => 'Image'
+				),
+			'thumbnail' => array(
+				'type' => 'file',
+				'allowempty' => true,
+				'userinput' => false
 				),
 			'created' => array(
-				'type' => 'datetime'
+				'type' => 'datetime',
+				'userinput' => false
 				),
 			'modified' => array(
-				'type' => 'datetime'
+				'type' => 'datetime',
+				'userinput' => false
 				)
 			),
 		self::CATEGORY_TABLE => array(
@@ -159,7 +171,10 @@ class Gallery extends Record
 							{
 								$column_type = $column_value;
 							}
-
+							elseif ($column_value == 'file')
+							{
+								$column_type = 'longblob';
+							}
 						}
 						/* =============== Find: Extra column attributes =============== */
 						elseif ($column_option == 'pkey')
@@ -202,7 +217,7 @@ class Gallery extends Record
 						}
 					}
 
-					/* ===============  column attributes =============== */
+					/* ===============  Column attributes =============== */
 					if ($column_allow_empty)
 					{
 						$SQL = trim($SQL). ' NULL ';
@@ -257,15 +272,13 @@ class Gallery extends Record
 	 **/
 	static public function deleteTables()
 	{
-		$SQL = '';
-
 		foreach (self::$database_schema as $table_name => $table_details)
 		{
 			if (isset($table_name) && !empty($table_name))
 			{
 				$table_name = TABLE_PREFIX. $table_name;	// Add the table prefix, if any, to the table name
 
-				$SQL .= "DROP TABLE IF EXISTS `$table_name`;\n\n";
+				$SQL = "DROP TABLE IF EXISTS `$table_name`;\n\n";
 			}
 			self::execSQL($SQL);
 		}
@@ -284,14 +297,22 @@ class Gallery extends Record
 
 	/**
 	 * Add an item to the database
+	 * 
+	 * @var array
 	 *
 	 * @return void
 	 **/
-	static public function addItem()
+	static public function addItem($data, $table)
 	{
-		
-	}
+		echo '<pre>';
+		print_r($data);
+		echo '</pre>';
 
+		foreach ($database_schema[self::ITEMS_TABLE] as $column_name => $column_details)
+		{
+
+		}
+	}
 
 	/**
 	 * Execute a SQL query, return the result object
