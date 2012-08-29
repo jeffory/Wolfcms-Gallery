@@ -41,48 +41,6 @@ class Gallery extends Record
 	const ARG_CHAR = '?';
 
 	/**
-	 * All the common supported data types by the database
-	 *
-	 * @var array
-	 **/
-	public static $database_datatypes = array(
-		'int' => array('int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float', 'double', 'decimal'), 											// Numbers
-		'time' => array('date', 'datetime', 'timestamp', 'time', 'year'),																			// Time
-		'str' => array('char', 'varchar', 'blob', 'text', 'tinyblob', 'tinytext', 'mediumblob', 'mediumtext','longblob', 'longtext', 'enum')		// Strings
-		);
-
-	/**
-	 * All the common supported column definitions by the database
-	 *
-	 * @var array
-	 **/
-	public static $database_columndefs = array(
-		'AUTO_INCREMENT', 'PRIMARY KEY', 'NOT NULL', 'NULL', 'DEFAULT', 'ON UPDATE'
-		);
-
-	/**
-	 * Predefined SQL column rules and their conditions
-	 *
-	 * @var array
-	 **/
-	public static $database_columnrules = array(
-		'id' => array(
-				'details' => array(
-					'int(16)',
-					'NOT NULL',
-					'AUTO_INCREMENT',
-					'PRIMARY KEY'
-				)
-			),
-		'created' => array(
-			'append' => "\nCREATE TRIGGER `{%table_name%}_creation` BEFORE INSERT ON `{%table_name%}` FOR EACH ROW SET NEW.{%column_name%} = NOW();"
-			),
-		'modified' => array(
-			'append' => "\nCREATE TRIGGER `{%table_name%}_modification` BEFORE UPDATE ON `{%table_name%}` FOR EACH ROW SET NEW.{%column_name%} = NOW();"
-			),
-		);
-
-	/**
 	 * Database schema, setting it like this allows the class to easily access the structure
 	 *
 	 * @var array
@@ -90,7 +48,9 @@ class Gallery extends Record
 	public static $database_schema = array(
 		self::ITEMS_TABLE => array(
 			'id' => array(
-				'type' => 'num_id'
+				'type' => 'integer',
+				'maxlength' => 8,
+				'pkey' => true,
 				),
 			'name' => array(
 				'type' => 'string',
@@ -112,25 +72,31 @@ class Gallery extends Record
 				'allowempty' => true
 				),
 			'created' => array(
-				'type' => 'datetime',
+				'type' => 'datetime'
 				),
 			'modified' => array(
-				'type' => 'datetime',
+				'type' => 'datetime'
 				)
 			),
 		self::CATEGORY_TABLE => array(
-			'id',
+			'id' => array(
+				'type' => 'integer',
+				'pkey' => true,
+				),
 			'category_name' => array(
 				'type' => 'string',
 				'allowempty' => false
 				)
 			),
+
 		self::ITEMS_CATEGORY_TABLE => array(
 			'item_id' => array(
-				'type' => 'num_id'
+				'type' => 'integer',
+				'pkey' => true
 				),
 			'category_id' => array(
-				'type' => 'num_id'
+				'type' => 'integer',
+				'pkey' => true
 				)
 			)
 		);
@@ -167,7 +133,12 @@ class Gallery extends Record
 						$column_details = array();
 					}
 					
-					$SQL .= "  `$column_name`";
+					$SQL .= " `$column_name`";
+
+					/* =============== Column defaults =============== */
+					$column_type = null;
+					$column_size = null;
+					$column_allow_empty = true;
 
 					// die(print_r($column_details));
 
@@ -175,84 +146,102 @@ class Gallery extends Record
 					{
 						if ($column_option == 'type')
 						{
+							/* =============== Find: Column types =============== */
 							if ($column_value == 'string')
 							{
-								$SQL .= ' varchar';
+								$column_type = 'varchar';
 							}
-							else
+							elseif ($column_value == 'integer')
 							{
+								$column_type = 'int';
+							}
+							elseif ($column_value == 'datetime' || $column_value == 'text')
+							{
+								$column_type = $column_value;
+							}
 
+						}
+						/* =============== Find: Extra column attributes =============== */
+						elseif ($column_option == 'pkey')
+						{
+							if ($column_value === true)
+							{
+								$table_primary_key = $column_name;
 							}
 						}
-						elseif ($column_option == 'maxlength') {
-							
+						elseif ($column_option == 'maxlength')
+						{
+							$column_size = $column_value;
 						}
 						elseif ($column_option == 'allowempty')
 						{
-							
+							$column_allow_empty = (bool)$column_value;
 						}
 					}
 
-				// 	// Check for column rules
-				// 	foreach (self::$database_columnrules as $column_match => $column_rules)
-				// 	{
-				// 		if (preg_match('/'. $column_match. '/i', $column_name))
-				// 		{
-				// 			foreach ($column_rules as $column_rule => $column_ruleset)
-				// 			{
-				// 				switch ($column_rule)
-				// 				{
-				// 					case 'details':
-				// 						$column_details = $column_ruleset;
-				// 						break;
-									
-				// 					case 'append':
-				// 						$replacement_vars = array(
-				// 							'{%table_name%}' => $table_name,
-				// 							'{%column_name%}' => $column_name,
-				// 							);
+					if (isset($column_type))
+					{
+						$SQL .= ' '. $column_type;
 
-				// 						$extra_SQL .= str_replace(array_keys($replacement_vars), array_values($replacement_vars), $column_ruleset);
-				// 						break;
+						/* =============== Default Column sizes =============== */
+						if ($column_type == 'int' || $column_type == 'varchar')	// should be any column that takes a column size, eg. varchar(255)
+						{
+							if (!isset($column_size))
+							{
+								if ($column_type == 'varchar')
+								{
+									$column_size = 255;
+								}
+								elseif ($column_type == 'int')
+								{
+									$column_size = 10;
+								}
+							}
 
-				// 					default:
-				// 						# code...
-				// 						break;
-				// 				}
-				// 			}
-				// 		}
-				// 	}
+							$SQL .= '('. $column_size . ') ';
+						}
+					}
 
-				// 	foreach ($column_details as $column_detail)
-				// 	{
-				// 		// Check for a valid column datatype
-				// 		if (preg_match("/^(". implode('|', self::getSupportedDatatypes()). ")/i", $column_detail))
-				// 		{
-				// 			$SQL .= ' '. $column_detail;
-				// 		}
-				// 		// Check for a valid column definition
-				// 		elseif (preg_match("/^(". implode('|', self::$database_columndefs). ")/i", $column_detail))
-				// 		{
-				// 			if (preg_match('/PRIMARY KEY/i', $column_detail))
-				// 			{
-				// 				$table_primary_key = $column_name;
-				// 			}
-				// 			else
-				// 			{
-				// 				$SQL .= ' '. $column_detail;
-				// 			}
-				// 		}
-				// 	} // END foreach column detail in column
-				// 	$SQL .= ",\n";
+					/* ===============  column attributes =============== */
+					if ($column_allow_empty)
+					{
+						$SQL = trim($SQL). ' NULL ';
+					}
+					else
+					{
+						$SQL = trim($SQL). ' NOT NULL ';
+					}
+
+					/* =============== Special column types =============== */
+					if ($column_name == 'created')
+					{
+						$extra_SQL .= "\nCREATE TRIGGER `{$table_name}_creation` BEFORE INSERT ON `{$table_name}` FOR EACH ROW SET NEW.{$column_name} = NOW();";
+					}
+					elseif ($column_name == 'modified')
+					{
+						$extra_SQL .= "\nCREATE TRIGGER `{$table_name}_creation` BEFORE UPDATE ON `{$table_name}` FOR EACH ROW SET NEW.{$column_name} = NOW();";
+					}
+
+					$SQL = trim($SQL). ",";
 				} // END foreach column in table
 
 				if (isset($table_primary_key))
 				{
-					$SQL .= "  PRIMARY KEY (`$table_primary_key`)\n";
+					$SQL .= " PRIMARY KEY (`$table_primary_key`)\n";
 				}
-				$SQL = trim($SQL). "\n);\n". $extra_SQL;
+
+				// remove trailing comma(s)
+				$SQL = rtrim($SQL, ', ');
+
+				$SQL = trim($SQL). "\n);\n\n";
+
+				if (isset($extra_SQL))
+				{
+					$SQL .= trim($extra_SQL). "\n\n";
+				}
+
 				self::execSQL($SQL);
-				echo "<pre>\n". $SQL. "</pre>\n";
+				//echo "<pre>\n". $SQL. "</pre>\n";
 			}
 			else
 			{
@@ -291,26 +280,6 @@ class Gallery extends Record
 	{
 		
 		return self::$database_schema[$table_name];
-	}
-
-	/**
-	 * Get all the registered supported types of the database minus the categories
-	 *
-	 * @return void
-	 **/
-	static public function getSupportedDatatypes()
-	{
-		$supported_datatypes = array();
-
-		foreach (self::$database_datatypes as $category => $datatypes)
-		{
-			foreach ($datatypes as $datatype)
-			{
-				$supported_datatypes[] = $datatype;
-			}
-		}
-
-		return $supported_datatypes;
 	}
 
 	/**
