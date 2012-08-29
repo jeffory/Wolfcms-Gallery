@@ -43,10 +43,10 @@ class Gallery extends Record
 	/**
 	 * Database schema, dynamic generates the SQL used for the tables and forms.
 	 * 
-	 * Types:
+	 * Type (Required):
 	 * integer, string, text, file, datetime
 	 * 
-	 * Other options:
+	 * Options:
 	 *   validation - for validating form fields generated from table
 	 *   allowempty - (true/false) null/not null, also if the field is optional in forms
 	 *   maxlength - (number) table column size, form maxlength

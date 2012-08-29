@@ -52,7 +52,7 @@ if (!defined('IN_CMS')) { exit(); }
                 }
 
                 // Check if optional
-                if ($details['allowEmpty'] == true)
+                if (isset($details['allowEmpty']) && $details['allowEmpty'] === true)
                 {
                     echo '<span>(Optional)</span>';
                 }
