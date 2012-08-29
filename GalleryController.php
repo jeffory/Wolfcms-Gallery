@@ -34,8 +34,6 @@ class GalleryController extends PluginController
 	{
 		$this->title = 'Gallery';
 
-		// self::enable();
-
 		if (defined('CMS_BACKEND'))
 		{
 			self::_checkPermission();
@@ -90,12 +88,38 @@ class GalleryController extends PluginController
 	 **/
 	public function add()
 	{
+		$data = $_POST;
 
+		if (isset($_POST) && !empty($_POST))
+		{
+			// Sort out uploading the files
+			foreach ($_FILES as $field_name => $details)
+			{
+				$data[$field_name] = base64_encode( file_get_contents( $details['tmp_name']) );
+				$data[$field_name. '_name'] = $details['name'];
+			}
+
+			//die(print_r($data));
+			Gallery::addItem($data);
+		}
 
 		$this->display(
 			GAL_URL. "/views/add-item",
 			array('item_fields' => Gallery::getTableStructure(Gallery::ITEMS_TABLE))
 			);
+	}
+
+	/**
+	 * Empty and recreate tables
+	 *
+	 * @return void
+	 **/
+	public function clearall()
+	{
+		self::uninstall();
+		self::enable();
+
+		redirect(get_url('plugin/gallery'));
 	}
 
 	/**
