@@ -41,8 +41,21 @@ class Gallery extends Record
 	const ARG_CHAR = '?';
 
 	/**
-	 * Database schema, setting it like this allows the class to easily access the structure
+	 * Database schema, dynamic generates the SQL used for the tables and forms.
+	 * 
+	 * Types:
+	 * integer, string, text, file, datetime
+	 * 
+	 * Other options:
+	 *   validation - for validating form fields generated from table
+	 *   allowempty - (true/false) null/not null, also if the field is optional in forms
+	 *   maxlength - (number) table column size, form maxlength
+	 *   userinput - (true/false) if the field allows user input, ie. if it shows in forms
+	 *   pkey - primary key in table
 	 *
+	 * TODO: Run this through a function to add default values, eg. strings: maxlength => 255
+	 * Then it can be used in forms and validation.
+	 * 
 	 * @var array
 	 **/
 	public static $database_schema = array(
