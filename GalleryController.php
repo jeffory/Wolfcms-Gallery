@@ -95,8 +95,15 @@ class GalleryController extends PluginController
 			// Sort out uploading the files
 			foreach ($_FILES as $field_name => $details)
 			{
-				$data[$field_name] = base64_encode( file_get_contents( $details['tmp_name']) );
-				$data[$field_name. '_name'] = $details['name'];
+				if ($details['error'] == 0)
+				{
+					$data[$field_name] = base64_encode( file_get_contents( $details['tmp_name']) );
+					
+					// Pass extra information through to the model
+					$data[$field_name. '_name'] = $details['name'];
+					$data[$field_name. '_type'] = $details['type'];
+					$data[$field_name. '_size'] = $details['size'];
+				}
 			}
 
 			//die(print_r($data));
