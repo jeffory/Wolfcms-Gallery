@@ -63,7 +63,13 @@ class GalleryController extends PluginController
 	 **/
 	public function index()
 	{
-		$this->settings();
+		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_ID. '/views/sidebar'));
+		$items = Gallery::listItems();
+
+		$this->display(
+			GAL_ID. "/views/list-items",
+			array('items' => $items)
+			);
 	}
 
 	/**
@@ -73,8 +79,6 @@ class GalleryController extends PluginController
 	 **/
 	public function settings()
 	{
-		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_ID. '/views/sidebar'));
-
 		$this->display(
 			GAL_ID. "/views/settings",
 			Plugin::getAllSettings(GAL_ID)
@@ -98,7 +102,7 @@ class GalleryController extends PluginController
 				if ($details['error'] == 0)
 				{
 					$data[$field_name] = base64_encode( file_get_contents( $details['tmp_name']) );
-					
+
 					// Pass extra information through to the model
 					$data[$field_name. '_name'] = $details['name'];
 					$data[$field_name. '_type'] = $details['type'];
@@ -107,7 +111,11 @@ class GalleryController extends PluginController
 			}
 
 			//die(print_r($data));
-			Gallery::addItem($data);
+			if (Gallery::addItem($data))
+			{
+				redirect(get_url('plugin/gallery'));
+				Flash::set('success', __('You are soooo cute... you were successful.'));
+			}
 		}
 
 		$this->display(
