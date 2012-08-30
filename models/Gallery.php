@@ -53,6 +53,7 @@ class Gallery extends Record
 	 *   userinput - (default: true, true/false) if the field allows user input, ie. if it shows in forms
 	 *   pkey - primary key in table
 	 *   special - currently reserved for the controller setting a value for the model
+	 *   autoinc - Auto increment
 	 *
 	 * TODO: Run this through a function to add default values, eg. strings: maxlength => 255
 	 * Then it can be used in forms and validation.
@@ -65,7 +66,9 @@ class Gallery extends Record
 				'type' => 'integer',
 				'maxlength' => 8,
 				'pkey' => true,
-				'userinput' => false
+				'userinput' => false,
+				'autoinc' => true,
+				'allowempty' => false,
 				),
 			'name' => array(
 				'type' => 'string',
@@ -171,6 +174,7 @@ class Gallery extends Record
 					$column_type = null;
 					$column_size = null;
 					$column_allow_empty = true;
+					$column_auto_increment = false;
 
 					// die(print_r($column_details));
 
@@ -212,6 +216,10 @@ class Gallery extends Record
 						{
 							$column_allow_empty = (bool)$column_value;
 						}
+						elseif ($column_option == 'autoinc')
+						{
+							$column_auto_increment = true;
+						}
 					}
 
 					if (isset($column_type))
@@ -245,6 +253,10 @@ class Gallery extends Record
 					else
 					{
 						$SQL = trim($SQL). ' NOT NULL ';
+					}
+					if ($column_auto_increment)
+					{
+						$SQL = trim($SQL). ' AUTO_INCREMENT ';
 					}
 
 					/* =============== Special column types =============== */
@@ -324,21 +336,55 @@ class Gallery extends Record
 	 **/
 	static public function addItem($data)
 	{
-		echo '<pre>';
-		print_r($data);
+		//echo '<pre>';
+		//print_r($data);
 		
+		// Generate the SQL to insert the row
+		$SQL = 'INSERT INTO `'. TABLE_PREFIX. self::ITEMS_TABLE. '` (';
+
 		foreach (self::$database_schema[self::ITEMS_TABLE] as $column_name => $column_details)
 		{
 			if (@$column_details['userinput'] === true || !isset($column_details['userinput']) || @$column_details['special'] === true)
 			{
 				if (isset($data[$column_name]))
 				{
-					echo $column_name. ' ';
+					$SQL .= '`'. $column_name. '`,';
+					$args[] = $data[$column_name];
 				}
 			}
 		}
 
-		echo '</pre>';
+		$SQL = rtrim($SQL, ', '). ') VALUES (';
+
+		for ($i = 0; $i < count($args); $i++)
+		{
+			$SQL .= '?, ';
+		}
+
+		$SQL = rtrim($SQL, ', '). ');';
+
+		return self::execSQL($SQL, $args);
+
+		//echo $SQL;
+		//echo '</pre>';
+	}
+
+	/**
+	 * List items from the database
+	 * 
+	 * @var array
+	 *
+	 * @return void
+	 **/
+	static public function listItems()
+	{
+		// NEEDS TO BE DYNAMIC!
+		$SQL = 'SELECT id, name, code, description FROM `'. TABLE_PREFIX. self::ITEMS_TABLE. '`;';
+
+		$ret = self::execSQL($SQL);
+		$ret = $ret->fetchAll(PDO::FETCH_ASSOC);
+
+		return $ret;
 	}
 
 	/**
