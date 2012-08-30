@@ -323,7 +323,7 @@ class Gallery extends Record
 	 **/
 	static public function getTableStructure($table_name)
 	{
-		
+		// This should include default values, then it can be used by both the table creation function and views
 		return self::$database_schema[$table_name];
 	}
 
