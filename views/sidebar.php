@@ -32,8 +32,6 @@ if (!defined('IN_CMS')) { exit(); }
  * @license http://www.gnu.org/licenses/gpl.html GPLv3 license
  */
 ?>
-<div class="box">
-<h2><?php echo __('A sidebar');?></h2>
 
 <p class='button'>
 	<a href="<?php echo BASE_URI. 'plugin/'. GAL_ID ?>/add">
@@ -42,12 +40,18 @@ if (!defined('IN_CMS')) { exit(); }
 	</a>
 </p>
 
+
 <?php if (DEBUG): ?>
-<p class='button'>
-	<a href="<?php echo BASE_URI. 'plugin/'. GAL_ID ?>/clearall">
-		<img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
-		Clear all data!
-	</a>
-</p>
-<?php endif; ?>
+<div class="box">
+	<h2>Debugging options:</h2>
+
+	<p>Only use these functions if you're sure what you're doing.</p>
+
+	<p class='button'>
+		<a href="<?php echo BASE_URI. 'plugin/'. GAL_ID ?>/clearall">
+			<img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
+			Clear all data!
+		</a>
+	</p>
 </div>
+<?php endif; ?>
