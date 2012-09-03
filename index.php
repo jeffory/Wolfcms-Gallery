@@ -13,20 +13,24 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 
+// 
 define('GAL_ID', 'gallery');
-define('GAL_ROOT', PLUGINS_URI.'gallery');
-define('GAL_URL', '/gallery');
+// Where the folder containing the plugin is...
+define('GAL_ROOT', PLUGINS_URI.GAL_ID);
+define('GAL_URL', 'gallery');
+define('GAL_TITLE', 'Gallery');
 
 Plugin::setInfos(array(
-    'id'          => 'gallery',
-    'title'       => __('Gallery'),
-    'description' => __('Adds a simple and easy to use gallery to a website.'),
-    'version'     => '1.0',
-   	'license'     => 'Commerical',
-	'author'      => 'Keith McGahey',
-    'website'     => 'http://www.keithmcgahey.com/',
-    // 'update_url'  => 'http://www.keithmcgahey.com/',
-    'require_wolf_version' => '0.7.3'
+    'id'                    => GAL_ID,
+    'title'                 => __(GAL_TITLE),
+    'description'           => __('Adds a simple and easy to manipulate/use '. __(GAL_TITLE). ' to a website.'),
+    'version'               => '1.0',
+   	'license'               => 'Commerical',
+	'author'                => 'Keith McGahey',
+    'website'               => 'http://www.keithmcgahey.com/',
+    // 'update_url'         => 'http://www.keithmcgahey.com/',
+    'require_wolf_version'  => '0.7.3',
+    'type'                  => 'both',
 ));
 
 Plugin::addController(GAL_ID, __('Gallery'), 'administrator', true);
@@ -38,8 +42,10 @@ if (class_exists('Gallery', false))
     AutoLoader::addFile('Gallery', PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS. 'Gallery.php');
 }
 
-Dispatcher::addRoute(array(
-    GAL_URL. '(|/)'           => '/plugin/gallery/test',
-    GAL_URL. '/test'          => '/plugin/gallery/test',
-));
+//http://hamlinsacc.com.au/new/gallery/file
 
+Dispatcher::addRoute(array(
+    '/'.GAL_URL. '(|/)'                             => '/plugin/'. GAL_ID. '/test',
+    '/'.GAL_URL. '/'                                => '/plugin/'. GAL_ID. '/test',
+    '/'.GAL_URL. '/file/([0-9a-z-]+)/([0-9]+)'      => '/plugin/'. GAL_ID. '/file/$1/$2',
+));

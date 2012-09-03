@@ -32,7 +32,7 @@ class GalleryController extends PluginController
 	 **/
 	public function __construct()
 	{
-		$this->title = 'Gallery';
+		$this->title = GAL_TITLE;
 
 		if (defined('CMS_BACKEND'))
 		{
@@ -52,6 +52,7 @@ class GalleryController extends PluginController
      **/
     static public function enable()
     {
+    	self::_checkPermission();
         Gallery::deleteTables();
         Gallery::createTables();
     }
@@ -63,7 +64,8 @@ class GalleryController extends PluginController
 	 **/
 	public function index()
 	{
-		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_ID. '/views/sidebar'));
+		self::_checkPermission();
+		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_URL. '/views/sidebar'));
 		$items = Gallery::listItems();
 
 		$this->display(
@@ -79,6 +81,7 @@ class GalleryController extends PluginController
 	 **/
 	public function settings()
 	{
+		self::_checkPermission();
 		$this->display(
 			GAL_ID. "/views/settings",
 			Plugin::getAllSettings(GAL_ID)
@@ -92,6 +95,7 @@ class GalleryController extends PluginController
 	 **/
 	public function add()
 	{
+		self::_checkPermission();
 		$data = $_POST;
 
 		if (isset($_POST) && !empty($_POST))
@@ -120,7 +124,7 @@ class GalleryController extends PluginController
 				Flash::set('error', __('There appears to be a problem adding the new item!'));
 			}
 
-			redirect(get_url('plugin/gallery'));
+			redirect(get_url('plugin/'. GAL_URL));
 		}
 
 		$this->display(
@@ -136,6 +140,7 @@ class GalleryController extends PluginController
 	 **/
 	public function delete($id)
 	{
+		self::_checkPermission();
 		if (Gallery::deleteItem($id))
 		{
 			Flash::set('success', __('Item# '. $id. ' was deleted.'));
@@ -144,7 +149,7 @@ class GalleryController extends PluginController
 		{
 			Flash::set('error', __('Item# '. $id. ' could not be deleted!'));
 		}
-		redirect(get_url('plugin/gallery'));
+		redirect(get_url('plugin/'. GAL_ID));
 	}
 
 
@@ -154,7 +159,8 @@ class GalleryController extends PluginController
 	 **/
 	public function file($col, $id)
 	{
-
+		echo $col. '/'. $id;
+		print_r( Gallery::find(array('where' => 'id = '. (int) $id)) );
 	}
 
 
@@ -163,12 +169,13 @@ class GalleryController extends PluginController
 	 *
 	 * @return void
 	 **/
-	public function clearall()
+	static public function clearall()
 	{
+		self::_checkPermission();
 		self::uninstall();
 		self::enable();
 
-		redirect(get_url('plugin/gallery'));
+		redirect(get_url('plugin/'. GAL_ID));
 	}
 
 	/**
@@ -178,6 +185,7 @@ class GalleryController extends PluginController
      **/
     static public function uninstall()
     {
+    	self::_checkPermission();
         Gallery::deleteTables();
     }
 
