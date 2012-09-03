@@ -11,7 +11,7 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 ?>
-<h1><?php echo __('Add gallery item'); ?></h1>
+<h1><?php echo __('Add item'); ?></h1>
 
 <p>
 	<?php //print_r($item_fields) ?>

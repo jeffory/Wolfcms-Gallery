@@ -11,7 +11,7 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 ?>
-<h1><?php echo __('Add gallery item'); ?></h1>
+<h1><?php echo __('Items'); ?></h1>
 
 <?php //die(print_r($items) )?>
 
@@ -50,7 +50,7 @@ if (!defined('IN_CMS')) { exit(); }
                 $i++;
             }
 
-            echo '<td><div class="remove"><a class="remove" href="' .URL_PUBLIC. 'admin/'. GAL_ID. '/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="/new/wolf/admin/images/icon-remove.gif" alt="delete snippet icon" title="Delete snippet"></a></div></td>';
+            echo '<td><div class="remove"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_ID. '/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="/new/wolf/admin/images/icon-remove.gif" alt="delete snippet icon" title="Delete snippet"></a></div></td>';
             echo '</tr>';
         }
         ?>
