@@ -287,7 +287,7 @@ class Gallery extends Record
 					$SQL .= trim($extra_SQL). "\n\n";
 				}
 
-				self::execSQL($SQL);
+				self::query($SQL);
 				//echo "<pre>\n". $SQL. "</pre>\n";
 			}
 			else
@@ -312,7 +312,7 @@ class Gallery extends Record
 
 				$SQL = "DROP TABLE IF EXISTS `$table_name`;\n\n";
 			}
-			self::execSQL($SQL);
+			self::query($SQL);
 		}
 	}
 
@@ -363,16 +363,13 @@ class Gallery extends Record
 
 		$SQL = rtrim($SQL, ', '). ');';
 
-		return self::execSQL($SQL, $args);
+		$ret = self::query($SQL, $args);
 
-		//echo $SQL;
-		//echo '</pre>';
+		return ($ret !== false);
 	}
 
 	/**
 	 * List items from the database
-	 * 
-	 * @var array
 	 *
 	 * @return void
 	 **/
@@ -381,73 +378,37 @@ class Gallery extends Record
 		// NEEDS TO BE DYNAMIC!
 		$SQL = 'SELECT id, name, code, description FROM `'. TABLE_PREFIX. self::ITEMS_TABLE. '`;';
 
-		$ret = self::execSQL($SQL);
+		$ret = self::query($SQL);
 		$ret = $ret->fetchAll(PDO::FETCH_ASSOC);
 
 		return $ret;
 	}
 
 	/**
-	 * Execute a SQL query, return the result object
+	 * List items from the database
+	 * 
+	 * @var integer
 	 *
-	 * @param string sql query
-	 * @param string sql arguments (optional)
-	 *
-	 * @return boolean returns true if no errors
+	 * @return void
 	 **/
-	static private function execSQL($sql_query, $arguments=null, $quotes=true)
+	static public function deleteItem($id)
 	{
-		$orig_query = $sql_query;
+		// There's a delete function in record, should probably replace this
+		$SQL = 'DELETE FROM `'. TABLE_PREFIX. self::ITEMS_TABLE. '` WHERE `id` = ?;';
+		$ret = self::query($SQL, array($id));
 
-		if ($pdo = Record::getConnection())
-		{
-			if (!empty($arguments)) {
-				for ($i = 0; $i < count($arguments); $i++) {
-					if ($quotes === true)
-					{
-						$arguments[$i] = "'". addslashes(htmlspecialchars($arguments[$i], ENT_QUOTES)). "'";
-					}
-					else
-					{
-						$arguments[$i] = addslashes(htmlspecialchars($arguments[$i], ENT_QUOTES));
-					}
-				}
-
-				$sql_query = vsprintf(str_replace(self::ARG_CHAR, '%s', $sql_query), $arguments);
-			}
-
-			$GLOBALS['sqlqueries'][] = $sql_query;
-
-			if ($result = $pdo->query($sql_query))
-			{
-				$errored = $pdo->errorInfo();
-
-				//print_r($sql_query);
-
-				// if ($errored)
-				// {
-				//     throw new Exception('Unable to run SQL query. "'. $sql_query. '"<br>'. 'Error: "'. $errored. ': '. $result->errorInfo(). '"');
-				// }
-				// else
-				// {
-				return $result;
-				// }
-			}
-			elseif ($error = $pdo->errorInfo())
-			{
-				throw new Exception('Unable to run SQL query:<br>"'. (!empty($sql_query) ? $sql_query : $orig_query). '"<br><br>'. (@!empty($error[2]) ? ('Error:<br>'. @$error[2]) : 'No error message!' ));
-				return false;
-			}
-			else
-			{
-				throw new Exception('Unknown error while executing:<br>"'. (!empty($sql_query) ? $sql_query : $orig_query));
-			}
-
-		}
-		else
-		{
-			throw new Exception('Unable to connect to Database/PDO Instance.');
-			return false;
-		}
+		return ($ret !== false);
+	} 
+	
+	/**
+	 * List items from the database
+	 * 
+	 * @var array
+	 *
+	 * @return void
+	 **/
+	static public function findby()
+	{
+		
 	}
 } // END class Gallery

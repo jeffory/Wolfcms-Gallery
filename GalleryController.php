@@ -86,7 +86,7 @@ class GalleryController extends PluginController
 	}
 
 	/**
-	 * Set function for admin tab
+	 * Add an item to the Gallery
 	 *
 	 * @return void
 	 **/
@@ -113,9 +113,14 @@ class GalleryController extends PluginController
 			//die(print_r($data));
 			if (Gallery::addItem($data))
 			{
-				redirect(get_url('plugin/gallery'));
-				Flash::set('success', __('You are soooo cute... you were successful.'));
+				Flash::set('success', __('Added successfully!'));
 			}
+			else
+			{
+				Flash::set('error', __('There appears to be a problem adding the new item!'));
+			}
+
+			redirect(get_url('plugin/gallery'));
 		}
 
 		$this->display(
@@ -123,6 +128,35 @@ class GalleryController extends PluginController
 			array('item_fields' => Gallery::getTableStructure(Gallery::ITEMS_TABLE))
 			);
 	}
+
+	/**
+	 * Delete an item
+	 *
+	 * @return void
+	 **/
+	public function delete($id)
+	{
+		if (Gallery::deleteItem($id))
+		{
+			Flash::set('success', __('Item# '. $id. ' was deleted.'));
+		}
+		else
+		{
+			Flash::set('error', __('Item# '. $id. ' could not be deleted!'));
+		}
+		redirect(get_url('plugin/gallery'));
+	}
+
+
+	/* Return a file from the database
+	 *
+	 * @return void
+	 **/
+	public function file($col, $id)
+	{
+
+	}
+
 
 	/**
 	 * Empty and recreate tables
