@@ -16,7 +16,7 @@ if (!defined('IN_CMS')) { exit(); }
 // 
 define('GAL_ID', 'gallery');
 // Where the folder containing the plugin is...
-define('GAL_ROOT', PLUGINS_URI.GAL_ID);
+define('GAL_ROOT', PLUGINS_ROOT. DS. GAL_ID);
 define('GAL_URL', 'gallery');
 define('GAL_TITLE', 'Gallery');
 
@@ -33,16 +33,11 @@ Plugin::setInfos(array(
     'type'                  => 'both',
 ));
 
+AutoLoader::addFile('PluginRecord', GAL_ROOT. DS. 'PluginRecord.php');
+//AutoLoader::addFile('GalleryItem', GAL_ROOT. DS. 'models'. DS. 'GalleryItem.php');
+
 Plugin::addController(GAL_ID, __('Gallery'), 'administrator', true);
 AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models');      // Sometimes doesn't load?
-
-// Load the model if the autoloader failed to (Note the second argument to prevent the autoloader from trying and failing again)
-if (class_exists('Gallery', false))
-{
-    AutoLoader::addFile('Gallery', PLUGINS_ROOT. DS. GAL_ID. DS. 'models'. DS. 'Gallery.php');
-}
-
-//http://hamlinsacc.com.au/new/gallery/file
 
 Dispatcher::addRoute(array(
     '/'.GAL_URL. '(|/)'                             => '/plugin/'. GAL_ID. '/test',
