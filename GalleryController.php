@@ -53,8 +53,11 @@ class GalleryController extends PluginController
     static public function enable()
     {
     	self::_checkPermission();
-        Gallery::deleteTables();
-        Gallery::createTables();
+        self::uninstall();
+
+        GalleryItem::createTable();
+        GalleryItemCat::createTable();
+        GalleryCat::createTable();
     }
 
 	/**
@@ -66,7 +69,8 @@ class GalleryController extends PluginController
 	{
 		self::_checkPermission();
 		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_URL. '/views/sidebar'));
-		$items = Gallery::listItems();
+
+		$items = GalleryItem::listItems();
 
 		$this->display(
 			GAL_ID. "/views/list-items",
@@ -115,7 +119,7 @@ class GalleryController extends PluginController
 			}
 
 			//die(print_r($data));
-			if (Gallery::addItem($data))
+			if (GalleryItem::insertRow($data))
 			{
 				Flash::set('success', __('Added successfully!'));
 			}
@@ -129,7 +133,7 @@ class GalleryController extends PluginController
 
 		$this->display(
 			GAL_URL. "/views/add-item",
-			array('item_fields' => Gallery::getTableStructure(Gallery::ITEMS_TABLE))
+			array('item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name))
 			);
 	}
 
@@ -141,7 +145,7 @@ class GalleryController extends PluginController
 	public function delete($id)
 	{
 		self::_checkPermission();
-		if (Gallery::deleteItem($id))
+		if (GalleryItem::deleteRow($id))
 		{
 			Flash::set('success', __('Item# '. $id. ' was deleted.'));
 		}
@@ -160,7 +164,7 @@ class GalleryController extends PluginController
 	public function file($col, $id)
 	{
 		echo $col. '/'. $id;
-		print_r( Gallery::find(array('where' => 'id = '. (int) $id)) );
+		print_r( GalleryItem::find(array('where' => 'id = '. (int) $id)) );
 	}
 
 
@@ -186,7 +190,9 @@ class GalleryController extends PluginController
     static public function uninstall()
     {
     	self::_checkPermission();
-        Gallery::deleteTables();
+        GalleryItem::deleteTable();
+        GalleryItemCat::deleteTable();
+        GalleryCat::deleteTable();
     }
 
 	/**
