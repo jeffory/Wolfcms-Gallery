@@ -40,7 +40,6 @@ Plugin::addController(GAL_ID, __('Gallery'), 'administrator', true);
 AutoLoader::addFolder(PLUGINS_ROOT. DS. GAL_ID. DS. 'models');      // Sometimes doesn't load?
 
 Dispatcher::addRoute(array(
-    '/'.GAL_URL. '(|/)'                             => '/plugin/'. GAL_ID. '/test',
-    '/'.GAL_URL. '/'                                => '/plugin/'. GAL_ID. '/test',
+    '/'.GAL_URL. '(|/)'                             => '/plugin/'. GAL_ID. '/front_index',
     '/'.GAL_URL. '/file/([0-9a-z-]+)/([0-9]+)'      => '/plugin/'. GAL_ID. '/file/$1/$2',
 ));

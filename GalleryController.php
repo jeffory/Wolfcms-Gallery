@@ -41,7 +41,8 @@ class GalleryController extends PluginController
 		}
 		else
 		{
-			$this->setLayout('Hamlins');	/* TODO: Should be the name of the layout going to be used */
+			// TODO: Should be the name of the layout going to be used
+			$this->setLayout('Hamlins');
 		}
 	}
 
@@ -166,6 +167,22 @@ class GalleryController extends PluginController
 		echo $col. '/'. $id;
 		print_r( GalleryItem::find(array('where' => 'id = '. (int) $id)) );
 	}
+
+	/**
+     * Frontend index view for Gallery
+     *
+     * @return void
+     **/
+    public function front_index()
+    {
+    	$items = GalleryItem::listItems();
+
+    	$this->display(
+			GAL_URL. "/views/front-index",
+			array('item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name)),
+			$items
+			);
+    }
 
 
 	/**
