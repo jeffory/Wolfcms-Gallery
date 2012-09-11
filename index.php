@@ -16,8 +16,8 @@ define('GAL_ID', 'gallery');                        // For the Plugin section in
 define('GAL_ROOT', PLUGINS_ROOT. DS. 'gallery');    // Directory root to the plugin
 define('GAL_C_CLASS', 'gallery');                   // Class names, (ie. gallery = GalleryController) Needs to be lowercase!
 
-define('GAL_URL', 'products');                       // Base URL to use the plugin
-define('GAL_TITLE', 'Product Listing');                     // Title of the plugin (for views and what not)
+define('GAL_URL', 'gallery');                       // Base URL to use the plugin
+define('GAL_TITLE', 'Gallery');                     // Title of the plugin (for views and what not)
 
 Plugin::setInfos(array(
     'id'                    => GAL_ID,
