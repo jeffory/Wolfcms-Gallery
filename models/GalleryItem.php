@@ -12,6 +12,7 @@ if (!defined('IN_CMS')) { exit(); }
  */
 class GalleryItem extends PluginRecord
 {
+	const TABLE_NAME = 'gallery_item';
 	/**
 	 * Associated database table 
 	 *
@@ -120,7 +121,7 @@ class GalleryItem extends PluginRecord
 	public static function listItems()
 	{
 		// NEEDS TO BE DYNAMIC!
-		$SQL = 'SELECT id, name, code, description FROM `'. TABLE_PREFIX. self::$table_name. '`;';
+		$SQL = 'SELECT id, name, code, description FROM `'. TABLE_PREFIX. self::$table_name. '` ORDER BY `id` ASC;';
 
 		$ret = self::query($SQL);
 		$ret = $ret->fetchAll(PDO::FETCH_ASSOC);
