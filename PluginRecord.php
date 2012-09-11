@@ -244,20 +244,88 @@ class PluginRecord extends Record
 	}
 
 	/**
-	 * List items from the database
+	 * Delete row(s) from the database via id(s)
 	 * 
 	 * @var integer
 	 *
 	 * @return void
 	 **/
-	static public function deleteRow($id)
+	static public function deleteRows($ids)
 	{
 		$model_class = get_called_class();
 
-		// There's a delete function in record, should probably replace this
-		$SQL = 'DELETE FROM `'. TABLE_PREFIX. $model_class::$table_name. '` WHERE `id` = ?;';
-		$ret = self::query($SQL, array($id));
+		$SQL = 'DELETE FROM `'. TABLE_PREFIX. $model_class::$table_name. '` WHERE `id` ';
+
+		if (is_array($ids))
+		{
+			$SQL .= 'IN (';
+
+			foreach ($ids as $id)
+			{
+				$SQL .= '?,';
+			}
+
+			$SQL .= rtrim($SQL, ', ');
+			$SQL .= ')';
+		}
+		else
+		{
+			$SQL .= '= ?;';
+			$ret = self::query($SQL, array($ids));
+		}
 
 		return ($ret !== false);
+	}
+
+	/**
+	 * List items from the database
+	 * 
+	 * @var array
+	 *
+	 * @return void
+	 **/
+	public static function find($args = null)
+	{
+		$model_class = get_called_class();
+		$table_name = TABLE_PREFIX. $model_class::$table_name;
+
+		// Collect attributes...
+		$where = isset($args['where']) ? trim($args['where']) : '';
+		$order_by = isset($args['order']) ? trim($args['order']) : 'id DESC';
+
+		$offset = isset($args['offset']) ? (int)$args['offset'] : 0;
+		$limit = isset($args['limit']) ? (int)$args['limit'] : 0;
+
+		// Prepare query parts
+		$order_by_string = empty($order_by) ? '' : "ORDER BY $order_by";
+		$limit_string = $limit > 0 ? "LIMIT $limit" : '';
+		$offset_string = $offset > 0 ? "OFFSET $offset" : '';
+
+		// Prepare SQL
+		// @todo FIXME - do this in a better way (sqlite doesn't like empty WHEREs)
+		if ($where != '')
+		{
+			$sql = "SELECT * FROM $table_name " .
+				"WHERE $where $order_by_string $limit_string $offset_string";
+		}
+		else
+		{
+			$sql = "SELECT * FROM $table_name " .
+				"$order_by_string $limit_string $offset_string";
+		}
+
+		$stmt = self::$__CONN__->prepare($sql);
+		$stmt->execute();
+
+		// Run!
+		if ($limit == 1) {
+			return $stmt->fetchObject($model_class);
+		} else {
+			$objects = array();
+			while ($object = $stmt->fetchObject($model_class))
+				$objects[] = $object;
+
+			return $objects;
+		}
 	}
 }
