@@ -18,7 +18,6 @@ if (!defined('IN_CMS')) { exit(); }
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Name</th>
                 <th>Code</th>
                 <th>Description</th>
@@ -35,7 +34,7 @@ if (!defined('IN_CMS')) { exit(); }
             $i = 0;
             foreach ($details as $detail)
             {
-                $id = $details['id'];
+                $id = $details->id;
 
                 if ($i == 1)
                 {
