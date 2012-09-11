@@ -34,7 +34,7 @@ if (!defined('IN_CMS')) { exit(); }
 ?>
 
 <p class='button'>
-	<a href="<?php echo BASE_URI. 'plugin/'. GAL_ID ?>/add">
+	<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
 		<img src='<?php echo URI_PUBLIC ?>/wolf/icons/add-page-32.png' align="middle" alt="snippet icon">
 		Add item
 	</a>
@@ -48,7 +48,7 @@ if (!defined('IN_CMS')) { exit(); }
 	<p>Only use these functions if you're sure what you're doing.</p>
 
 	<p class='button'>
-		<a href="<?php echo BASE_URI. 'plugin/'. GAL_ID ?>/clearall">
+		<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall">
 			<img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
 			Clear all data!
 		</a>
