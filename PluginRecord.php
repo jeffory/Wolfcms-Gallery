@@ -265,14 +265,16 @@ class PluginRecord extends Record
 				$SQL .= '?,';
 			}
 
-			$SQL .= rtrim($SQL, ', ');
+			$SQL = rtrim($SQL, ', ');
 			$SQL .= ')';
 		}
 		else
 		{
 			$SQL .= '= ?;';
-			$ret = self::query($SQL, array($ids));
+			$ids = array($ids);
 		}
+
+		$ret = self::query($SQL, $ids);
 
 		return ($ret !== false);
 	}
