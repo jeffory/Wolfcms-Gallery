@@ -69,7 +69,14 @@ class GalleryController extends PluginController
 	public function index()
 	{
 		self::_checkPermission();
-		$this->assignToLayout('sidebar', new View('../../plugins/'. GAL_URL. '/views/sidebar'));
+		
+		$this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/sidebar'));
+
+		// Delete multiple items?
+		if (isset($_POST['remove']))
+		{
+			GalleryItem::deleteRows($_POST['remove']);
+		}
 
 		$items = GalleryItem::listItems();
 
@@ -100,6 +107,8 @@ class GalleryController extends PluginController
 	 **/
 	public function add()
 	{
+		$store_in_db = false;
+
 		self::_checkPermission();
 		$data = $_POST;
 
@@ -110,7 +119,11 @@ class GalleryController extends PluginController
 			{
 				if ($details['error'] == 0)
 				{
-					$data[$field_name] = base64_encode( file_get_contents( $details['tmp_name']) );
+					GalleryItem::query('SELECT COUNT(*) FROM gallery_item');
+					//$ret = GalleryItem::query('SELECT LAST_INSERT_ID() as last_id FROM gallery_item');
+
+					// if (!file_exists(  lastInsertId ))
+					$data[$field_name] = file_get_contents( $details['tmp_name']);
 
 					// Pass extra information through to the model
 					$data[$field_name. '_name'] = $details['name'];
@@ -133,8 +146,23 @@ class GalleryController extends PluginController
 		}
 
 		$this->display(
-			GAL_URL. "/views/add-item",
+			basename(GAL_ROOT). "/views/add-item",
 			array('item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name))
+			);
+	}
+
+	/**
+	 * Add an item to the Gallery
+	 *
+	 * @return void
+	 **/
+	public function edit($id)
+	{
+		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+
+		$this->display(
+			basename(GAL_ROOT). "/views/add-item",
+			array('item_fields' => $item_fields)
 			);
 	}
 
@@ -146,7 +174,7 @@ class GalleryController extends PluginController
 	public function delete($id)
 	{
 		self::_checkPermission();
-		if (GalleryItem::deleteRow($id))
+		if (GalleryItem::deleteRows($id))
 		{
 			Flash::set('success', __('Item# '. $id. ' was deleted.'));
 		}
@@ -164,8 +192,14 @@ class GalleryController extends PluginController
 	 **/
 	public function file($col, $id)
 	{
-		echo $col. '/'. $id;
-		print_r( GalleryItem::find(array('where' => 'id = '. (int) $id)) );
+		$item = GalleryItem::find(array('where' => 'id = '. (int) $id));
+
+		if (isset($item[0]->$col_type) && !empty($item[0]->$col_type))
+		{
+			header('Content-Type: '. $item[0]->image_type);
+		}
+
+		echo $item[0]->$col;
 	}
 
 	/**
@@ -178,9 +212,11 @@ class GalleryController extends PluginController
     	$items = GalleryItem::listItems();
 
     	$this->display(
-			GAL_URL. "/views/front-index",
-			array('item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name)),
-			$items
+			basename(GAL_ROOT). "/views/front-index",
+			array(
+				'item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name),
+				'items' => $items
+				)
 			);
     }
 
@@ -196,7 +232,7 @@ class GalleryController extends PluginController
 		self::uninstall();
 		self::enable();
 
-		redirect(get_url('plugin/'. GAL_ID));
+		redirect(get_url('plugin/'. GAL_URL));
 	}
 
 	/**
