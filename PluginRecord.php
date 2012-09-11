@@ -15,7 +15,7 @@ class PluginRecord extends Record
 	 *
 	 * @return void
 	 **/
-	static public function createTable()
+	public static function createTable()
 	{
 		$model_class = get_called_class();
 
@@ -176,7 +176,7 @@ class PluginRecord extends Record
 	 *
 	 * @return void
 	 **/
-	static public function deleteTable()
+	public static function deleteTable()
 	{
 		$model_class = get_called_class();
 		if (isset($model_class::$table_name) && !empty($model_class::$table_name))
@@ -197,7 +197,7 @@ class PluginRecord extends Record
 	 *
 	 * @return void
 	 **/
-	static public function getTableStructure($table_name)
+	public static function getTableStructure($table_name)
 	{
 		$model_class = get_called_class();
 		return $model_class::$table_structure;
@@ -210,7 +210,7 @@ class PluginRecord extends Record
 	 *
 	 * @return void
 	 **/
-	static public function insertRow($data)
+	public static function insertRow($data)
 	{
 		$model_class = get_called_class();
 
@@ -250,7 +250,7 @@ class PluginRecord extends Record
 	 *
 	 * @return void
 	 **/
-	static public function deleteRows($ids)
+	public static function deleteRows($ids)
 	{
 		$model_class = get_called_class();
 
