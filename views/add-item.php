@@ -31,20 +31,23 @@ if (!defined('IN_CMS')) { exit(); }
                     echo "<label for='{$field_id}'>{$details['caption']}:</label> ";
                 }
 
+                $value = isset($data[$field_id]) ? $data[$field_id] : '';
+
                 if ($details['type'] == 'string')
                 {
                     if (isset($details['maxlength']))
                     {
-                        echo "<input name='{$field_id}' type='text' maxlength='{$details['maxlength']}' style='width: {$details['maxlength']}ex;' value='{$data[$field_id]}'>";
+                        echo "<input name='{$field_id}' type='text' maxlength='{$details['maxlength']}' style='width: {$details['maxlength']}ex;' value='{$value}'>";
                     }
                     else
                     {
-                        echo "<input name='{$field_id}' type='text' value='{$data[$field_id]}'>";
+
+                        echo "<input name='{$field_id}' type='text' value='{$value}'>";
                     }
                 }
                 elseif ($details['type'] == 'text')
                 {
-                    echo "<textarea name='{$field_id}'>{$data[$field_id]}</textarea>";
+                    echo "<textarea name='{$field_id}'>{$value}</textarea>";
                 }
                 elseif ($details['type'] == 'file')
                 {
