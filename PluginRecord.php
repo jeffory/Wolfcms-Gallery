@@ -45,6 +45,8 @@ class PluginRecord extends Record
 				$column_size = null;
 				$column_allow_empty = true;
 				$column_auto_increment = false;
+				$extra_SQL = '';
+
 
 				// die(print_r($column_details));
 
