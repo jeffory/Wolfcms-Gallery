@@ -291,6 +291,24 @@ class PluginRecord extends Record
 		$model_class = get_called_class();
 		$table_name = TABLE_PREFIX. $model_class::$table_name;
 
+		$select = isset($args['select']) ? $args['select'] : '*';
+
+		if (isset($args['select']))
+		{
+			if (is_array($args['select']))
+			{
+				$select = implode(', ', $args['select']);
+			}
+			else
+			{
+				$select = $args['select'];
+			}
+		}
+		else
+		{
+			$select = '*';
+		}
+
 		// Collect attributes...
 		$where = isset($args['where']) ? trim($args['where']) : '';
 		$order_by = isset($args['order']) ? trim($args['order']) : 'id DESC';
@@ -303,16 +321,18 @@ class PluginRecord extends Record
 		$limit_string = $limit > 0 ? "LIMIT $limit" : '';
 		$offset_string = $offset > 0 ? "OFFSET $offset" : '';
 
+
+
 		// Prepare SQL
 		// @todo FIXME - do this in a better way (sqlite doesn't like empty WHEREs)
 		if ($where != '')
 		{
-			$sql = "SELECT * FROM $table_name " .
+			$sql = "SELECT $select FROM $table_name " .
 				"WHERE $where $order_by_string $limit_string $offset_string";
 		}
 		else
 		{
-			$sql = "SELECT * FROM $table_name " .
+			$sql = "SELECT $select FROM $table_name " .
 				"$order_by_string $limit_string $offset_string";
 		}
 
