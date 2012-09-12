@@ -221,7 +221,7 @@ class PluginRecord extends Record
 
 		foreach (self::getTableStructure() as $column_name => $column_details)
 		{
-			if (@$column_details['userinput'] === true || !isset($column_details['userinput']) || @$column_details['special'] === true)
+			if (!isset($column_details['userinput']) || $column_details['userinput'] === true || @$column_details['special'] === true)
 			{
 				if (isset($data[$column_name]))
 				{
