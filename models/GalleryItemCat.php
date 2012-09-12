@@ -18,8 +18,8 @@ class GalleryItemCat extends PluginRecord
 	 * @var string
 	 **/
 	public static $table_name = 'gallery_item_cat';
-    
-    /**
+	
+	/**
 	 * Database schema, dynamic generates the SQL used for the tables and forms.
 	 * 
 	 * Type (Required):
@@ -39,8 +39,8 @@ class GalleryItemCat extends PluginRecord
 	 * 
 	 * @var array
 	 **/
-    public static $table_structure = array(
-    	'item_id' => array(
+	public static $table_structure = array(
+		'item_id' => array(
 			'type' => 'integer',
 			'pkey' => true
 			),
