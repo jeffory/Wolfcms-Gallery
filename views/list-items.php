@@ -105,6 +105,7 @@ if (!defined('IN_CMS')) { exit(); }
 <script type="text/javascript">
     var ck_mode = false;
 
+    /* This is so when control is held down extra commands appear */
     $(function(){
         $('body').keydown(function(e) {
             if (e.ctrlKey && !ck_mode)
