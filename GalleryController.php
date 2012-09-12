@@ -47,19 +47,29 @@ class GalleryController extends PluginController
 	}
 
 	/**
-     * Run on enabling plugin 
-     *
-     * @return void
-     **/
-    static public function enable()
-    {
-    	self::_checkPermission();
-        self::uninstall();
+	 * Run on enabling plugin 
+	 *
+	 * @return void
+	 **/
+	static public function enable()
+	{
+		self::_checkPermission();
+		self::uninstall();
 
-        GalleryItem::createTable();
-        GalleryItemCat::createTable();
-        GalleryCat::createTable();
-    }
+		GalleryItem::createTable();
+		GalleryItemCat::createTable();
+		GalleryCat::createTable();
+	}
+
+	/**
+	 * Run on disabling plugin 
+	 *
+	 * @return void
+	 **/
+	static public function disable()
+	{
+		self::_checkPermission();
+	}
 
 	/**
 	 * Set function for admin tab
@@ -166,7 +176,7 @@ class GalleryController extends PluginController
 			basename(GAL_ROOT). "/views/add-item",
 			array(
 				'item_fields' => $item_fields,
-				'data' => (array)$data[0]			// Object -> Array, gotta love PHP sometimes
+				'data' => (array)$data[0]           // Object -> Array, gotta love PHP sometimes
 				)
 			);
 	}
@@ -208,22 +218,22 @@ class GalleryController extends PluginController
 	}
 
 	/**
-     * Frontend index view for Gallery
-     *
-     * @return void
-     **/
-    public function front_index()
-    {
-    	$items = GalleryItem::listItems();
+	 * Frontend index view for Gallery
+	 *
+	 * @return void
+	 **/
+	public function front_index()
+	{
+		$items = GalleryItem::listItems();
 
-    	$this->display(
+		$this->display(
 			basename(GAL_ROOT). "/views/front-index",
 			array(
 				'item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name),
 				'items' => $items
 				)
 			);
-    }
+	}
 
 
 	/**
@@ -262,17 +272,17 @@ class GalleryController extends PluginController
 	}
 
 	/**
-     * Uninstalling plugin, delete associated tables 
-     *
-     * @return void
-     **/
-    static public function uninstall()
-    {
-    	self::_checkPermission();
-        GalleryItem::deleteTable();
-        GalleryItemCat::deleteTable();
-        GalleryCat::deleteTable();
-    }
+	 * Uninstalling plugin, delete associated tables 
+	 *
+	 * @return void
+	 **/
+	static public function uninstall()
+	{
+		self::_checkPermission();
+		GalleryItem::deleteTable();
+		GalleryItemCat::deleteTable();
+		GalleryCat::deleteTable();
+	}
 
 	/**
 	 * WolfCMS display hack/fix
