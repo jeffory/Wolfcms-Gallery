@@ -14,7 +14,7 @@ if (!defined('IN_CMS')) { exit(); }
 <h1><?php echo __('Add item'); ?></h1>
 
 <p>
-	<?php //print_r($item_fields) ?>
+	
 </p>
 
 <form id='addItem' method='post' enctype="multipart/form-data">
@@ -35,16 +35,16 @@ if (!defined('IN_CMS')) { exit(); }
                 {
                     if (isset($details['maxlength']))
                     {
-                        echo "<input name='{$field_id}' type='text' maxlength='{$details['maxlength']}' style='width: {$details['maxlength']}ex; '>";
+                        echo "<input name='{$field_id}' type='text' maxlength='{$details['maxlength']}' style='width: {$details['maxlength']}ex;' value='{$data[$field_id]}'>";
                     }
                     else
                     {
-                        echo "<input name='{$field_id}' type='text'>";
+                        echo "<input name='{$field_id}' type='text' value='{$data[$field_id]}'>";
                     }
                 }
                 elseif ($details['type'] == 'text')
                 {
-                    echo "<textarea name='{$field_id}'></textarea>";
+                    echo "<textarea name='{$field_id}'>{$data[$field_id]}</textarea>";
                 }
                 elseif ($details['type'] == 'file')
                 {
