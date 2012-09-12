@@ -40,13 +40,12 @@ class GalleryCat extends PluginRecord
 	 * @var array
 	 **/
     public static $table_structure = array(
-    	'item_id' => array(
+    	'category_id' => array(
 			'type' => 'integer',
 			'pkey' => true
 			),
-		'category_id' => array(
-			'type' => 'integer',
-			'pkey' => true
+		'category' => array(
+			'type' => 'string'
 			)
 		);
 }
