@@ -54,6 +54,7 @@ class GalleryController extends PluginController
 	static public function enable()
 	{
 		self::_checkPermission();
+		// Drop any related tables
 		self::uninstall();
 
 		GalleryItem::createTable();
@@ -163,6 +164,8 @@ class GalleryController extends PluginController
 
 	/**
 	 * Add an item to the Gallery
+	 * 
+	 * @var integer item id
 	 *
 	 * @return void
 	 **/
@@ -183,7 +186,9 @@ class GalleryController extends PluginController
 
 	/**
 	 * Delete an item
-	 *
+	 * 
+	 * @var integer item id
+	 * 
 	 * @return void
 	 **/
 	public function delete($id)
@@ -201,7 +206,11 @@ class GalleryController extends PluginController
 	}
 
 
-	/* Return a file from the database
+	/**
+	 * Return a file from the database
+	 * 
+	 * @var string column of the file to output
+	 * @var integer item id of the associated file
 	 *
 	 * @return void
 	 **/
@@ -244,6 +253,7 @@ class GalleryController extends PluginController
 	static public function clearall()
 	{
 		self::_checkPermission();
+
 		self::uninstall();
 		self::enable();
 
