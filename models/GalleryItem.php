@@ -120,7 +120,9 @@ class GalleryItem extends PluginRecord
 	 **/
 	public static function listItems()
 	{
-		$ret = self::find();
+		$ret = self::find(array(
+			'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category')
+			));
 
 		return $ret;
 	}

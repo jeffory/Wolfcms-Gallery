@@ -18,6 +18,7 @@ if (!defined('IN_CMS')) { exit(); }
     <table>
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Code</th>
                 <th>Description</th>
