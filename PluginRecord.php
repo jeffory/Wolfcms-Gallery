@@ -147,8 +147,9 @@ class PluginRecord extends Record
 				$SQL .= " PRIMARY KEY (";
 				foreach ($table_primary_keys as $table_primary_key)
 				{
-					$SQL .= "`". $table_primary_key. "`";
+					$SQL .= "`". $table_primary_key. "`,";
 				}
+				$SQL = rtrim($SQL, ', ');
 				$SQL .= ")\n";
 			}
 
@@ -163,7 +164,6 @@ class PluginRecord extends Record
 			}
 
 			$model_class::query($SQL);
-			//echo "<pre>\n". $SQL. "</pre>\n";
 		}
 		else
 		{
@@ -311,7 +311,7 @@ class PluginRecord extends Record
 
 		// Collect attributes...
 		$where = isset($args['where']) ? trim($args['where']) : '';
-		$order_by = isset($args['order']) ? trim($args['order']) : 'id DESC';
+		$order_by = isset($args['order']) ? trim($args['order']) : 'id ASC';
 
 		$offset = isset($args['offset']) ? (int)$args['offset'] : 0;
 		$limit = isset($args['limit']) ? (int)$args['limit'] : 0;
@@ -321,18 +321,19 @@ class PluginRecord extends Record
 		$limit_string = $limit > 0 ? "LIMIT $limit" : '';
 		$offset_string = $offset > 0 ? "OFFSET $offset" : '';
 
-
+		// Tables joins...
+		$join_string = trim(self::generateJoins());
 
 		// Prepare SQL
 		// @todo FIXME - do this in a better way (sqlite doesn't like empty WHEREs)
 		if ($where != '')
 		{
-			$sql = "SELECT $select FROM $table_name " .
+			$sql = "SELECT $select FROM $table_name $join_string " .
 				"WHERE $where $order_by_string $limit_string $offset_string";
 		}
 		else
 		{
-			$sql = "SELECT $select FROM $table_name " .
+			$sql = "SELECT $select FROM $table_name $join_string " .
 				"$order_by_string $limit_string $offset_string";
 		}
 
@@ -348,6 +349,42 @@ class PluginRecord extends Record
 				$objects[] = $object;
 
 			return $objects;
+		}
+	}
+
+	/**
+	 * Generate the joins on the database table
+	 *
+	 * @return void
+	 **/
+	private static function generateJoins()
+	{
+		$model_class = get_called_class();
+		if (isset($model_class::$table_joins))
+		{
+			$joins = '';
+
+			foreach ($model_class::$table_joins as $table_joins)
+			{
+				foreach ($table_joins as $table_join => $fields)
+				{
+					if (strcasecmp('leftjoin', $table_join) == 0)
+					{
+						list($field1, $field2) = $fields;
+
+						$table1 = substr($field1, 0, strpos($field1, '.'));
+						$table2 = substr($field2, 0, strpos($field2, '.'));
+
+						$joins .= 'LEFT JOIN '. $table2. ' ON '. $field1. ' = '. $field2. ' ';
+
+					}
+				}
+			}
+			return trim($joins);
+		}
+		else
+		{
+			return false;
 		}
 	}
 }
