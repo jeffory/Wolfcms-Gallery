@@ -199,7 +199,7 @@ class PluginRecord extends Record
 	 *
 	 * @return void
 	 **/
-	public static function getTableStructure($table_name)
+	public static function getTableStructure()
 	{
 		$model_class = get_called_class();
 		return $model_class::$table_structure;
@@ -219,7 +219,7 @@ class PluginRecord extends Record
 		// Generate the SQL to insert the row
 		$SQL = 'INSERT INTO `'. TABLE_PREFIX. $model_class::$table_name. '` (';
 
-		foreach (self::getTableStructure() as $column_name => $column_details)
+		foreach ($model_class::getTableStructure() as $column_name => $column_details)
 		{
 			if (!isset($column_details['userinput']) || $column_details['userinput'] === true || @$column_details['special'] === true)
 			{
@@ -356,7 +356,7 @@ class PluginRecord extends Record
 				"$order_by_string $limit_string $offset_string";
 		}
 
-		echo $sql;
+		// echo $sql;
 
 		$stmt = self::$__CONN__->prepare($sql);
 		$stmt->execute();
