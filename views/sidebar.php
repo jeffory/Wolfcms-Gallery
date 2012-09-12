@@ -48,6 +48,13 @@ if (!defined('IN_CMS')) { exit(); }
 	<p>Only use these functions if you're sure what you're doing.</p>
 
 	<p class='button'>
+		<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/addsamples">
+			<img src='<?php echo URI_PUBLIC ?>/wolf/icons/open-32.png' align="middle" alt="snippet icon">
+			Add randomized sample data
+		</a>
+	</p>
+
+	<p class='button'>
 		<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall">
 			<img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
 			Clear all data!
