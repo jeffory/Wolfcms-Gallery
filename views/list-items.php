@@ -22,6 +22,7 @@ if (!defined('IN_CMS')) { exit(); }
                 <th>Name</th>
                 <th>Code</th>
                 <th>Description</th>
+                <th>Category</th>
                 <th>Modify</th>
             </tr>
         </thead>
