@@ -311,7 +311,24 @@ class PluginRecord extends Record
 
 		// Collect attributes...
 		$where = isset($args['where']) ? trim($args['where']) : '';
-		$order_by = isset($args['order']) ? trim($args['order']) : 'id ASC';
+
+		if (isset($args['order']))
+		{
+			$order_by = trim($args['order']);
+		}
+		else
+		{
+			// Table has joins?
+			if (isset($model_class::$table_joins))
+			{
+				$order_by = $model_class::$table_name. '.id ASC';
+			}
+			else
+			{
+				$order_by = 'id ASC';
+			}
+		}
+		//$order_by = isset($args['order']) ? trim($args['order']) : 'id ASC';
 
 		$offset = isset($args['offset']) ? (int)$args['offset'] : 0;
 		$limit = isset($args['limit']) ? (int)$args['limit'] : 0;
@@ -337,6 +354,8 @@ class PluginRecord extends Record
 				"$order_by_string $limit_string $offset_string";
 		}
 
+		echo $sql;
+
 		$stmt = self::$__CONN__->prepare($sql);
 		$stmt->execute();
 
@@ -359,7 +378,7 @@ class PluginRecord extends Record
 	 **/
 	private static function generateJoins()
 	{
-		$model_class = get_called_class();
+		$model_class = get_called_class(); 
 		if (isset($model_class::$table_joins))
 		{
 			$joins = '';
