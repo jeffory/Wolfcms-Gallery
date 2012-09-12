@@ -53,6 +53,12 @@ if (!defined('IN_CMS')) { exit(); }
                 {
                     echo "<input name='{$field_id}' type='file'>";
                 }
+                elseif ($details['type'] == 'list')
+                {
+                    echo "<div class='datalist' for='{$field_id}'>";
+                    echo "<input class='datalist_add' type='button' value='Add another''> <input name='{$field_id}[]' class='datalist_item' type='text'><br>";
+                    echo "</div>";
+                }
 
                 // Check if optional
                 if (isset($details['allowEmpty']) && $details['allowEmpty'] === true)
@@ -94,7 +100,25 @@ if (!defined('IN_CMS')) { exit(); }
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
     }
+    .datalist {
+        display: inline-block;
+        clear: none;
+    }
+    .datalist_add {
+        float: right;
+    }
+    .datalist_item {
+        margin-bottom: 3px;
+    }
 </style>
+
+<script>
+    $(function(){
+        $('.datalist_add').click(function(){
+            $(this).parent('.datalist').append("<input name='' class='datalist_item' type='text'><br>");
+        });
+    });
+</script>
 
 <!--
 <script type="text/javascript">
