@@ -236,6 +236,27 @@ class GalleryController extends PluginController
 	}
 
 	/**
+	 * Add sample data
+	 *
+	 * @return void
+	 **/
+	static public function addsamples()
+	{
+		for ($i=0; $i < 10; $i++)
+		{
+			$rand = mt_rand(1,100);
+			$rand2 = mt_rand(1,1897897);
+			GalleryItem::insertRow(array(
+				'name' => 'test item '. $rand,
+				'code' => 'K'. $rand2,
+				'description' => 'This is the description for item #'. $rand. '.'
+				));
+		}
+
+		redirect(get_url('plugin/'. GAL_URL));
+	}
+
+	/**
      * Uninstalling plugin, delete associated tables 
      *
      * @return void
