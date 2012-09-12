@@ -160,9 +160,14 @@ class GalleryController extends PluginController
 	{
 		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
+		$data = GalleryItem::find(array('where' => 'gallery_item.id = '. (int) $id));
+
 		$this->display(
 			basename(GAL_ROOT). "/views/add-item",
-			array('item_fields' => $item_fields)
+			array(
+				'item_fields' => $item_fields,
+				'data' => (array)$data[0]			// Object -> Array, gotta love PHP sometimes
+				)
 			);
 	}
 
