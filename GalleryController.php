@@ -89,7 +89,9 @@ class GalleryController extends PluginController
 			GalleryItem::deleteRows($_POST['remove']);
 		}
 
-		$items = GalleryItem::listItems();
+		$items = GalleryItem::find(array(
+			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name')
+			));
 
 		$this->display(
 			GAL_ID. "/views/list-items",
@@ -156,9 +158,18 @@ class GalleryController extends PluginController
 			redirect(get_url('plugin/'. GAL_URL));
 		}
 
+		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+
+		// Add categories field
+		$item_fields['categories'] = array(
+			'type' => 'list',
+			'allowempty' => 1,
+			'caption' => 'Categories'
+			);
+
 		$this->display(
 			basename(GAL_ROOT). "/views/add-item",
-			array('item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name))
+			array('item_fields' => $item_fields)
 			);
 	}
 
@@ -174,6 +185,8 @@ class GalleryController extends PluginController
 		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
 		$data = GalleryItem::find(array('where' => 'gallery_item.id = '. (int) $id));
+
+		print_r($data);
 
 		$this->display(
 			basename(GAL_ROOT). "/views/add-item",
@@ -233,7 +246,9 @@ class GalleryController extends PluginController
 	 **/
 	public function front_index()
 	{
-		$items = GalleryItem::listItems();
+		$items = GalleryItem::find(array(
+			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name')
+			));
 
 		$this->display(
 			basename(GAL_ROOT). "/views/front-index",
@@ -276,6 +291,33 @@ class GalleryController extends PluginController
 				'code' => 'K'. $rand2,
 				'description' => 'This is the description for item #'. $rand. '.'
 				));
+
+			$item_id = GalleryItem::lastInsertId();
+
+			GalleryCat::insertRow(array(
+				'category_name' => 'test item '. $rand. ' category ',
+				));
+
+			$cat_id = GalleryCat::lastInsertId();
+
+			GalleryItemCat::insertRow(array(
+				'item_id' => $item_id,
+				'category_id' => $cat_id,
+				));
+
+			// Add a second category
+
+			GalleryCat::insertRow(array(
+				'category_name' => 'test item '. $rand. ' category 333!!',
+				));
+
+			$cat_id = GalleryCat::lastInsertId();
+
+			GalleryItemCat::insertRow(array(
+				'item_id' => $item_id,
+				'category_id' => $cat_id,
+				));
+
 		}
 
 		redirect(get_url('plugin/'. GAL_URL));
