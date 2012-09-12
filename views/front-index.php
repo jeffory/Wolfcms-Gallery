@@ -5,20 +5,20 @@
 	<tr>
 		<td>
 			<div class="thumb_container">
-				<img src="<?php echo URL_PUBLIC. GAL_URL. '/file/image/'. $item['id'] ?>">
+				<img src="<?php echo URL_PUBLIC. GAL_URL. '/file/image/'. $item->id ?>">
 			</div>
 		</td>
 
 		<td>
 			<p>
-				<strong><?php echo $item['code'] ?></strong><br>
-				<?php echo $item['name'] ?>
+				<strong><?php echo $item->code ?></strong><br>
+				<?php echo $item->name ?>
 			</p>
 		</td>
 
 		<td>
 			<p>
-				<?php echo $item['description'] ?>
+				<?php echo $item->description ?>
 			</p>
 		</td>
 	</tr>
