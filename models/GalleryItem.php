@@ -99,8 +99,8 @@ class GalleryItem extends PluginRecord
 	 * @var string
 	 **/
 	public static $table_joins = array(
-		array('join' => array('gallery_item.id' => 'gallery_item_cat.item_id')),
-		array('join' => array('gallery_item_cat.category_id' => 'gallery_cat.id')),
+		array('leftjoin' => array('gallery_item.id', 'gallery_item_cat.item_id')),
+		array('leftjoin' => array('gallery_item_cat.category_id', 'gallery_cat.id')),
 		);
 
 	/**
@@ -121,7 +121,7 @@ class GalleryItem extends PluginRecord
 	public static function listItems()
 	{
 		$ret = self::find(array(
-			'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category')
+			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name')
 			));
 
 		return $ret;
