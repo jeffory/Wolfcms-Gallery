@@ -11,8 +11,8 @@
 
 		<td>
 			<p>
-				<strong><?php echo $item->code ?></strong><br>
-				<?php echo $item->name ?>
+				<strong><?php echo $item->name ?></strong><br>
+				<?php echo $item->code ?>
 			</p>
 		</td>
 
