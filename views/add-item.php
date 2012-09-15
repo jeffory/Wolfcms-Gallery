@@ -14,7 +14,7 @@ if (!defined('IN_CMS')) { exit(); }
 <h1><?php echo __('Add/Edit item'); ?></h1>
 
 <p>
-	
+    
 </p>
 
 <form id='addItem' method='post' enctype="multipart/form-data">
@@ -31,17 +31,19 @@ if (!defined('IN_CMS')) { exit(); }
                     echo "<label for='{$field_id}'>{$details['caption']}:</label> ";
                 }
 
+                // Get previous POST/data data for form
                 $value = isset($data[$field_id]) ? $data[$field_id] : '';
 
                 if ($details['type'] == 'string')
                 {
                     if (isset($details['maxlength']))
                     {
-                        echo "<input name='{$field_id}' type='text' maxlength='{$details['maxlength']}' style='width: {$details['maxlength']}ex;' value='{$value}'>";
+                        // Guesstimate, ex isn't useful unless they fix it, gives user a rough idea that the form is limited
+                        $csswidth = (int) $details['maxlength'] + 2;
+                        echo "<input name='{$field_id}' type='text' maxlength='{$details['maxlength']}' style='width: {$csswidth}ex;' value='{$value}'>";
                     }
                     else
                     {
-
                         echo "<input name='{$field_id}' type='text' value='{$value}'>";
                     }
                 }
