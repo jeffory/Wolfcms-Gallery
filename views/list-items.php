@@ -73,7 +73,7 @@ if (!defined('IN_CMS')) { exit(); }
 </p>
 
 <div class="hidden_options">
-    Options: <input type="submit" value="Delete all">
+    Options: <input type="submit" value="Delete selected">
 </div>
 </form>
 
