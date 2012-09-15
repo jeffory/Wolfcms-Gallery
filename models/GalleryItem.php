@@ -112,18 +112,4 @@ class GalleryItem extends PluginRecord
 	{
 		parent::__construct();
 	}
-
-	/**
-	 * List items from the database
-	 *
-	 * @return void
-	 **/
-	public static function listItems()
-	{
-		$ret = self::find(array(
-			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name')
-			));
-
-		return $ret;
-	}
 }
