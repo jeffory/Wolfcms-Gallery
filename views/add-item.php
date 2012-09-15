@@ -11,7 +11,7 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 ?>
-<h1><?php echo __('Add item'); ?></h1>
+<h1><?php echo __('Add/Edit item'); ?></h1>
 
 <p>
 	
@@ -56,7 +56,14 @@ if (!defined('IN_CMS')) { exit(); }
                 elseif ($details['type'] == 'list')
                 {
                     echo "<div class='datalist' for='{$field_id}'>";
-                    echo "<input class='datalist_add' type='button' value='Add another''> <input name='{$field_id}[]' class='datalist_item' type='text'><br>";
+                    echo "<input class='datalist_add' type='button' value='Add another'>";
+
+                    if (!is_array($value)) $value = array($value);
+
+                    foreach ($value as $val)
+                    {
+                        echo "<input name='{$field_id}[]' class='datalist_item' type='text' value='{$val}'> <br>";
+                    }
                     echo "</div>";
                 }
 
