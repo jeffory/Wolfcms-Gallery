@@ -282,7 +282,7 @@ class PluginRecord extends Record
 	}
 
 	/**
-	 * List items from the database
+	 * Find items in the database by arguments
 	 * 
 	 * @var array
 	 *
@@ -411,7 +411,9 @@ class PluginRecord extends Record
 	}
 
 	/**
-	 * Generate the joins on the database table
+	 * Change the multiple rows returned by a many to many resultset into a 3 dimensional array
+	 * 
+	 * @var object fetched rows
 	 *
 	 * @return void
 	 **/
