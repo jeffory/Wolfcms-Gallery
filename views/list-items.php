@@ -44,7 +44,21 @@ if (!defined('IN_CMS')) { exit(); }
                 }
                 else
                 {
-                    echo '<td>'. $detail. '</td>';
+                    echo '<td>';
+                    if (is_array($detail)) {
+                        echo '<ul class="listing">';
+                        foreach ($detail as $item)
+                        {
+                            echo '<li>'. $item. '</li>';
+                        }
+                        echo '</ul>';
+                        
+                    }
+                    else
+                    {
+                        echo $detail;
+                    }
+                    echo '</td>';
                 }
                 
                 $i++;
@@ -69,6 +83,7 @@ if (!defined('IN_CMS')) { exit(); }
     }
     table tr {
         border-bottom: 1px solid #DEDEDE;
+        vertical-align: top;
     }
     table td {
         min-width: 30px;
@@ -99,6 +114,9 @@ if (!defined('IN_CMS')) { exit(); }
     }
     input {
         padding: .1em .2em;
+    }
+    .listing  {
+        /*list-style: square;*/
     }
 </style>
 
