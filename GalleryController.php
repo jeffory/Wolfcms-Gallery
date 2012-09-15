@@ -282,7 +282,7 @@ class GalleryController extends PluginController
 	 **/
 	static public function addsamples()
 	{
-		for ($i=0; $i < 10; $i++)
+		for ($i = 0; $i < 10; $i++)
 		{
 			$rand = mt_rand(1,100);
 			$rand2 = mt_rand(1,1897897);
@@ -292,31 +292,25 @@ class GalleryController extends PluginController
 				'description' => 'This is the description for item #'. $rand. '.'
 				));
 
+			$rand3 = mt_rand(1,3);
+
+			Flash::set('success', $rand3);
+
 			$item_id = GalleryItem::lastInsertId();
 
-			GalleryCat::insertRow(array(
-				'category_name' => 'test item '. $rand. ' category ',
-				));
+			for($x = 0; $x < $rand3; $x++)
+			{
+				GalleryCat::insertRow(array(
+					'category_name' => 'test item '. $rand. ' category '. $x,
+					));
 
-			$cat_id = GalleryCat::lastInsertId();
+				$cat_id = GalleryCat::lastInsertId();
 
-			GalleryItemCat::insertRow(array(
-				'item_id' => $item_id,
-				'category_id' => $cat_id,
-				));
-
-			// Add a second category
-
-			GalleryCat::insertRow(array(
-				'category_name' => 'test item '. $rand. ' category 333!!',
-				));
-
-			$cat_id = GalleryCat::lastInsertId();
-
-			GalleryItemCat::insertRow(array(
-				'item_id' => $item_id,
-				'category_id' => $cat_id,
-				));
+				GalleryItemCat::insertRow(array(
+					'item_id' => $item_id,
+					'category_id' => $cat_id,
+					));
+			}
 
 		}
 
