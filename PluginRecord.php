@@ -369,6 +369,7 @@ class PluginRecord extends Record
 			while ($object = $stmt->fetchObject($model_class))
 				$objects[] = $object;
 
+			$objects = self::fixManytoManyReturn($objects);
 			return $objects;
 		}
 	}
@@ -407,5 +408,57 @@ class PluginRecord extends Record
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Generate the joins on the database table
+	 *
+	 * @return void
+	 **/
+	public static function fixManytoManyReturn($items)
+	{
+		// Stores where the ids are in our return array
+		$ids = array();
+		$ret = array();
+
+		if (is_array($items))
+		{
+			foreach ($items as $index => $item)
+			{
+				// If not a duplicate
+				if (!isset($ids[$item->id]))
+				{
+					$index = count($ret);
+
+					$ids[$item->id] = $index;
+					$ret[] = $item;
+				}
+				else
+				{
+					$index = $ids[$item->id];
+
+					foreach ($item as $col => $val)
+					{
+						if (is_array($ret[$index]->$col))
+						{
+							if (!in_array($val, $ret[$index]->$col))
+							{
+								array_push($ret[$index]->$col, $val);
+							}
+						}
+						else
+						{
+							if ( strcasecmp($ret[$index]->$col, $val) != 0 )
+							{
+								$ret[$index]->$col = array($ret[$index]->$col, $val);
+							}
+						}
+					}
+				}
+			}
+
+			return $ret;
+		}
+		
 	}
 }
