@@ -102,14 +102,4 @@ class GalleryItem extends PluginRecord
 		array('leftjoin' => array('gallery_item.id', 'gallery_item_cat.item_id')),
 		array('leftjoin' => array('gallery_item_cat.category_id', 'gallery_cat.id')),
 		);
-
-	/**
-	 * Initialise class
-	 *
-	 * @return void
-	 **/
-	function __construct ()
-	{
-		parent::__construct();
-	}
 }
