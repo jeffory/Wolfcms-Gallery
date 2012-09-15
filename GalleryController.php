@@ -161,7 +161,7 @@ class GalleryController extends PluginController
 		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
 		// Add categories field
-		$item_fields['categories'] = array(
+		$item_fields['category_name'] = array(
 			'type' => 'list',
 			'allowempty' => 1,
 			'caption' => 'Categories'
@@ -182,11 +182,16 @@ class GalleryController extends PluginController
 	 **/
 	public function edit($id)
 	{
-		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
-
 		$data = GalleryItem::find(array('where' => 'gallery_item.id = '. (int) $id));
 
-		print_r($data);
+		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+
+		// Add categories field
+		$item_fields['category_name'] = array(
+			'type' => 'list',
+			'allowempty' => 1,
+			'caption' => 'Categories'
+			);
 
 		$this->display(
 			basename(GAL_ROOT). "/views/add-item",
