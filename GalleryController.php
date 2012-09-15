@@ -182,7 +182,10 @@ class GalleryController extends PluginController
 	 **/
 	public function edit($id)
 	{
-		$data = GalleryItem::find(array('where' => 'gallery_item.id = '. (int) $id));
+		$data = GalleryItem::find(array(
+			'where' => 'gallery_item.id = '. (int) $id,
+			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_item.image', 'gallery_cat.category_name')
+			));
 
 		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
