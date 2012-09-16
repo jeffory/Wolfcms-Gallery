@@ -293,23 +293,44 @@ class PluginRecord extends Record
 		$model_class = get_called_class();
 		$table_name = TABLE_PREFIX. $model_class::$table_name;
 
-		$select = isset($args['select']) ? $args['select'] : '*';
+		$select = '';
+		$mm_sep = "\n";		// Seperator for MYSQL returning multiple rows, originally a comma.
+		$mm_cols = array();
 
 		if (isset($args['select']))
 		{
-			if (is_array($args['select']))
+			// String -> Array
+			if (!is_array($args['select'])) $args['select'] = array($args['select']);
+
+			foreach ($args['select'] as $col)
 			{
-				$select = implode(', ', $args['select']);
-			}
-			else
-			{
-				$select = $args['select'];
+				// Is there NOT a table name for the columns
+				if (!preg_match('#([a-z0-9-_]+)\.([a-z0-9-_]+)#i', $col, $matches))
+				{
+					$col = $table_name. '.'. $col;
+				}
+				else
+				{
+					//echo $matches[1];
+					// If not the current table
+					if (strcasecmp($table_name, $matches[1]) != 0)
+					{
+						$mm_cols[] = $matches[2];
+						$mm_sep = (isset($mm_sep)) ? $mm_sep : ',';
+						$col = 'GROUP_CONCAT('. $col. ' ORDER BY '. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $matches[2];
+						$group_by_string = 'GROUP BY '. $table_name. '.id';
+					}
+				}
+
+				$select .= $col. ', ';
 			}
 		}
 		else
 		{
 			$select = '*';
 		}
+
+		$select = rtrim($select, ', ');
 
 		// Collect attributes...
 		$where = isset($args['where']) ? trim($args['where']) : '';
@@ -348,30 +369,44 @@ class PluginRecord extends Record
 		if ($where != '')
 		{
 			$sql = "SELECT $select FROM $table_name $join_string " .
-				"WHERE $where $order_by_string $limit_string $offset_string";
+				"WHERE $where $group_by_string $order_by_string $limit_string $offset_string";
 		}
 		else
 		{
 			$sql = "SELECT $select FROM $table_name $join_string " .
-				"$order_by_string $limit_string $offset_string";
+				"$group_by_string $order_by_string $limit_string $offset_string";
 		}
 
-		// echo $sql;
+		echo $sql;
 
 		$stmt = self::$__CONN__->prepare($sql);
 		$stmt->execute();
 
 		// Run!
-		if ($limit == 1) {
-			return $stmt->fetchObject($model_class);
-		} else {
+		if ($limit == 1)
+		{
+			$objects = $stmt->fetchObject($model_class);
+		}
+		else
+		{
 			$objects = array();
 			while ($object = $stmt->fetchObject($model_class))
 				$objects[] = $object;
-
-			$objects = self::fixManytoManyReturn($objects);
-			return $objects;
 		}
+
+		// Divide up columns with multiple rows
+		foreach ($objects as $index => $object)
+		{
+			foreach ($object as $col => $value)
+			{
+				if (in_array($col, $mm_cols))
+				{
+					$objects[$index]->$col = explode($mm_sep, $value);
+				}
+			}
+		}
+
+		return $objects;
 	}
 
 	/**
@@ -408,59 +443,5 @@ class PluginRecord extends Record
 		{
 			return false;
 		}
-	}
-
-	/**
-	 * Change the multiple rows returned by a many to many resultset into a 3 dimensional array
-	 * 
-	 * @var object fetched rows
-	 *
-	 * @return void
-	 **/
-	public static function fixManytoManyReturn($items)
-	{
-		// Stores where the ids are in our return array
-		$ids = array();
-		$ret = array();
-
-		if (is_array($items))
-		{
-			foreach ($items as $index => $item)
-			{
-				// If not a duplicate
-				if (!isset($ids[$item->id]))
-				{
-					$index = count($ret);
-
-					$ids[$item->id] = $index;
-					$ret[] = $item;
-				}
-				else
-				{
-					$index = $ids[$item->id];
-
-					foreach ($item as $col => $val)
-					{
-						if (is_array($ret[$index]->$col))
-						{
-							if (!in_array($val, $ret[$index]->$col))
-							{
-								array_push($ret[$index]->$col, $val);
-							}
-						}
-						else
-						{
-							if ( strcasecmp($ret[$index]->$col, $val) != 0 )
-							{
-								$ret[$index]->$col = array($ret[$index]->$col, $val);
-							}
-						}
-					}
-				}
-			}
-
-			return $ret;
-		}
-		
 	}
 }
