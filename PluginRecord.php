@@ -294,8 +294,10 @@ class PluginRecord extends Record
 		$table_name = TABLE_PREFIX. $model_class::$table_name;
 
 		$select = '';
-		$mm_sep = "\n";		// Seperator for MYSQL returning multiple rows, originally a comma.
+		$mm_sep = "|\n|";		// Seperator for MYSQL returning multiple rows, originally a comma.
 		$mm_cols = array();
+
+		$group_by_string = '';
 
 		if (isset($args['select']))
 		{
@@ -362,7 +364,7 @@ class PluginRecord extends Record
 		$offset_string = $offset > 0 ? "OFFSET $offset" : '';
 
 		// Tables joins...
-		$join_string = trim(self::generateJoins());
+		$join_string = trim(self::generateJoin());
 
 		// Prepare SQL
 		// @todo FIXME - do this in a better way (sqlite doesn't like empty WHEREs)
@@ -377,44 +379,54 @@ class PluginRecord extends Record
 				"$group_by_string $order_by_string $limit_string $offset_string";
 		}
 
-		echo $sql;
+		//echo $sql;
 
 		$stmt = self::$__CONN__->prepare($sql);
 		$stmt->execute();
+
+		// Explode (into arrays) the Many2Many rows
+		$explode_cols = function ($object, $columns, $seperator)
+			{
+				foreach ($object as $col => $val)
+				{
+					if (in_array($col, $columns))
+					{
+						$object->$col = explode($seperator, $val);
+					}
+				}
+				return $object;
+			};
 
 		// Run!
 		if ($limit == 1)
 		{
 			$objects = $stmt->fetchObject($model_class);
+			$objects = $explode_cols($objects, $mm_cols, $mm_sep);
 		}
 		else
 		{
 			$objects = array();
 			while ($object = $stmt->fetchObject($model_class))
 				$objects[] = $object;
-		}
 
-		// Divide up columns with multiple rows
-		foreach ($objects as $index => $object)
-		{
-			foreach ($object as $col => $value)
+			// Divide up columns with multiple rows
+			foreach ($objects as $index => $object)
 			{
-				if (in_array($col, $mm_cols))
-				{
-					$objects[$index]->$col = explode($mm_sep, $value);
-				}
+				$objects[$index] = $explode_cols($object, $mm_cols, $mm_sep);
 			}
 		}
+
+		//die(print_r($objects));
 
 		return $objects;
 	}
 
 	/**
-	 * Generate the joins on the database table
+	 * Generate the join(s) on the database table
 	 *
 	 * @return void
 	 **/
-	private static function generateJoins()
+	private static function generateJoin()
 	{
 		$model_class = get_called_class(); 
 		if (isset($model_class::$table_joins))
@@ -443,5 +455,16 @@ class PluginRecord extends Record
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Get the column count
+	 *
+	 * @return void
+	 **/
+	public static function countRows()
+	{
+		$model_class = get_called_class();
+		return self::countFrom($model_class);
 	}
 }
