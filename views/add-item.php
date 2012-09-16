@@ -14,7 +14,7 @@ if (!defined('IN_CMS')) { exit(); }
 <h1><?php echo __('Add/Edit item'); ?></h1>
 
 <p>
-    
+
 </p>
 
 <form id='addItem' method='post' enctype="multipart/form-data">
@@ -57,15 +57,19 @@ if (!defined('IN_CMS')) { exit(); }
                 }
                 elseif ($details['type'] == 'list')
                 {
-                    echo "<div class='datalist' for='{$field_id}'>";
-                    echo "<input class='datalist_add' type='button' value='Add another'>";
+                    echo "<div class='datalist' data-col='{$field_id}'>";
+                    echo "<input class='datalist_add' type='button' value='Add category'>";
 
                     if (!is_array($value)) $value = array($value);
 
                     foreach ($value as $val)
                     {
-                        echo "<input name='{$field_id}[]' class='datalist_item' type='text' value='{$val}'> <br>";
+                        echo "<span class='datalist_line'>";
+                        echo "<input name='{$field_id}[]' class='datalist_item' type='text' value='{$val}'>";
+                        echo "<input class='datalist_delete' type='button' value='Delete'>";
+                        echo "<span>";
                     }
+
                     echo "</div>";
                 }
 
@@ -119,12 +123,27 @@ if (!defined('IN_CMS')) { exit(); }
     .datalist_item {
         margin-bottom: 3px;
     }
+    .datalist_line {
+        display: block;
+        clear: both;
+    }
 </style>
 
 <script>
     $(function(){
         $('.datalist_add').click(function(){
-            $(this).parent('.datalist').append("<input name='' class='datalist_item' type='text'><br>");
+            field = $(this).parent('.datalist').attr('data-col');
+
+            $(this).parent('.datalist')
+                .append("<span class='datalist_line'><input name='"+ field+ "[]' class='datalist_item' type='text'><input class='datalist_delete' type='button' value='Delete'></span>");
+
+            $('.datalist_delete').click(function(){
+                $(this).parent('.datalist_line').remove();
+            });
+        });
+
+        $('.datalist_delete').click(function(){
+            $(this).parent('.datalist_line').remove();
         });
     });
 </script>
