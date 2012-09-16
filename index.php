@@ -40,9 +40,10 @@ AutoLoader::addFolder(GAL_ROOT. DS. 'models');      // Sometimes doesn't load?
 
 // A lot of the functions have to be re-routed to allow for different plugin names
 Dispatcher::addRoute(array(
-    '/'. GAL_URL. '(|/)'                                        => '/plugin/'. GAL_C_CLASS. '/front_index',
+    '/'. GAL_URL. '(|/)'                                        => '/plugin/'. GAL_C_CLASS. '/front_category_index',
+
     '/admin/plugin/'.GAL_URL. '(|/)'                            => '/plugin/'. GAL_C_CLASS. '/index',
-    '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                       => '/plugin/'. GAL_C_CLASS. '/index/$1',
+    '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                  => '/plugin/'. GAL_C_CLASS. '/index/$1',
     '/admin/plugin/'.GAL_URL. '/add'                            => '/plugin/'. GAL_C_CLASS. '/add',
     '/admin/plugin/'.GAL_URL. '/edit/([0-9]+)'                  => '/plugin/'. GAL_C_CLASS. '/edit/$1',
     '/admin/plugin/'.GAL_URL. '/delete/([0-9]+)'                => '/plugin/'. GAL_C_CLASS. '/delete/$1',

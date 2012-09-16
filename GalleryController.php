@@ -263,21 +263,39 @@ class GalleryController extends PluginController
 	 *
 	 * @return void
 	 **/
-	public function front_index()
+	public function front_items_index()
 	{
 		$items = GalleryItem::find(array(
-			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name')
+			'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name')
 			));
 
 		$this->display(
-			basename(GAL_ROOT). "/views/front-index",
+			basename(GAL_ROOT). "/views/front-items-index",
 			array(
-				'item_fields' => GalleryItem::getTableStructure(GalleryItem::$table_name),
+				'item_fields' => GalleryItem::getTableStructure(),
 				'items' => $items
 				)
 			);
 	}
 
+	/**
+	 * Frontend index view
+	 *
+	 * @return void
+	 **/
+	public function front_category_index()
+	{
+		$items = GalleryCat::find();
+
+		$this->display(
+			basename(GAL_ROOT). "/views/front-categories-index",
+			array(
+				'category_fields' => GalleryCat::getTableStructure(),
+				'categories' => $items
+				)
+			);
+	}
+	
 
 	/**
 	 * Empty and recreate tables
