@@ -77,7 +77,7 @@ class GalleryController extends PluginController
 	 *
 	 * @return void
 	 **/
-	public function index()
+	public function index($page=1, $limit=5)
 	{
 		self::_checkPermission();
 		
@@ -90,7 +90,9 @@ class GalleryController extends PluginController
 		}
 
 		$items = GalleryItem::find(array(
-			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name')
+			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name'),
+			'limit' => $limit,
+			'offset' => ($page - 1) * $limit
 			));
 
 		$this->display(
