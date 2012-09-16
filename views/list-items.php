@@ -13,12 +13,13 @@ if (!defined('IN_CMS')) { exit(); }
 ?>
 <h1><?php echo __('Items'); ?></h1>
 
+<?php $page_total = ceil($total / $limit); ?>
+
 <form method="post">
 <p>
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Name</th>
                 <th>Code</th>
                 <th>Description</th>
@@ -36,11 +37,15 @@ if (!defined('IN_CMS')) { exit(); }
             echo '<tr>';
 
             $i = 0;
-            foreach ($details as $detail)
+            foreach ($details as $col => $detail)
             {
                 $id = $details->id;
 
-                if ($i == 1)
+                if ($col == 'id')
+                {
+
+                }
+                elseif ($col == 'name')
                 {
                     echo '<td><a href="'. URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/edit/'. $id. '">'. $detail. '</a></td>';
                 }
@@ -74,31 +79,30 @@ if (!defined('IN_CMS')) { exit(); }
     </table>
 </p>
 
+<?php if ($page_total > 0): ?>
 <div class="hidden_options">
     Options: <input type="button" value="Select all" class="select_all"> <span class="selection_options"><input type="submit" value="Delete selected"></span>
 </div>
+<?php endif; ?>
 </form>
 
 
-<?php
-    $page_total = ceil($total / $limit);
-    if ($page_total > 0):
-?>
-<div class='pagination'>
+<?php if ($page_total > 0): ?>
+<div class='pagination form_controls'>
     <?php if ($page > 1): ?>
-    <a href="<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/page:'. ($page - 1) ?>">&larr; Prev</a>
+    <a href="<?php echo ($page > 1) ? URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/page:'. ($page - 1) : '' ?>" style="float:left; margin-top: 3px">&larr; Prev</a>
     <?php endif; ?>
 
     <span style='display: inline-block; margin-left: 30px; margin-right: 30px;'>
-        Page <input type="text" value="<?php echo $page ?>" class="pagination_curpage"> of <?php echo $page_total ?>
+        Page <input type='text' value='<?php echo $page ?>' class='pagination_curpage'> of <span class='pagination_total'><?php echo $page_total ?></span>
     </span>
 
     <?php if ($page * $limit < $total): ?>
-    <a href="<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/page:'. ($page + 1) ?>">Next &rarr;</a>
+    <a href="<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/page:'. ($page + 1) ?>" style="float:right; margin-top: 3px">Next &rarr;</a>
     <?php endif; ?>
 </div>
 <?php else: ?>
-<p style='text-align: center;'>
+<p style='text-align: center; clear: both;'>
     No items found.
 </p>
 <?php endif; ?>
@@ -106,6 +110,7 @@ if (!defined('IN_CMS')) { exit(); }
 <style>
     table {
         width: 100%;
+        border-collapse:collapse;
     }
     table tr {
         border-bottom: 1px solid #DEDEDE;
@@ -150,10 +155,9 @@ if (!defined('IN_CMS')) { exit(); }
     input {
         padding: .1em .2em;
     }
-    .listing  {
-        /*list-style: square;*/
-    }
     .pagination {
+        width: 400px;
+
         text-align: center;
         margin: 0 auto;
         clear: both;
@@ -161,10 +165,13 @@ if (!defined('IN_CMS')) { exit(); }
     .pagination_curpage {
         width: 40px;
     }
+
 </style>
 
 <script type="text/javascript">
+    var baseurl = '<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL ?>';
     var ck_mode = false;
+    var curpage = <?php echo $page ?>;
 
     /* This is so when control is held down extra commands appear */
     $(function(){
@@ -218,5 +225,26 @@ if (!defined('IN_CMS')) { exit(); }
 
         $('tbody tr:odd').addClass('odd');
         $('tbody tr:even').addClass('even');
+
+        $('.pagination_curpage').keydown(function(e){
+            
+
+            if (e.keyCode == 13)
+            {
+                if (parseFloat($(this).val()) <= parseFloat($('.pagination_total').text())  )
+                {
+                    window.location = (baseurl + '/page:' + $(this).val());
+                }
+            }
+        });
+
+        $('.pagination_curpage').keyup(function(){
+            $(this).val( $(this).val().replace(/[^0-9]/g, '') );
+
+            if ($(this).val() == '')
+            {
+                $(this).val(curpage);
+            }
+        });
     });
 </script>
