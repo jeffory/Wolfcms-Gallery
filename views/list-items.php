@@ -64,7 +64,7 @@ if (!defined('IN_CMS')) { exit(); }
                 $i++;
             }
 
-            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. '/wolf/admin/images/icon-remove.gif" alt="delete snippet icon" title="Delete snippet"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
+            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete snippet icon" title="Delete snippet"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
             echo '</tr>';
         }
         ?>
@@ -98,6 +98,12 @@ if (!defined('IN_CMS')) { exit(); }
         text-align: left;
 
         padding: 2px 4px;
+    }
+    tbody tr.odd {
+        background-color: #F2F2F2;
+    }
+    tbody tr:hover {
+        background-color: #E6F0FC;
     }
     .hidden_options {
         background-color: #E3E3E3;
@@ -157,5 +163,8 @@ if (!defined('IN_CMS')) { exit(); }
                 $('.hidden_options').hide();
             }
         });
-    })
+
+        $('tbody tr:odd').addClass('odd');
+        $('tbody tr:even').addClass('even');
+    });
 </script>
