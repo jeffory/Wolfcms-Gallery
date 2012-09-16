@@ -304,8 +304,6 @@ class GalleryController extends PluginController
 
 			$rand3 = mt_rand(1,3);
 
-			Flash::set('success', $rand3);
-
 			$item_id = GalleryItem::lastInsertId();
 
 			for($x = 0; $x < $rand3; $x++)
