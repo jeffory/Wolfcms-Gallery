@@ -11,10 +11,6 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 
-/*
- * Any code below gets executed each time the plugin is disabled.
- */
-
-Plugin::addController(GAL_C_CLASS, __(GAL_TITLE), 'administrator', true);
+@require_once('index.php');
 GalleryController::disable();
 exit();
