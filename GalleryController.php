@@ -114,7 +114,7 @@ class GalleryController extends PluginController
 	}
 
 	/**
-	 * Add an item to the Gallery
+	 * Add an item
 	 *
 	 * @return void
 	 **/
@@ -169,12 +169,14 @@ class GalleryController extends PluginController
 
 		$this->display(
 			basename(GAL_ROOT). "/views/add-item",
-			array('item_fields' => $item_fields)
+			array(
+				'item_fields' => $item_fields
+				)
 			);
 	}
 
 	/**
-	 * Add an item to the Gallery
+	 * Edit an item
 	 * 
 	 * @var integer item id
 	 *
@@ -228,7 +230,7 @@ class GalleryController extends PluginController
 
 
 	/**
-	 * Return a file from the database
+	 * Return a file
 	 * 
 	 * @var string column of the file to output
 	 * @var integer item id of the associated file
@@ -248,7 +250,7 @@ class GalleryController extends PluginController
 	}
 
 	/**
-	 * Frontend index view for Gallery
+	 * Frontend index view
 	 *
 	 * @return void
 	 **/
