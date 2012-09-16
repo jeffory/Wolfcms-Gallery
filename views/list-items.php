@@ -29,6 +29,8 @@ if (!defined('IN_CMS')) { exit(); }
 
         <tbody>
         <?php
+        $items = (!is_array($items)) ? array($items) : $items;
+
         foreach ($items as $item => $details)
         {
             echo '<tr>';
@@ -73,9 +75,33 @@ if (!defined('IN_CMS')) { exit(); }
 </p>
 
 <div class="hidden_options">
-    Options: <input type="submit" value="Delete selected">
+    Options: <input type="button" value="Select all" class="select_all"> <span class="selection_options"><input type="submit" value="Delete selected"></span>
 </div>
 </form>
+
+
+<?php
+    $page_total = ceil($total / $limit);
+    if ($page_total > 0):
+?>
+<div class='pagination'>
+    <?php if ($page > 1): ?>
+    <a href="<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/page:'. ($page - 1) ?>">&larr; Prev</a>
+    <?php endif; ?>
+
+    <span style='display: inline-block; margin-left: 30px; margin-right: 30px;'>
+        Page <input type="text" value="<?php echo $page ?>" class="pagination_curpage"> of <?php echo $page_total ?>
+    </span>
+
+    <?php if ($page * $limit < $total): ?>
+    <a href="<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/page:'. ($page + 1) ?>">Next &rarr;</a>
+    <?php endif; ?>
+</div>
+<?php else: ?>
+<p style='text-align: center;'>
+    No items found.
+</p>
+<?php endif; ?>
 
 <style>
     table {
@@ -115,6 +141,9 @@ if (!defined('IN_CMS')) { exit(); }
         -moz-border-radius: 5px;
         border-radius: 5px;
     }
+    .selection_options {
+        display: none;
+    }
     .ck_remove {
         display: none;
     }
@@ -123,6 +152,14 @@ if (!defined('IN_CMS')) { exit(); }
     }
     .listing  {
         /*list-style: square;*/
+    }
+    .pagination {
+        text-align: center;
+        margin: 0 auto;
+        clear: both;
+    }
+    .pagination_curpage {
+        width: 40px;
     }
 </style>
 
@@ -136,6 +173,7 @@ if (!defined('IN_CMS')) { exit(); }
             {
                 ck_mode = true;
                 $('.ck_remove').show();
+                $('.hidden_options').show();
             }
         });
 
@@ -146,7 +184,17 @@ if (!defined('IN_CMS')) { exit(); }
                 $('.ck_remove:not(:checked)').each(function(){
                     $(this).hide();
                 });
+
+                if ($('.selection_options').is(':hidden'))
+                {
+                    $('.hidden_options').hide();
+                }
             }
+        });
+
+        $('.select_all').click(function(){
+            $('.ck_remove').click();
+            $('.ck_remove').change();
         });
 
         $('.ck_remove').change(function(){
@@ -156,11 +204,15 @@ if (!defined('IN_CMS')) { exit(); }
             }
             if ( $('.ck_remove:checked').length > 0 )
             {
-                $('.hidden_options').show();
+                $('.selection_options').show();
             }
             else
             {
-                $('.hidden_options').hide();
+                $('.selection_options').hide();
+
+                if (!ck_mode) {
+                    $('.hidden_options').hide();
+                }
             }
         });
 

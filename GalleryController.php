@@ -77,7 +77,7 @@ class GalleryController extends PluginController
 	 *
 	 * @return void
 	 **/
-	public function index($page=1, $limit=5)
+	public function index($page=1, $limit=10)
 	{
 		self::_checkPermission();
 		
@@ -95,9 +95,16 @@ class GalleryController extends PluginController
 			'offset' => ($page - 1) * $limit
 			));
 
+		$total = GalleryItem::countRows();
+
 		$this->display(
 			GAL_ID. "/views/list-items",
-			array('items' => $items)
+			array(
+				'items' => $items,
+				'page' => $page,
+				'limit' => $limit,
+				'total' => $total
+				)
 			);
 	}
 
