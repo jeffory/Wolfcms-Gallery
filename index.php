@@ -42,13 +42,13 @@ AutoLoader::addFolder(GAL_ROOT. DS. 'models');      // Sometimes doesn't load?
 Dispatcher::addRoute(array(
     '/'. GAL_URL. '(|/)'                                        => '/plugin/'. GAL_C_CLASS. '/front_category_index',
     '/admin/plugin/'.GAL_URL. '(|/)'                            => '/plugin/'. GAL_C_CLASS. '/index',
-    '/admin/plugin/'.GAL_URL. '/categories'                     => '/plugin/'. GAL_C_CLASS. '/category_index',
+    '/admin/plugin/'.GAL_URL. '/categories(|/)'                     => '/plugin/'. GAL_C_CLASS. '/category_index',
     '/admin/plugin/'.GAL_URL. '/categories/page:([0-9]+)'       => '/plugin/'. GAL_C_CLASS. '/category_index/$1',
     '/admin/plugin/'.GAL_URL. '/categories/delete/([0-9]+)'     => '/plugin/'. GAL_C_CLASS. '/category_delete/$1',
     '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                  => '/plugin/'. GAL_C_CLASS. '/index/$1',
-    '/admin/plugin/'.GAL_URL. '/add'                            => '/plugin/'. GAL_C_CLASS. '/add',
+    '/admin/plugin/'.GAL_URL. '/add(|/)'                            => '/plugin/'. GAL_C_CLASS. '/add',
     '/admin/plugin/'.GAL_URL. '/edit/([0-9]+)'                  => '/plugin/'. GAL_C_CLASS. '/edit/$1',
     '/admin/plugin/'.GAL_URL. '/delete/([0-9]+)'                => '/plugin/'. GAL_C_CLASS. '/delete/$1',
-    '/admin/plugin/'.GAL_URL. '/clearall'                       => '/plugin/'. GAL_C_CLASS. '/clearall',
+    '/admin/plugin/'.GAL_URL. '/clearall(|/)'                       => '/plugin/'. GAL_C_CLASS. '/clearall',
     '/'. GAL_URL. '/file/([0-9a-z-]+)/([0-9]+)(.?(?:[a-z]+)|)'  => '/plugin/'. GAL_C_CLASS. '/file/$1/$2',
 ));
