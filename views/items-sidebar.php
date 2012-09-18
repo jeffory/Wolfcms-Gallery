@@ -48,7 +48,7 @@ if (!defined('IN_CMS')) { exit(); }
 </p>
 
 <div class="box">
-    <h2>Gallery</h2>
+    <h2>Gallery items</h2>
     <p>
         All the items in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
     </p>
@@ -68,7 +68,7 @@ if (!defined('IN_CMS')) { exit(); }
     </p>
 
     <p class='button'>
-        <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall">
+        <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall" onclick="return confirm('Are you sure you wish to delete all the data in the gallery?');">
             <img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
             Clear all data!
         </a>
