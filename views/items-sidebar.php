@@ -32,52 +32,44 @@ if (!defined('IN_CMS')) { exit(); }
  * @license http://www.gnu.org/licenses/gpl.html GPLv3 license
  */
 ?>
-
-<?php
-// Get page slug
-foreach (array_reverse(explode('/', CURRENT_URI)) as $url_part)
-{
-	// If not in the format of a url variable
-	if (!preg_match('/(page|limit)\:/is', $url_part))
-	{
-		$page_slug = $url_part;
-		break;
-	}
-}
-?>
+<div class="box">
+    <p>
+        All the items in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
+    </p>
+</div>
 
 <p class='button'>
-	<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
-		<img src='<?php echo URI_PUBLIC ?>/wolf/icons/add-page-32.png' align="middle" alt="snippet icon">
-		Add item
-	</a>
+    <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
+        <img src='<?php echo URI_PUBLIC ?>/wolf/icons/add-page-32.png' align="middle" alt="snippet icon">
+        Add item
+    </a>
 </p>
 
 <p class='button' style='height: 34px;'>
-	<img src='<?php echo URI_PUBLIC ?>/wolf/icons/file-folder-32.png' align="middle" alt="snippet icon">
-	<a href='<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>'>
-		Edit Categories
-	</a>
+    <img src='<?php echo URI_PUBLIC ?>/wolf/icons/file-folder-32.png' align="middle" alt="snippet icon">
+    <a href='<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>'>
+        Edit categories
+    </a>
 </p>
 
 <?php if (DEBUG): ?>
 <div class="box">
-	<h2>Debugging options:</h2>
+    <h2>Debugging options:</h2>
 
-	<p>Only use these functions if you're sure what you're doing.</p>
+    <p>Only use these functions if you're sure what you're doing.</p>
 
-	<p class='button'>
-		<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/addsamples">
-			<img src='<?php echo URI_PUBLIC ?>/wolf/icons/open-32.png' align="middle" alt="snippet icon">
-			Add randomized sample data
-		</a>
-	</p>
+    <p class='button'>
+        <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/addsamples">
+            <img src='<?php echo URI_PUBLIC ?>/wolf/icons/open-32.png' align="middle" alt="snippet icon">
+            Add randomized sample data
+        </a>
+    </p>
 
-	<p class='button'>
-		<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall">
-			<img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
-			Clear all data!
-		</a>
-	</p>
+    <p class='button'>
+        <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall">
+            <img src='<?php echo URI_PUBLIC ?>/wolf/icons/delete-32.png' align="middle" alt="snippet icon">
+            Clear all data!
+        </a>
+    </p>
 </div>
 <?php endif; ?>
