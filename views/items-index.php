@@ -71,7 +71,7 @@ if (!defined('IN_CMS')) { exit(); }
                 $i++;
             }
 
-            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete snippet icon" title="Delete snippet"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
+            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete item icon" title="Delete item"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
             echo '</tr>';
         }
         ?>
@@ -108,64 +108,7 @@ if (!defined('IN_CMS')) { exit(); }
 <?php endif; ?>
 
 <style>
-    table {
-        width: 100%;
-        border-collapse:collapse;
-    }
-    table tr {
-        border-bottom: 1px solid #DEDEDE;
-        vertical-align: top;
-    }
-    table td {
-        min-width: 30px;
-        padding: 2px 4px;
-    }
-    table thead {
-        background-color: whiteSmoke;
-    }
-    table th {
-        font-size: 90%;
-        font-weight: normal;
-        text-align: left;
-
-        padding: 2px 4px;
-    }
-    tbody tr.odd {
-        background-color: #F2F2F2;
-    }
-    tbody tr:hover {
-        background-color: #E6F0FC;
-    }
-    .hidden_options {
-        background-color: #E3E3E3;
-        float: right;
-        display: none;
-        padding: .2em .4em;
-        margin-top: -.8em;
-
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-    }
-    .selection_options {
-        display: none;
-    }
-    .ck_remove {
-        display: none;
-    }
-    input {
-        padding: .1em .2em;
-    }
-    .pagination {
-        width: 400px;
-
-        text-align: center;
-        margin: 0 auto;
-        clear: both;
-    }
-    .pagination_curpage {
-        width: 40px;
-    }
-
+    <?php require(GAL_ROOT. '/css/listing.css') ?>
 </style>
 
 <script type="text/javascript">
