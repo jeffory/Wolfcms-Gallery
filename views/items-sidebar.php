@@ -32,11 +32,6 @@ if (!defined('IN_CMS')) { exit(); }
  * @license http://www.gnu.org/licenses/gpl.html GPLv3 license
  */
 ?>
-<div class="box">
-    <p>
-        All the items in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
-    </p>
-</div>
 
 <p class='button'>
     <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
@@ -51,6 +46,13 @@ if (!defined('IN_CMS')) { exit(); }
         Edit categories
     </a>
 </p>
+
+<div class="box">
+    <h2>Gallery</h2>
+    <p>
+        All the items in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
+    </p>
+</div>
 
 <?php if (DEBUG): ?>
 <div class="box">

@@ -15,10 +15,6 @@ if (!defined('IN_CMS')) { exit(); }
 
 <?php $page_total = ceil($total / $limit); ?>
 
-<p>
-    All the items in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
-</p>
-
 <form method="post">
 <p>
     <table>
