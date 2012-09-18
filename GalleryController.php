@@ -265,18 +265,21 @@ class GalleryController extends PluginController
 	 *
 	 * @return void
 	 **/
-	public function category_index()
+	public function category_index($page=1, $limit=15)
 	{
 		self::_checkPermission();
-		$items = GalleryCat::find();
+		$categories = GalleryCat::find(array(
+			'limit' => $limit,
+			'offset' => ($page - 1) * $limit
+			));
 
-		$items = GalleryCat::find();
+		$total = GalleryItem::countRows();
 
 		$this->display(
 			basename(GAL_ROOT). "/views/categories-index",
 			array(
 				'category_fields' => GalleryCat::getTableStructure(),
-				'categories' => $items
+				'categories' => $categories
 				)
 			);
 	}
