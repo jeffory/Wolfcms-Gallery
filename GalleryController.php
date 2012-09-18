@@ -98,7 +98,7 @@ class GalleryController extends PluginController
 		$total = GalleryItem::countRows();
 
 		$this->display(
-			GAL_ID. "/views/list-items",
+			GAL_ID. "/views/items-index",
 			array(
 				'items' => $items,
 				'page' => $page,
@@ -117,7 +117,7 @@ class GalleryController extends PluginController
 	{
 		self::_checkPermission();
 		$this->display(
-			GAL_ID. "/views/settings",
+			basename(GAL_ID). "/views/settings",
 			Plugin::getAllSettings(GAL_ID)
 			);
 	}
@@ -129,6 +129,7 @@ class GalleryController extends PluginController
 	 **/
 	public function add()
 	{
+		self::_checkPermission();
 		$store_in_db = false;
 
 		self::_checkPermission();
@@ -193,6 +194,7 @@ class GalleryController extends PluginController
 	 **/
 	public function edit($id)
 	{
+		self::_checkPermission();
 		$data = GalleryItem::find(array(
 			'where' => 'gallery_item.id = '. (int) $id,
 			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_item.image', 'gallery_cat.category_name')
@@ -263,6 +265,27 @@ class GalleryController extends PluginController
 	 *
 	 * @return void
 	 **/
+	public function category_index()
+	{
+		self::_checkPermission();
+		$items = GalleryCat::find();
+
+		$items = GalleryCat::find();
+
+		$this->display(
+			basename(GAL_ROOT). "/views/categories-index",
+			array(
+				'category_fields' => GalleryCat::getTableStructure(),
+				'categories' => $items
+				)
+			);
+	}
+
+	/**
+	 * Frontend index view
+	 *
+	 * @return void
+	 **/
 	public function front_items_index()
 	{
 		$items = GalleryItem::find(array(
@@ -319,6 +342,7 @@ class GalleryController extends PluginController
 	 **/
 	static public function addsamples()
 	{
+		self::_checkPermission();
 		for ($i = 0; $i < 10; $i++)
 		{
 			$rand = mt_rand(1,100);
