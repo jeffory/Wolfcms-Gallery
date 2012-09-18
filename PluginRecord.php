@@ -275,6 +275,7 @@ class PluginRecord extends Record
                     $where .= '?,';
                 }
 
+                $sql_args = $args;
                 $where = rtrim($where, ', ');
                 $where .= ')';
             }
@@ -287,8 +288,8 @@ class PluginRecord extends Record
 
         $SQL = 'DELETE FROM `'. TABLE_PREFIX. $model_class::$table_name. '` WHERE '. $where;
 
-        $ret = self::query($SQL, $sql_args);
-
+        $ret = isset($sql_args) ? self::query($SQL, $sql_args) : self::query($SQL);
+        
         return ($ret !== false);
     }
 
