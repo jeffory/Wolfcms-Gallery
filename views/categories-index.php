@@ -100,7 +100,7 @@ if (!defined('IN_CMS')) { exit(); }
 </div>
 <?php else: ?>
 <p style='text-align: center; clear: both;'>
-    No items found.
+    No categories found.
 </p>
 <?php endif; ?>
 
