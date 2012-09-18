@@ -12,7 +12,7 @@ if (!defined('IN_CMS')) { exit(); }
  */
 class GalleryItemCat extends PluginRecord
 {
-	const TABLE_NAME = 'gallery_item';
+	const TABLE_NAME = 'gallery_item_cat';
 	/**
 	 * Associated database table 
 	 *
