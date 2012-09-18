@@ -190,6 +190,11 @@ class GalleryController extends PluginController
 
         $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
+        foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
+        {
+            $categories[] = $category->category_name;
+        }
+
         // Add categories field
         $item_fields['category_name'] = array(
             'type' => 'list',
@@ -200,7 +205,8 @@ class GalleryController extends PluginController
         $this->display(
             basename(GAL_ROOT). "/views/add-item",
             array(
-                'item_fields' => $item_fields
+                'item_fields' => $item_fields,
+                'categories' => $categories
                 )
             );
     }
@@ -229,11 +235,17 @@ class GalleryController extends PluginController
             'caption' => 'Categories'
             );
 
+        foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
+        {
+            $categories[] = $category->category_name;
+        }
+
         $this->display(
             basename(GAL_ROOT). "/views/add-item",
             array(
                 'item_fields' => $item_fields,
-                'data' => (array)$data[0]           // Object -> Array, gotta love PHP sometimes
+                'data' => (array)$data[0],           // Object -> Array, gotta love PHP sometimes
+                'categories' => $categories
                 )
             );
     }
@@ -347,14 +359,7 @@ class GalleryController extends PluginController
         self::_checkPermission();
         if (GalleryCat::deleteRows($id))
         {
-            if (GalleryItemCat::deleteRows(array('where' => '`category_id` = '. $id)))
-            {
-                Flash::set('success', __('Category# '. $id. ' was deleted.'));
-            }
-            else
-            {
-                Flash::set('error', __('Category# '. $id. ' was deleted but it\'s relationships could not be deleted!'));
-            }
+            Flash::set('success', __('Category# '. $id. ' was deleted.'));
         }
         else
         {

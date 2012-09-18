@@ -116,6 +116,7 @@ if (!defined('IN_CMS')) { exit(); }
     .datalist {
         display: inline-block;
         clear: none;
+        min-width: 265px;
     }
     .datalist_add {
         float: right;
@@ -127,10 +128,58 @@ if (!defined('IN_CMS')) { exit(); }
         display: block;
         clear: both;
     }
+    /* Autocomplete */
+    .ui-autocomplete { position: absolute; cursor: default; }   
+    * html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
+    .ui-menu {
+        list-style:none;
+        margin: 0;
+        display:block;
+        float: left;
+        background-color: #fff;
+        border-left: 1px solid #7F9DB9;
+        border-bottom: 1px solid #7F9DB9;
+        border-right: 1px solid #7F9DB9;
+    }
+    .ui-menu .ui-menu {
+        margin-top: -3px;
+    }
+    .ui-menu .ui-menu-item {
+        margin:0;
+        padding: 0;
+        zoom: 1;
+        float: left;
+        clear: left;
+        width: 100%;
+    }
+    .ui-menu .ui-menu-item a {
+        text-decoration:none;
+        display:block;
+        padding:.2em .2em;
+        line-height: 1.2;
+        zoom:1;
+    }
+    .ui-menu .ui-menu-item a.ui-state-hover,
+    .ui-menu .ui-menu-item a.ui-state-active {
+        font-weight: normal;
+    }
+    .ui-menu a {
+        padding: 2px;
+        color: #000;
+        font-size: .9em;
+    }
+    .ui-menu a:hover {
+        color: #fff;
+        background-color: #4079FF;
+    }
 </style>
 
 <script>
     $(function(){
+        $(".datalist_item").autocomplete({
+            source: [ <?php if (isset($categories)) echo "'". implode("', '", $categories). "'" ?> ]
+        });
+
         $('.datalist_add').click(function(){
             field = $(this).parent('.datalist').attr('data-col');
 
@@ -139,6 +188,11 @@ if (!defined('IN_CMS')) { exit(); }
 
             $('.datalist_delete').click(function(){
                 $(this).parent('.datalist_line').remove();
+            });
+
+            // New items need to have autocomplete
+            $(".datalist_item").autocomplete({
+                source: [ <?php if (isset($categories)) echo "'". implode("', '", $categories). "'" ?> ]
             });
         });
 
