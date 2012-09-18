@@ -290,6 +290,12 @@ class GalleryController extends PluginController
     {
         self::_checkPermission();
 
+        // Delete multiple categories?
+        if (isset($_POST['remove']))
+        {
+            GalleryCat::deleteRows($_POST['remove']);
+        }
+
         $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/categories-sidebar'));
 
         $categories = GalleryCat::find(array(
@@ -297,7 +303,7 @@ class GalleryController extends PluginController
             'offset' => ($page - 1) * $limit
             ));
 
-        $total = GalleryItem::countRows();
+        $total = GalleryCat::countRows();
 
         $this->display(
             basename(GAL_ROOT). "/views/categories-index",
@@ -341,7 +347,7 @@ class GalleryController extends PluginController
         self::_checkPermission();
         if (GalleryCat::deleteRows($id))
         {
-            if (GalleryItemCat::deleteRows(array('where' => 'category_id = '. $id)))
+            if (GalleryItemCat::deleteRows(array('where' => '`category_id` = '. $id)))
             {
                 Flash::set('success', __('Category# '. $id. ' was deleted.'));
             }
@@ -354,6 +360,7 @@ class GalleryController extends PluginController
         {
             Flash::set('error', __('Category# '. $id. ' could not be deleted!'));
         }
+
         redirect(get_url('plugin/'. GAL_ID. '/categories'));
     }
 
