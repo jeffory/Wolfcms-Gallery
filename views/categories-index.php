@@ -107,3 +107,10 @@ if (!defined('IN_CMS')) { exit(); }
 <style>
     <?php require(GAL_ROOT. '/css/listing.css') ?>
 </style>
+
+<script type="text/javascript">
+    var baseurl = '<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>';
+    var curpage = <?php echo $page ?>;
+
+    <?php require(GAL_ROOT. '/js/listing.js') ?>
+</script>
