@@ -12,415 +12,422 @@ if (!defined('IN_CMS')) { exit(); }
  */
 class GalleryController extends PluginController
 {
-	/**
-	 * Checks if a user is logged in (used in backend functions), if not redirects them to the login screen
-	 *
-	 * @return void
-	 **/
-	private static function _checkPermission()
-	{
-		AuthUser::load();
+    /**
+     * Checks if a user is logged in (used in backend functions), if not redirects them to the login screen
+     *
+     * @return void
+     **/
+    private static function _checkPermission()
+    {
+        AuthUser::load();
 
-		if (!AuthUser::isLoggedIn())
-			redirect(get_url('login'));
-	}
+        if (!AuthUser::isLoggedIn())
+            redirect(get_url('login'));
+    }
 
-	/**
-	 *  Constructor: includes models, determines layout
-	 *
-	 * @return void
-	 **/
-	public function __construct()
-	{
-		$this->title = GAL_TITLE;
+    /**
+     *  Constructor: includes models, determines layout
+     *
+     * @return void
+     **/
+    public function __construct()
+    {
+        $this->title = GAL_TITLE;
 
-		if (defined('CMS_BACKEND'))
-		{
-			self::_checkPermission();
-			$this->setLayout('backend');
-		}
-		else
-		{
-			// TODO: Should be the name of the layout going to be used
-			$this->setLayout('Hamlins');
-		}
-	}
+        if (defined('CMS_BACKEND'))
+        {
+            self::_checkPermission();
+            $this->setLayout('backend');
+        }
+        else
+        {
+            // TODO: Should be the name of the layout going to be used
+            $this->setLayout('Hamlins');
+        }
+    }
 
-	/**
-	 * Run on enabling plugin 
-	 *
-	 * @return void
-	 **/
-	static public function enable()
-	{
-		self::_checkPermission();
-		// Drop any related tables
-		self::uninstall();
+    /**
+     * Run on enabling plugin 
+     *
+     * @return void
+     **/
+    static public function enable()
+    {
+        self::_checkPermission();
+        // Drop any related tables
+        self::uninstall();
 
-		GalleryItem::createTable();
-		GalleryItemCat::createTable();
-		GalleryCat::createTable();
-	}
+        GalleryItem::createTable();
+        GalleryItemCat::createTable();
+        GalleryCat::createTable();
+    }
 
-	/**
-	 * Run on disabling plugin 
-	 *
-	 * @return void
-	 **/
-	static public function disable()
-	{
-		self::_checkPermission();
-	}
+    /**
+     * Run on disabling plugin 
+     *
+     * @return void
+     **/
+    static public function disable()
+    {
+        self::_checkPermission();
+    }
 
-	/**
-	 * Set function for admin tab
-	 *
-	 * @return void
-	 **/
-	public function index($page=1, $limit=15)
-	{
-		self::_checkPermission();
-		
-		$this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/sidebar'));
+    /**
+     * Set function for admin tab
+     *
+     * @return void
+     **/
+    public function index($page=1, $limit=15)
+    {
+        self::_checkPermission();
+        
+        $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/items-sidebar'));
 
-		// Delete multiple items?
-		if (isset($_POST['remove']))
-		{
-			GalleryItem::deleteRows($_POST['remove']);
-		}
+        // Delete multiple items?
+        if (isset($_POST['remove']))
+        {
+            GalleryItem::deleteRows($_POST['remove']);
+        }
 
-		$items = GalleryItem::find(array(
-			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name'),
-			'limit' => $limit,
-			'offset' => ($page - 1) * $limit
-			));
+        $items = GalleryItem::find(array(
+            'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name'),
+            'limit' => $limit,
+            'offset' => ($page - 1) * $limit
+            ));
 
-		$total = GalleryItem::countRows();
+        $total = GalleryItem::countRows();
 
-		$this->display(
-			GAL_ID. "/views/items-index",
-			array(
-				'items' => $items,
-				'page' => $page,
-				'limit' => $limit,
-				'total' => $total
-				)
-			);
-	}
+        $this->display(
+            GAL_ID. "/views/items-index",
+            array(
+                'items' => $items,
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total
+                )
+            );
+    }
 
-	/**
-	 * Admin settings tab
-	 *
-	 * @return void
-	 **/
-	public function settings()
-	{
-		self::_checkPermission();
-		$this->display(
-			basename(GAL_ID). "/views/settings",
-			Plugin::getAllSettings(GAL_ID)
-			);
-	}
+    /**
+     * Frontend index view
+     *
+     * @return void
+     **/
+    public function front_items_index()
+    {
+        $items = GalleryItem::find(array(
+            'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name')
+            ));
 
-	/**
-	 * Add an item
-	 *
-	 * @return void
-	 **/
-	public function add()
-	{
-		self::_checkPermission();
-		$store_in_db = false;
+        $this->display(
+            basename(GAL_ROOT). "/views/front-items-index",
+            array(
+                'item_fields' => GalleryItem::getTableStructure(),
+                'items' => $items
+                )
+            );
+    }
 
-		self::_checkPermission();
-		$data = $_POST;
+    /**
+     * Admin settings tab
+     *
+     * @return void
+     **/
+    public function settings()
+    {
+        self::_checkPermission();
+        $this->display(
+            basename(GAL_ID). "/views/settings",
+            Plugin::getAllSettings(GAL_ID)
+            );
+    }
 
-		if (isset($_POST) && !empty($_POST))
-		{
-			// Sort out uploading the files
-			foreach ($_FILES as $field_name => $details)
-			{
-				if ($details['error'] == 0)
-				{
-					GalleryItem::query('SELECT COUNT(*) FROM gallery_item');
-					//$ret = GalleryItem::query('SELECT LAST_INSERT_ID() as last_id FROM gallery_item');
+    /**
+     * Add an item
+     *
+     * @return void
+     **/
+    public function add()
+    {
+        self::_checkPermission();
+        $store_in_db = false;
 
-					// if (!file_exists(  lastInsertId ))
-					$data[$field_name] = file_get_contents( $details['tmp_name']);
+        self::_checkPermission();
+        $data = $_POST;
 
-					// Pass extra information through to the model
-					$data[$field_name. '_name'] = $details['name'];
-					$data[$field_name. '_type'] = $details['type'];
-					$data[$field_name. '_size'] = $details['size'];
-				}
-			}
+        if (isset($_POST) && !empty($_POST))
+        {
+            // Sort out uploading the files
+            foreach ($_FILES as $field_name => $details)
+            {
+                if ($details['error'] == 0)
+                {
+                    GalleryItem::query('SELECT COUNT(*) FROM gallery_item');
+                    //$ret = GalleryItem::query('SELECT LAST_INSERT_ID() as last_id FROM gallery_item');
 
-			//die(print_r($data));
-			if (GalleryItem::insertRow($data))
-			{
-				Flash::set('success', __('Added successfully!'));
-			}
-			else
-			{
-				Flash::set('error', __('There appears to be a problem adding the new item!'));
-			}
+                    // if (!file_exists(  lastInsertId ))
+                    $data[$field_name] = file_get_contents( $details['tmp_name']);
 
-			redirect(get_url('plugin/'. GAL_URL));
-		}
+                    // Pass extra information through to the model
+                    $data[$field_name. '_name'] = $details['name'];
+                    $data[$field_name. '_type'] = $details['type'];
+                    $data[$field_name. '_size'] = $details['size'];
+                }
+            }
 
-		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+            //die(print_r($data));
+            if (GalleryItem::insertRow($data))
+            {
+                Flash::set('success', __('Added successfully!'));
+            }
+            else
+            {
+                Flash::set('error', __('There appears to be a problem adding the new item!'));
+            }
 
-		// Add categories field
-		$item_fields['category_name'] = array(
-			'type' => 'list',
-			'allowempty' => 1,
-			'caption' => 'Categories'
-			);
+            redirect(get_url('plugin/'. GAL_URL));
+        }
 
-		$this->display(
-			basename(GAL_ROOT). "/views/add-item",
-			array(
-				'item_fields' => $item_fields
-				)
-			);
-	}
+        $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
-	/**
-	 * Edit an item
-	 * 
-	 * @var integer item id
-	 *
-	 * @return void
-	 **/
-	public function edit($id)
-	{
-		self::_checkPermission();
-		$data = GalleryItem::find(array(
-			'where' => 'gallery_item.id = '. (int) $id,
-			'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_item.image', 'gallery_cat.category_name')
-			));
+        // Add categories field
+        $item_fields['category_name'] = array(
+            'type' => 'list',
+            'allowempty' => 1,
+            'caption' => 'Categories'
+            );
 
-		$item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+        $this->display(
+            basename(GAL_ROOT). "/views/add-item",
+            array(
+                'item_fields' => $item_fields
+                )
+            );
+    }
 
-		// Add categories field
-		$item_fields['category_name'] = array(
-			'type' => 'list',
-			'allowempty' => 1,
-			'caption' => 'Categories'
-			);
+    /**
+     * Edit an item
+     * 
+     * @var integer item id
+     *
+     * @return void
+     **/
+    public function edit($id)
+    {
+        self::_checkPermission();
+        $data = GalleryItem::find(array(
+            'where' => 'gallery_item.id = '. (int) $id,
+            'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_item.image', 'gallery_cat.category_name')
+            ));
 
-		$this->display(
-			basename(GAL_ROOT). "/views/add-item",
-			array(
-				'item_fields' => $item_fields,
-				'data' => (array)$data[0]           // Object -> Array, gotta love PHP sometimes
-				)
-			);
-	}
+        $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
-	/**
-	 * Delete an item
-	 * 
-	 * @var integer item id
-	 * 
-	 * @return void
-	 **/
-	public function delete($id)
-	{
-		self::_checkPermission();
-		if (GalleryItem::deleteRows($id))
-		{
-			Flash::set('success', __('Item# '. $id. ' was deleted.'));
-		}
-		else
-		{
-			Flash::set('error', __('Item# '. $id. ' could not be deleted!'));
-		}
-		redirect(get_url('plugin/'. GAL_ID));
-	}
+        // Add categories field
+        $item_fields['category_name'] = array(
+            'type' => 'list',
+            'allowempty' => 1,
+            'caption' => 'Categories'
+            );
+
+        $this->display(
+            basename(GAL_ROOT). "/views/add-item",
+            array(
+                'item_fields' => $item_fields,
+                'data' => (array)$data[0]           // Object -> Array, gotta love PHP sometimes
+                )
+            );
+    }
+
+    /**
+     * Delete an item
+     * 
+     * @var integer item id
+     * 
+     * @return void
+     **/
+    public function delete($id)
+    {
+        self::_checkPermission();
+        if (GalleryItem::deleteRows($id))
+        {
+            Flash::set('success', __('Item# '. $id. ' was deleted.'));
+        }
+        else
+        {
+            Flash::set('error', __('Item# '. $id. ' could not be deleted!'));
+        }
+        redirect(get_url('plugin/'. GAL_ID));
+    }
 
 
-	/**
-	 * Return a file
-	 * 
-	 * @var string column of the file to output
-	 * @var integer item id of the associated file
-	 *
-	 * @return void
-	 **/
-	public function file($col, $id)
-	{
-		$item = GalleryItem::find(array('where' => 'id = '. (int) $id));
+    /**
+     * Return a file
+     * 
+     * @var string column of the file to output
+     * @var integer item id of the associated file
+     *
+     * @return void
+     **/
+    public function file($col, $id)
+    {
+        $item = GalleryItem::find(array('where' => 'id = '. (int) $id));
 
-		if (isset($item[0]->$col_type) && !empty($item[0]->$col_type))
-		{
-			header('Content-Type: '. $item[0]->image_type);
-		}
+        if (isset($item[0]->$col_type) && !empty($item[0]->$col_type))
+        {
+            header('Content-Type: '. $item[0]->image_type);
+        }
 
-		echo $item[0]->$col;
-	}
+        echo $item[0]->$col;
+    }
 
-	/**
-	 * Frontend index view
-	 *
-	 * @return void
-	 **/
-	public function category_index($page=1, $limit=15)
-	{
-		self::_checkPermission();
-		$categories = GalleryCat::find(array(
-			'limit' => $limit,
-			'offset' => ($page - 1) * $limit
-			));
 
-		$total = GalleryItem::countRows();
+    /**
+     * Frontend index view
+     *
+     * @return void
+     **/
+    public function category_index($page=1, $limit=5)
+    {
+        self::_checkPermission();
 
-		$this->display(
-			basename(GAL_ROOT). "/views/categories-index",
-			array(
-				'category_fields' => GalleryCat::getTableStructure(),
-				'categories' => $categories
-				)
-			);
-	}
+        $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/categories-sidebar'));
 
-	/**
-	 * Frontend index view
-	 *
-	 * @return void
-	 **/
-	public function front_items_index()
-	{
-		$items = GalleryItem::find(array(
-			'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name')
-			));
+        $categories = GalleryCat::find(array(
+            'limit' => $limit,
+            'offset' => ($page - 1) * $limit
+            ));
 
-		$this->display(
-			basename(GAL_ROOT). "/views/front-items-index",
-			array(
-				'item_fields' => GalleryItem::getTableStructure(),
-				'items' => $items
-				)
-			);
-	}
+        $total = GalleryItem::countRows();
 
-	/**
-	 * Frontend index view
-	 *
-	 * @return void
-	 **/
-	public function front_category_index()
-	{
-		$items = GalleryCat::find();
+        $this->display(
+            basename(GAL_ROOT). "/views/categories-index",
+            array(
+                'category_fields' => GalleryCat::getTableStructure(),
+                'categories' => $categories,
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total
+                )
+            );
+    }
 
-		$this->display(
-			basename(GAL_ROOT). "/views/front-categories-index",
-			array(
-				'category_fields' => GalleryCat::getTableStructure(),
-				'categories' => $items
-				)
-			);
-	}
-	
+    /**
+     * Frontend index view
+     *
+     * @return void
+     **/
+    public function front_category_index()
+    {
+        $items = GalleryCat::find();
 
-	/**
-	 * Empty and recreate tables
-	 *
-	 * @return void
-	 **/
-	static public function clearall()
-	{
-		self::_checkPermission();
+        $this->display(
+            basename(GAL_ROOT). "/views/front-categories-index",
+            array(
+                'category_fields' => GalleryCat::getTableStructure(),
+                'categories' => $items
+                )
+            );
+    }
 
-		self::uninstall();
-		self::enable();
 
-		redirect(get_url('plugin/'. GAL_URL));
-	}
+    /**
+     * Empty and recreate tables
+     *
+     * @return void
+     **/
+    static public function clearall()
+    {
+        self::_checkPermission();
 
-	/**
-	 * Add sample data
-	 *
-	 * @return void
-	 **/
-	static public function addsamples()
-	{
-		self::_checkPermission();
-		for ($i = 0; $i < 10; $i++)
-		{
-			$rand = mt_rand(1,100);
-			$rand2 = mt_rand(1,1897897);
-			GalleryItem::insertRow(array(
-				'name' => 'test item '. $rand,
-				'code' => 'K'. $rand2,
-				'description' => 'This is the description for item #'. $rand. '.'
-				));
+        self::uninstall();
+        self::enable();
 
-			$rand3 = mt_rand(1,3);
+        redirect(get_url('plugin/'. GAL_URL));
+    }
 
-			$item_id = GalleryItem::lastInsertId();
+    /**
+     * Add sample data
+     *
+     * @return void
+     **/
+    static public function addsamples()
+    {
+        self::_checkPermission();
+        for ($i = 0; $i < 10; $i++)
+        {
+            $rand = mt_rand(1,100);
+            $rand2 = mt_rand(1,1897897);
+            GalleryItem::insertRow(array(
+                'name' => 'test item '. $rand,
+                'code' => 'K'. $rand2,
+                'description' => 'This is the description for item #'. $rand. '.'
+                ));
 
-			for($x = 0; $x < $rand3; $x++)
-			{
-				GalleryCat::insertRow(array(
-					'category_name' => 'test item '. $rand. ' category '. $x,
-					));
+            $rand3 = mt_rand(1,3);
 
-				$cat_id = GalleryCat::lastInsertId();
+            $item_id = GalleryItem::lastInsertId();
 
-				GalleryItemCat::insertRow(array(
-					'item_id' => $item_id,
-					'category_id' => $cat_id,
-					));
-			}
+            for($x = 0; $x < $rand3; $x++)
+            {
+                GalleryCat::insertRow(array(
+                    'category_name' => 'test item '. $rand. ' category '. $x,
+                    ));
 
-		}
+                $cat_id = GalleryCat::lastInsertId();
 
-		redirect(get_url('plugin/'. GAL_URL));
-	}
+                GalleryItemCat::insertRow(array(
+                    'item_id' => $item_id,
+                    'category_id' => $cat_id,
+                    ));
+            }
 
-	/**
-	 * Uninstalling plugin, delete associated tables 
-	 *
-	 * @return void
-	 **/
-	static public function uninstall()
-	{
-		self::_checkPermission();
-		GalleryItem::deleteTable();
-		GalleryItemCat::deleteTable();
-		GalleryCat::deleteTable();
-	}
+        }
 
-	/**
-	 * WolfCMS display hack/fix
-	 * 
-	 * I'm not sure how this came about, I wrote this a very long time ago, but the plugin fails without it.
-	 * 
-	 * @param boolean part
-	 * @param boolean inherit
-	 *
-	 * @return mixed returns content or false if content isn't available
-	 **/
-	public function content($part=false, $inherit=false)
-	{
-		return (!$part) ? $this->content : false;
-	}
-	
-	/**
-	 * WolfCMS frontend view filepath fix
-	 *
-	 * Differentiates between the frontend and backend to give a correct path to views
-	 *
-	 * @param string View id
-	 * @param string Variables for in the View.
-	 * @param boolean Exit PHP process when done?
-	 * 
-	 *
-	 * @return mixed Rendered content or nothing when $exit is true.
-	 **/
-	public function display($view, $vars=array(), $exit=true)
-	{
-		parent::display((defined('CMS_BACKEND') ? '/' : '../../plugins/'). ltrim($view, '/'), $vars, $exit);
-	}
+        redirect(get_url('plugin/'. GAL_URL));
+    }
+
+    /**
+     * Uninstalling plugin, delete associated tables 
+     *
+     * @return void
+     **/
+    static public function uninstall()
+    {
+        self::_checkPermission();
+        GalleryItem::deleteTable();
+        GalleryItemCat::deleteTable();
+        GalleryCat::deleteTable();
+    }
+
+    /**
+     * WolfCMS display hack/fix
+     * 
+     * I'm not sure how this came about, I wrote this a very long time ago, but the plugin fails without it.
+     * 
+     * @param boolean part
+     * @param boolean inherit
+     *
+     * @return mixed returns content or false if content isn't available
+     **/
+    public function content($part=false, $inherit=false)
+    {
+        return (!$part) ? $this->content : false;
+    }
+    
+    /**
+     * WolfCMS frontend view filepath fix
+     *
+     * Differentiates between the frontend and backend to give a correct path to views
+     *
+     * @param string View id
+     * @param string Variables for in the View.
+     * @param boolean Exit PHP process when done?
+     * 
+     *
+     * @return mixed Rendered content or nothing when $exit is true.
+     **/
+    public function display($view, $vars=array(), $exit=true)
+    {
+        parent::display((defined('CMS_BACKEND') ? '/' : '../../plugins/'). ltrim($view, '/'), $vars, $exit);
+    }
 }
