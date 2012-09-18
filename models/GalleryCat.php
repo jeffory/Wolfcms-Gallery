@@ -53,4 +53,30 @@ class GalleryCat extends PluginRecord
             'allowempty' => false
             )
         );
+
+    /**
+     * As well as deleting the category we need to clean up old table relations to it
+     * 
+     * @var mixed Accepts either a single id, ids in an array or a where statement (array key needs to be where)
+     *
+     * @return void
+     **/
+    public static function deleteRows($args)
+    {
+        if (is_array($args))
+        {
+            if (!isset($args['where']))
+            {
+                $ids = implode(",", $args);
+
+                GalleryItemCat::deleteRows(array('where' => '`category_id` IN ('. $ids. ')'));
+            }
+        }
+        elseif (preg_match('/^[0-9]+$/', $args))
+        {
+            GalleryItemCat::deleteRows(array('where' => '`category_id` = '. $args));
+        }
+
+        return parent::deleteRows($args);
+    }
 }
