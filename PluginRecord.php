@@ -248,35 +248,46 @@ class PluginRecord extends Record
     /**
      * Delete row(s) from the database via id(s)
      * 
-     * @var integer
+     * @var mixed Accepts either a single id, ids in an array or a where statement (array key needs to be where)
      *
      * @return void
      **/
-    public static function deleteRows($ids)
+    public static function deleteRows($args)
     {
         $model_class = get_called_class();
 
-        $SQL = 'DELETE FROM `'. TABLE_PREFIX. $model_class::$table_name. '` WHERE `id` ';
+        $where = '';
 
-        if (is_array($ids))
+        if (is_array($args) && !empty($args['where']))
         {
-            $SQL .= 'IN (';
-
-            foreach ($ids as $id)
-            {
-                $SQL .= '?,';
-            }
-
-            $SQL = rtrim($SQL, ', ');
-            $SQL .= ')';
+            $where = $args['where'];
         }
         else
         {
-            $SQL .= '= ?;';
-            $ids = array($ids);
+            $where = '`id` ';
+
+            if (is_array($args))
+            {
+                $where .= 'IN (';
+
+                foreach ($args as $id)
+                {
+                    $where .= '?,';
+                }
+
+                $where = rtrim($where, ', ');
+                $where .= ')';
+            }
+            else
+            {
+                $where .= '= ?;';
+                $sql_args = array($args);
+            }
         }
 
-        $ret = self::query($SQL, $ids);
+        $SQL = 'DELETE FROM `'. TABLE_PREFIX. $model_class::$table_name. '` WHERE '. $where;
+
+        $ret = self::query($SQL, $sql_args);
 
         return ($ret !== false);
     }
