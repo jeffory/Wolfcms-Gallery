@@ -45,3 +45,10 @@ if (!defined('IN_CMS')) { exit(); }
 		Edit Items
 	</a>
 </p>
+
+<div class="box">
+    <h2>Gallery categories</h2>
+    <p>
+        All the categories in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
+    </p>
+</div>
