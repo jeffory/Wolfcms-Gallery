@@ -44,6 +44,7 @@ Dispatcher::addRoute(array(
     '/admin/plugin/'.GAL_URL. '(|/)'                            => '/plugin/'. GAL_C_CLASS. '/index',
     '/admin/plugin/'.GAL_URL. '/categories'                     => '/plugin/'. GAL_C_CLASS. '/category_index',
     '/admin/plugin/'.GAL_URL. '/categories/page:([0-9]+)'       => '/plugin/'. GAL_C_CLASS. '/category_index/$1',
+    '/admin/plugin/'.GAL_URL. '/categories/delete/([0-9]+)'     => '/plugin/'. GAL_C_CLASS. '/category_delete/$1',
     '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                  => '/plugin/'. GAL_C_CLASS. '/index/$1',
     '/admin/plugin/'.GAL_URL. '/add'                            => '/plugin/'. GAL_C_CLASS. '/add',
     '/admin/plugin/'.GAL_URL. '/edit/([0-9]+)'                  => '/plugin/'. GAL_C_CLASS. '/edit/$1',

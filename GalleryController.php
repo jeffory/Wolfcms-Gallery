@@ -329,6 +329,33 @@ class GalleryController extends PluginController
             );
     }
 
+    /**
+     * Delete an category
+     * 
+     * @var integer category id
+     * 
+     * @return void
+     **/
+    public function category_delete($id)
+    {
+        self::_checkPermission();
+        if (GalleryCat::deleteRows($id))
+        {
+            if (GalleryItemCat::deleteRows(array('where' => 'category_id = '. $id)))
+            {
+                Flash::set('success', __('Category# '. $id. ' was deleted.'));
+            }
+            else
+            {
+                Flash::set('error', __('Category# '. $id. ' was deleted but it\'s relationships could not be deleted!'));
+            }
+        }
+        else
+        {
+            Flash::set('error', __('Category# '. $id. ' could not be deleted!'));
+        }
+        redirect(get_url('plugin/'. GAL_ID. '/categories'));
+    }
 
     /**
      * Empty and recreate tables
