@@ -33,6 +33,19 @@ if (!defined('IN_CMS')) { exit(); }
  */
 ?>
 
+<?php
+// Get page slug
+foreach (array_reverse(explode('/', CURRENT_URI)) as $url_part)
+{
+	// If not in the format of a url variable
+	if (!preg_match('/(page|limit)\:/is', $url_part))
+	{
+		$page_slug = $url_part;
+		break;
+	}
+}
+?>
+
 <p class='button'>
 	<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
 		<img src='<?php echo URI_PUBLIC ?>/wolf/icons/add-page-32.png' align="middle" alt="snippet icon">
@@ -40,6 +53,12 @@ if (!defined('IN_CMS')) { exit(); }
 	</a>
 </p>
 
+<p class='button' style='height: 34px;'>
+	<img src='<?php echo URI_PUBLIC ?>/wolf/icons/file-folder-32.png' align="middle" alt="snippet icon">
+	<a href='<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>'>
+		Edit Categories
+	</a>
+</p>
 
 <?php if (DEBUG): ?>
 <div class="box">
