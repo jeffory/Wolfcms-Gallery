@@ -286,7 +286,7 @@ class GalleryController extends PluginController
      *
      * @return void
      **/
-    public function category_index($page=1, $limit=5)
+    public function category_index($page=1, $limit=15)
     {
         self::_checkPermission();
 
