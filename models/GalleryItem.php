@@ -18,7 +18,7 @@ class GalleryItem extends PluginRecord
      *
      * @var string
      **/
-    public static $table_name = 'gallery_item';
+    public static $table_name = self::TABLE_NAME;
     
     /**
      * Database schema, dynamic generates the SQL used for the tables and forms.

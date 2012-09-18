@@ -12,12 +12,13 @@ if (!defined('IN_CMS')) { exit(); }
  */
 class GalleryItemCat extends PluginRecord
 {
+	const TABLE_NAME = 'gallery_item';
 	/**
 	 * Associated database table 
 	 *
 	 * @var string
 	 **/
-	public static $table_name = 'gallery_item_cat';
+	public static $table_name = self::TABLE_NAME;
 	
 	/**
 	 * Database schema, dynamic generates the SQL used for the tables and forms.
