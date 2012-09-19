@@ -203,7 +203,7 @@ class GalleryController extends PluginController
             );
 
         $this->display(
-            basename(GAL_ROOT). "/views/add-item",
+            basename(GAL_ROOT). "/views/items-add",
             array(
                 'item_fields' => $item_fields,
                 'categories' => $categories
@@ -241,7 +241,7 @@ class GalleryController extends PluginController
         }
 
         $this->display(
-            basename(GAL_ROOT). "/views/add-item",
+            basename(GAL_ROOT). "/views/items-add",
             array(
                 'item_fields' => $item_fields,
                 'data' => (array)$data[0],           // Object -> Array, gotta love PHP sometimes
