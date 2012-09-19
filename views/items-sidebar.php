@@ -48,7 +48,7 @@ if (!defined('IN_CMS')) { exit(); }
 </p>
 
 <div class="box">
-    <h2>Gallery items</h2>
+    <h2><?php echo __(singularise(GAL_TITLE)) ?> items</h2>
     <p>
         All the items in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
     </p>

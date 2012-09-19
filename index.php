@@ -52,3 +52,22 @@ Dispatcher::addRoute(array(
     '/admin/plugin/'.GAL_URL. '/clearall(|/)'                       => '/plugin/'. GAL_C_CLASS. '/clearall',
     '/'. GAL_URL. '/file/([0-9a-z-]+)/([0-9]+)(.?(?:[a-z]+)|)'  => '/plugin/'. GAL_C_CLASS. '/file/$1/$2',
 ));
+
+/**
+ * Singularises a word, so functions = function
+ *
+ * @var string pural word
+ * 
+ * @return string singular word
+ **/
+function singularise($word)
+{
+    $singularize_rules = array(
+        '/([a-zA-Z-]+)s$/i' => '$1',
+        '/([a-zA-Z-]+)ies$/i' => '$1y'
+        );
+
+    $word = preg_replace(array_keys($singularize_rules), array_values($singularize_rules), $word);
+
+    return $word;
+}
