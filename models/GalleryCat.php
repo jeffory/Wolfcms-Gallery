@@ -79,4 +79,56 @@ class GalleryCat extends PluginRecord
 
         return parent::deleteRows($args);
     }
+
+    /**
+     * Set the categories for an item
+     *
+     * @var integer Item ID
+     * @var mixed String/Array Categories for the item to be added to
+     * @var boolean Remove any categories not specified in previous array
+     * 
+     * @return void
+     **/
+    public static function setItemCategories($id, $categories, $remove_old = false)
+    {
+        $in_categories = GalleryItem::find(array(
+            'where' => 'gallery_item.id = '. (int) $id,
+            'select' => array('gallery_cat.id', 'gallery_cat.category_name')
+            ));
+
+        $in_categories = array_combine($in_categories[0]->id,  $in_categories[0]->category_name);
+
+
+        // FUNCTION: Case insensitive version of in_array
+        function in_iarray ($needle, $haystack) {
+            foreach ($haystack as $haystack_item)
+            {
+                foreach ((!is_array($needle) ? array($needle) : $needle) as $needle_item)
+                {
+                    if (strcasecmp($needle_item, $haystack_item) == 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        print_r($in_categories);
+
+        foreach ((!is_array($categories) ? array($categories) : $categories) as $category)
+        {
+            if (in_iarray($category, $in_categories))
+            {
+                echo $category;
+            }
+            else
+            {
+                if ($remove_old == true)
+                {
+                    self::deleteRows();
+                }
+            }
+        }
+    }
 }
