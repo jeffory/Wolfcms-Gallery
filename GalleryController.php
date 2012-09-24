@@ -151,8 +151,6 @@ class GalleryController extends PluginController
     {
         self::_checkPermission();
         $store_in_db = false;
-
-        self::_checkPermission();
         $data = $_POST;
 
         if (isset($_POST) && !empty($_POST))
@@ -166,7 +164,7 @@ class GalleryController extends PluginController
                     //$ret = GalleryItem::query('SELECT LAST_INSERT_ID() as last_id FROM gallery_item');
 
                     // if (!file_exists(  lastInsertId ))
-                    $data[$field_name] = file_get_contents( $details['tmp_name']);
+                    $data[$field_name] = file_get_contents($details['tmp_name']);
 
                     // Pass extra information through to the model
                     $data[$field_name. '_name'] = $details['name'];
@@ -175,7 +173,8 @@ class GalleryController extends PluginController
                 }
             }
 
-            //die(print_r($data));
+            
+
             if (GalleryItem::insertRow($data))
             {
                 Flash::set('success', __('Added successfully!'));
@@ -221,9 +220,10 @@ class GalleryController extends PluginController
     public function edit($id)
     {
         self::_checkPermission();
+
         $data = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
-            'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_item.image', 'gallery_cat.category_name')
+            'select' => array('id', 'name', 'code', 'description', 'image', 'gallery_cat.category_name')
             ));
 
         $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
