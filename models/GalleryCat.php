@@ -50,7 +50,9 @@ class GalleryCat extends PluginRecord
             ),
         'category_name' => array(
             'type' => 'string',
-            'allowempty' => false
+            'allowempty' => false,
+            'caption' => 'Category Name',
+            'userinput' => true
             )
         );
 
@@ -91,15 +93,18 @@ class GalleryCat extends PluginRecord
      **/
     public static function setItemCategories($id, $categories, $remove_old = false)
     {
-        $in_categories = GalleryItem::find(array(
+        error_reporting(E_ALL);
+
+        $current_categories = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
             'select' => array('gallery_cat.id', 'gallery_cat.category_name')
             ));
 
-        $in_categories = array_combine($in_categories[0]->id,  $in_categories[0]->category_name);
+        // Combine the two seperate arrays (must have something to do with them being from different tables)
+        $current_categories = array_combine($current_categories[0]->id,  $current_categories[0]->category_name);
 
 
-        // FUNCTION: Case insensitive version of in_array
+        // START FUNCTIONS: Case insensitive version of in_array
         function in_iarray ($needle, $haystack) {
             foreach ($haystack as $haystack_item)
             {
@@ -113,22 +118,38 @@ class GalleryCat extends PluginRecord
             }
             return false;
         }
+        // END FUNCTIONS
 
-        print_r($in_categories);
 
+        // Check for new categories
         foreach ((!is_array($categories) ? array($categories) : $categories) as $category)
         {
-            if (in_iarray($category, $in_categories))
+            if (!in_iarray($category, $current_categories))
             {
-                echo $category;
-            }
-            else
-            {
-                if ($remove_old == true)
+                // Check if category exists in table, if so grab the id, if it doesn't, create it. In either instance return the category_id
+                if ($category_id = self::findOneFrom(self, 'where category_name = '. $category))
                 {
-                    self::deleteRows();
+                    die($category_id);
+                }
+                $new_categories[] = $category;
+            }
+        }
+
+        // Delete old ones?
+        if ($remove_old == true)
+        {
+            foreach ($current_categories as $current_category_id => $current_category)
+            {
+                foreach ($categories as $category)
+                {
+                    // Remove categories not specified
+                    if (!in_iarray($current_category, $categories))
+                    {
+                        self::deleteRows($current_category);
+                    }
                 }
             }
         }
+
     }
 }
