@@ -306,7 +306,7 @@ class PluginRecord extends Record
         $table_name = TABLE_PREFIX. $model_class::$table_name;
 
         $select = '';
-        $mm_sep = "|\n|";       // Seperator for MYSQL returning multiple rows, originally a comma.
+        $mm_sep = "|";       // Seperator for MYSQL returning multiple rows, originally a comma.
         $mm_cols = array();
 
         $group_by_string = '';
@@ -325,13 +325,12 @@ class PluginRecord extends Record
                 }
                 else
                 {
-                    //echo $matches[1];
                     // If not the current table
                     if (strcasecmp($table_name, $matches[1]) != 0)
                     {
                         $mm_cols[] = $matches[2];
                         $mm_sep = (isset($mm_sep)) ? $mm_sep : ',';
-                        $col = 'GROUP_CONCAT('. $col. ' ORDER BY '. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $matches[2];
+                        $col = 'GROUP_CONCAT('. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $matches[2];
                         $group_by_string = 'GROUP BY '. $table_name. '.id';
                     }
                 }
@@ -396,6 +395,8 @@ class PluginRecord extends Record
         $stmt = self::$__CONN__->prepare($sql);
         $stmt->execute();
 
+        Record::logQuery($sql);
+
         // Explode (into arrays) the Many2Many rows
         $explode_cols = function ($object, $columns, $seperator)
             {
@@ -428,8 +429,6 @@ class PluginRecord extends Record
             }
         }
 
-        //die(print_r($objects));
-
         return $objects;
     }
 
@@ -440,7 +439,7 @@ class PluginRecord extends Record
      **/
     private static function generateJoin()
     {
-        $model_class = get_called_class(); 
+        $model_class = get_called_class();
         if (isset($model_class::$table_joins))
         {
             $joins = '';
