@@ -49,6 +49,6 @@ if (!defined('IN_CMS')) { exit(); }
 <div class="box">
     <h2>Gallery categories</h2>
     <p>
-        All the categories in the <?php echo __(GAL_TITLE) ?> are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
+        All the categories are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.
     </p>
 </div>
