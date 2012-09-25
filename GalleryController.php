@@ -175,21 +175,30 @@ class GalleryController extends PluginController
                 }
             }
 
-            
-
             if (GalleryItem::insertRow($data))
             {
-                Flash::set('success', __('Added successfully!'));
+                $item_id = GalleryItem::lastInsertId();
+
+                if (GalleryCat::setItemCategories($item_id, $data['category_name'], true))
+                {
+                    Flash::set('success', __('Added successfully!'));
+                    redirect(get_url('plugin/'. GAL_URL));
+                }
+                else
+                {
+                    Flash::setNow('success', __('Added item successfully, but category could not be added!'));
+                }
+                
             }
             else
             {
-                Flash::set('error', __('There appears to be a problem adding the new item!'));
+                Flash::setNow('error', __('There appears to be a problem adding the new item!'));
             }
-
-            redirect(get_url('plugin/'. GAL_URL));
         }
 
         $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+
+        $categories = '';
 
         foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
         {
@@ -223,13 +232,38 @@ class GalleryController extends PluginController
     {
         self::_checkPermission();
 
+
+        $data = $_POST;
+
+        if (isset($_POST) && !empty($data))
+        {
+            $categories = $data['category_name'];
+            unset($data['category_name']);
+
+            if (GalleryItem::update('GalleryItem', $data, 'id = '. $id))
+            {
+                if (GalleryCat::setItemCategories($id, $categories, true))
+                {
+                    Flash::set('success', __('Edited item successfully!'));
+                    redirect(get_url('plugin/'. GAL_URL));
+                }
+                else
+                {
+                    Flash::set('success', __('Edited item successfully, but category could not be edited!'));
+                }
+            }
+            else
+            {
+                Flash::set('error', __('There appears to be a problem editing the item!'));
+            }
+            
+        }
+
+
         $data = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
             'select' => array('id', 'name', 'code', 'description', 'image', 'gallery_cat.category_name')
             ));
-
-
-        // TODO: Add code to capture POST data and edit item
 
         $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
@@ -239,6 +273,8 @@ class GalleryController extends PluginController
             'allowempty' => 1,
             'caption' => 'Categories'
             );
+
+        $categories = '';
 
         foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
         {
@@ -373,13 +409,12 @@ class GalleryController extends PluginController
             if (GalleryCat::insertRow($data))
             {
                 Flash::set('success', __('Added successfully!'));
+                redirect(get_url('plugin/'. GAL_URL. '/categories'));
             }
             else
             {
-                Flash::set('error', __('There appears to be a problem adding the new item!'));
+                Flash::setNow('error', __('There appears to be a problem adding the new item!'));
             }
-
-            redirect(get_url('plugin/'. GAL_URL. '/categories'));
         }
 
         $cat_fields = GalleryCat::getTableStructure(GalleryItem::$table_name);
@@ -402,6 +437,23 @@ class GalleryController extends PluginController
     public function category_edit($id)
     {
         self::_checkPermission();
+
+        $data = $_POST;
+
+        if (isset($_POST) && !empty($data))
+        {
+            if (GalleryCat::update('GalleryCat', $data, 'id = '. $id))
+            {
+                echo 'sup';
+                Flash::set('success', __('Edited successfully!'));
+                redirect(get_url('plugin/'. GAL_URL. '/categories'));
+            }
+            else
+            {
+                echo 'sup';
+                Flash::setNow('error', __('There appears to be a problem editing the item!'));
+            }
+        }
 
         $data = GalleryCat::find(array(
             'where' => 'gallery_cat.id = '. (int) $id
