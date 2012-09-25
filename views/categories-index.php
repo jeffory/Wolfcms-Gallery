@@ -68,7 +68,7 @@ if (!defined('IN_CMS')) { exit(); }
                 $i++;
             }
 
-            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/delete:'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete category icon" title="Delete category"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
+            echo '<td class="modify-options"><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/delete:'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete category icon" title="Delete category"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
             echo '</tr>';
         }
         ?>
@@ -104,7 +104,7 @@ if (!defined('IN_CMS')) { exit(); }
 </p>
 <?php endif; ?>
 
-<style>
+<style type="text/css">
     <?php if (file_exists(GAL_ROOT. '/css/listing.css')) require(GAL_ROOT. '/css/listing.css') ?>
 </style>
 
@@ -112,5 +112,5 @@ if (!defined('IN_CMS')) { exit(); }
     var baseurl = '<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>';
     var curpage = <?php echo $page ?>;
 
-    <?php require(GAL_ROOT. '/js/listing.js') ?>
+    <?php if (file_exists(GAL_ROOT. '/js/listing.js')) require(GAL_ROOT. '/js/listing.js') ?>
 </script>

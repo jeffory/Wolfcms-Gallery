@@ -56,3 +56,7 @@ input {
 .pagination_curpage {
     width: 40px;
 }
+.modify-options {
+    width: 70px;
+    padding-left: .5em;
+}
