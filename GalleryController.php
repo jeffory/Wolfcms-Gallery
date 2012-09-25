@@ -136,6 +136,7 @@ class GalleryController extends PluginController
     public function settings()
     {
         self::_checkPermission();
+        
         $this->display(
             basename(GAL_ID). "/views/settings",
             Plugin::getAllSettings(GAL_ID)
@@ -150,6 +151,7 @@ class GalleryController extends PluginController
     public function add()
     {
         self::_checkPermission();
+
         $store_in_db = false;
         $data = $_POST;
 
@@ -260,6 +262,7 @@ class GalleryController extends PluginController
     public function delete($id)
     {
         self::_checkPermission();
+
         if (GalleryItem::deleteRows($id))
         {
             Flash::set('success', __('Item# '. $id. ' was deleted.'));
@@ -336,6 +339,8 @@ class GalleryController extends PluginController
      **/
     public function front_category_index()
     {
+        self::_checkPermission();
+
         $items = GalleryCat::find();
 
         $this->display(
@@ -357,6 +362,7 @@ class GalleryController extends PluginController
     public function category_delete($id)
     {
         self::_checkPermission();
+
         if (GalleryCat::deleteRows($id))
         {
             Flash::set('success', __('Category# '. $id. ' was deleted.'));
@@ -366,7 +372,7 @@ class GalleryController extends PluginController
             Flash::set('error', __('Category# '. $id. ' could not be deleted!'));
         }
 
-        redirect(get_url('plugin/'. GAL_ID. '/categories'));
+        redirect(get_url('plugin/'. GAL_URL. '/categories'));
     }
 
     /**
@@ -392,6 +398,7 @@ class GalleryController extends PluginController
     static public function addsamples()
     {
         self::_checkPermission();
+
         for ($i = 0; $i < 10; $i++)
         {
             $rand = mt_rand(1,100);
@@ -433,6 +440,7 @@ class GalleryController extends PluginController
     static public function uninstall()
     {
         self::_checkPermission();
+
         GalleryItem::deleteTable();
         GalleryItemCat::deleteTable();
         GalleryCat::deleteTable();
