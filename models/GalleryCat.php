@@ -91,12 +91,13 @@ class GalleryCat extends PluginRecord
      * 
      * @return void
      **/
-    public static function setItemCategories($id, $categories, $remove_old = false)
+    public static function setItemCategories($item_id, $categories, $remove_old = false)
     {
+        $model_class = get_called_class();
         error_reporting(E_ALL);
 
         $current_categories = GalleryItem::find(array(
-            'where' => 'gallery_item.id = '. (int) $id,
+            'where' => 'gallery_item.id = '. (int) $item_id,
             'select' => array('gallery_cat.id', 'gallery_cat.category_name')
             ));
 
@@ -127,9 +128,25 @@ class GalleryCat extends PluginRecord
             if (!in_iarray($category, $current_categories))
             {
                 // Check if category exists in table, if so grab the id, if it doesn't, create it. In either instance return the category_id
-                if ($category_id = self::findOneFrom(self, 'where category_name = '. $category))
+                if ($found_category = parent::findOneFrom($model_class, 'category_name = "'. $category. '"'))
                 {
-                    die($category_id);
+                    // Create just the link, category already exists
+                    // $found_category->id;
+                }
+                else
+                {
+                    // Create the category and the link
+                    GalleryCat::insertRow(array(
+                        'category_name' => $category,
+                        ));
+
+                    $cat_id = GalleryCat::lastInsertId();
+
+                    GalleryItemCat::insertRow(array(
+                        'item_id' => $item_id,
+                        'category_id' => $cat_id,
+                        ));
+                    
                 }
                 $new_categories[] = $category;
             }
@@ -145,11 +162,12 @@ class GalleryCat extends PluginRecord
                     // Remove categories not specified
                     if (!in_iarray($current_category, $categories))
                     {
-                        self::deleteRows($current_category);
+                        self::deleteRows($current_category_id);
                     }
                 }
             }
         }
 
+        return true;
     }
 }
