@@ -131,7 +131,10 @@ class GalleryCat extends PluginRecord
                 if ($found_category = parent::findOneFrom($model_class, 'category_name = "'. $category. '"'))
                 {
                     // Create just the link, category already exists
-                    // $found_category->id;
+                    GalleryItemCat::insertRow(array(
+                        'item_id' => $item_id,
+                        'category_id' => $found_category->id,
+                        ));
                 }
                 else
                 {
@@ -157,7 +160,7 @@ class GalleryCat extends PluginRecord
         {
             foreach ($current_categories as $current_category_id => $current_category)
             {
-                foreach ($categories as $category)
+                foreach ((!is_array($categories) ? array($categories) : $categories) as $category)
                 {
                     // Remove categories not specified
                     if (!in_iarray($current_category, $categories))
