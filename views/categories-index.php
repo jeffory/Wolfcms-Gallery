@@ -105,7 +105,7 @@ if (!defined('IN_CMS')) { exit(); }
 <?php endif; ?>
 
 <style>
-    <?php require(GAL_ROOT. '/css/listing.css') ?>
+    <?php if (file_exists(GAL_ROOT. '/css/listing.css')) require(GAL_ROOT. '/css/listing.css') ?>
 </style>
 
 <script type="text/javascript">
