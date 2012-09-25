@@ -136,7 +136,7 @@ class GalleryController extends PluginController
     public function settings()
     {
         self::_checkPermission();
-        
+
         $this->display(
             basename(GAL_ID). "/views/settings",
             Plugin::getAllSettings(GAL_ID)
@@ -155,7 +155,7 @@ class GalleryController extends PluginController
         $store_in_db = false;
         $data = $_POST;
 
-        if (isset($_POST) && !empty($_POST))
+        if (isset($_POST) && !empty($data))
         {
             // Sort out uploading the files
             foreach ($_FILES as $field_name => $details)
@@ -227,6 +227,9 @@ class GalleryController extends PluginController
             'where' => 'gallery_item.id = '. (int) $id,
             'select' => array('id', 'name', 'code', 'description', 'image', 'gallery_cat.category_name')
             ));
+
+
+        // TODO: Add code to capture POST data and edit item
 
         $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
@@ -348,6 +351,71 @@ class GalleryController extends PluginController
             array(
                 'category_fields' => GalleryCat::getTableStructure(),
                 'categories' => $items
+                )
+            );
+    }
+
+    /**
+     * Add an category
+     * 
+     * @var integer category id
+     * 
+     * @return void
+     **/
+    public function category_add()
+    {
+        self::_checkPermission();
+
+        $data = $_POST;
+
+        if (isset($_POST) && !empty($data))
+        {
+            if (GalleryCat::insertRow($data))
+            {
+                Flash::set('success', __('Added successfully!'));
+            }
+            else
+            {
+                Flash::set('error', __('There appears to be a problem adding the new item!'));
+            }
+
+            redirect(get_url('plugin/'. GAL_URL. '/categories'));
+        }
+
+        $cat_fields = GalleryCat::getTableStructure(GalleryItem::$table_name);
+
+        $this->display(
+            basename(GAL_ROOT). "/views/categories-add",
+            array(
+                'item_fields' => $cat_fields
+                )
+            );
+    }
+
+    /**
+     * Edit an category
+     * 
+     * @var integer category id
+     * 
+     * @return void
+     **/
+    public function category_edit($id)
+    {
+        self::_checkPermission();
+
+        $data = GalleryCat::find(array(
+            'where' => 'gallery_cat.id = '. (int) $id
+            ));
+
+        // TODO: Add code to capture POST data and edit item
+
+        $cat_fields = GalleryCat::getTableStructure(GalleryItem::$table_name);
+
+        $this->display(
+            basename(GAL_ROOT). "/views/categories-add",
+            array(
+                'item_fields' => $cat_fields,
+                'data' => (array)$data[0]
                 )
             );
     }
