@@ -44,7 +44,7 @@ if (!defined('IN_CMS')) { exit(); }
                 }
                 elseif ($col == 'category_name')
                 {
-                    echo '<td><a href="'. URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/edit/'. $id. '">'. $detail. '</a></td>';
+                    echo '<td><a href="'. URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/edit:'. $id. '">'. $detail. '</a></td>';
                 }
                 else
                 {
@@ -68,7 +68,7 @@ if (!defined('IN_CMS')) { exit(); }
                 $i++;
             }
 
-            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/delete/'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete category icon" title="Delete category"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
+            echo '<td><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/delete:'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete category icon" title="Delete category"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
             echo '</tr>';
         }
         ?>
