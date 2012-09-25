@@ -33,7 +33,7 @@ if (!defined('IN_CMS')) { exit(); }
  */
 ?>
 <p class='button'>
-	<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
+	<a href="<?php echo BASE_URI. 'plugin/'. GAL_URL. '/categories' ?>/add">
 		<img src='<?php echo URI_PUBLIC ?>/wolf/icons/add-page-32.png' align="middle" alt="snippet icon">
 		Add category
 	</a>
