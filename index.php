@@ -43,13 +43,14 @@ Dispatcher::addRoute(array(
     '/'. GAL_URL. '(|/)'                                                                => '/plugin/'. GAL_C_CLASS. '/front_category_index',
     '/admin/plugin/'.GAL_URL. '(|/)'                                                    => '/plugin/'. GAL_C_CLASS. '/index',
 
-    '/admin/plugin/'.GAL_URL. '/categories(|/)(?:|)(|page)(|/[0-9]+)'            => '/plugin/'. GAL_C_CLASS. '/category_index$1$2',
+    '/admin/plugin/'.GAL_URL. '/categories(|/)(?:|)(|page)(|/[0-9]+)'                   => '/plugin/'. GAL_C_CLASS. '/category_index$1$2',
     '/admin/plugin/'.GAL_URL. '/categories/page:([0-9]+)'                               => '/plugin/'. GAL_C_CLASS. '/category_index/$1',
 
 
-    '/admin/plugin/'.GAL_URL. '/categories/delete/([0-9]+)'                             => '/plugin/'. GAL_C_CLASS. '/category_delete/$1',
+    '/admin/plugin/'.GAL_URL. '/categories/(add|delete|edit)(?:\:|)([0-9]+|)'            => '/plugin/'. GAL_C_CLASS. '/category_$1/$2',
+
     '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                                          => '/plugin/'. GAL_C_CLASS. '/index/$1/$2',
-    '/admin/plugin/'.GAL_URL. '/(addsamples|clearall|add|edit|delete)(?:\:|)([0-9]+|)'   => '/plugin/'. GAL_C_CLASS. '/$1/$2',
+    '/admin/plugin/'.GAL_URL. '/(add|edit|delete|addsamples|clearall)(?:\:|)([0-9]+|)'  => '/plugin/'. GAL_C_CLASS. '/$1/$2',
     '/'. GAL_URL. '/file/([0-9a-z-]+)/([0-9]+)(.?(?:[a-z]+)|)'                          => '/plugin/'. GAL_C_CLASS. '/file/$1/$2',
 ));
 
