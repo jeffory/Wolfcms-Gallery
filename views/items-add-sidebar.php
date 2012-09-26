@@ -15,6 +15,6 @@ if (!defined('IN_CMS')) { exit(); }
 <div class="box">
     <h2><?php echo __(singularise(GAL_TITLE)) ?> items</h2>
     <p>
-        <b>Please note:</b> When editing an item, if you delete a category it only delete's it's association, the category will need to be deleted seperately.
+        <b>Please note:</b> When editing an item, if you delete a category it only deletes it's association with the item, the category will need to be <a href="<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>">deleted seperately</a>.
     </p>
 </div>
