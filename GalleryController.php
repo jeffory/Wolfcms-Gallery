@@ -81,7 +81,7 @@ class GalleryController extends PluginController
     {
         self::_checkPermission();
         
-        $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/items-sidebar'));
+        $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/items-index-sidebar'));
 
         // Delete multiple items?
         if (isset($_POST['remove']))
@@ -198,6 +198,8 @@ class GalleryController extends PluginController
             }
         }
 
+        $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/items-add-sidebar'));
+
         $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
 
         $categories = '';
@@ -261,6 +263,7 @@ class GalleryController extends PluginController
             
         }
 
+        $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/items-add-sidebar'));
 
         $data = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
