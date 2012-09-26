@@ -372,7 +372,7 @@ class GalleryController extends PluginController
     }
 
     /**
-     * Frontend index view
+     * Frontend category index view
      *
      * @return void
      **/

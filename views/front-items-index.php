@@ -1,3 +1,13 @@
+<?php
+/**
+ * Simple, easy to setup and use gallery plugin for WolfCMS
+ *
+ * @package Plugins
+ * @subpackage Gallery
+ *
+ * @author Keith McGahey
+ */
+?>
 <h2><?php echo GAL_TITLE ?></h2>
 
 <table class="items_listing">
