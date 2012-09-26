@@ -67,7 +67,7 @@ if (!defined('IN_CMS')) { exit(); }
                         echo "<span class='datalist_line'>";
                         echo "<input name='{$field_id}[]' class='datalist_item' type='text' value='{$val}'>";
                         echo "<input class='datalist_delete' type='button' value='Delete'>";
-                        echo "<span>";
+                        echo "</span>";
                     }
 
                     echo "</div>";
@@ -95,7 +95,9 @@ if (!defined('IN_CMS')) { exit(); }
 <script>
     $(function(){
         $(".datalist_item").autocomplete({
-            source: [ <?php if (isset($categories)) echo "'". implode("', '", $categories). "'" ?> ]
+            source: [ <?php if (!isset($categories) && is_array($categories)) echo "'". @implode("', '", $categories). "'" ?> ],
+            minLength: 0,
+            delay: 0
         });
 
         $('.datalist_add').click(function(){
@@ -105,12 +107,12 @@ if (!defined('IN_CMS')) { exit(); }
                 .append("<span class='datalist_line'><input name='"+ field+ "[]' class='datalist_item' type='text'><input class='datalist_delete' type='button' value='Delete'></span>");
 
             $('.datalist_delete').click(function(){
-                $(this).parent('.datalist_line').remove();
+                $(this).parent('.datalist_line:first-child').remove();
             });
 
             // New items need to have autocomplete
             $(".datalist_item").autocomplete({
-                source: [ <?php if (isset($categories)) echo "'". implode("', '", $categories). "'" ?> ]
+                source: [ <?php if (!isset($categories) && is_array($categories)) echo "'". @implode("', '", $categories). "'" ?> ]
             });
         });
 
