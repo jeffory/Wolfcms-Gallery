@@ -21,6 +21,7 @@ if (!defined('IN_CMS')) { exit(); }
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Item count</th>
                 <th>Modify</th>
             </tr>
         </thead>
