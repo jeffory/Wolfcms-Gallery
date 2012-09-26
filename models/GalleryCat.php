@@ -165,7 +165,8 @@ class GalleryCat extends PluginRecord
                     // Remove categories not specified
                     if (!in_iarray($current_category, $categories))
                     {
-                        self::deleteRows($current_category_id);
+                        //GalleryItemCat::delete(GalleryItemCat::$table_name, '');
+                        self::deleteWhere('GalleryItemCat', 'item_id = ? AND category_id = ?', array($item_id, $current_category_id));
                     }
                 }
             }
