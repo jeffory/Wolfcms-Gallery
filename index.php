@@ -41,13 +41,14 @@ AutoLoader::addFolder(GAL_ROOT. DS. 'models');      // Sometimes doesn't load?
 // A lot of the functions have to be re-routed to allow for different plugin names
 Dispatcher::addRoute(array(
     '/'. GAL_URL. '(|/)'                                                                => '/plugin/'. GAL_C_CLASS. '/front_category_index',
-    '/admin/plugin/'.GAL_URL. '(|/)'                                                    => '/plugin/'. GAL_C_CLASS. '/index',
+    '/'. GAL_URL. '/([0-9]+)()(|/[a-z0-9-]+)'                                           => '/plugin/'. GAL_C_CLASS. '/front_items_index',
+    '/admin/plugin/'.GAL_URL                                                            => '/plugin/'. GAL_C_CLASS. '/index',
 
     '/admin/plugin/'.GAL_URL. '/categories(|/)(?:|)(|page)(|/[0-9]+)'                   => '/plugin/'. GAL_C_CLASS. '/category_index$1$2',
     '/admin/plugin/'.GAL_URL. '/categories/page:([0-9]+)'                               => '/plugin/'. GAL_C_CLASS. '/category_index/$1',
 
 
-    '/admin/plugin/'.GAL_URL. '/categories/(add|delete|edit)(?:\:|)([0-9]+|)'            => '/plugin/'. GAL_C_CLASS. '/category_$1/$2',
+    '/admin/plugin/'.GAL_URL. '/categories/(add|delete|edit)(?:\:|)([0-9]+|)'           => '/plugin/'. GAL_C_CLASS. '/category_$1/$2',
 
     '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                                          => '/plugin/'. GAL_C_CLASS. '/index/$1/$2',
     '/admin/plugin/'.GAL_URL. '/(add|edit|delete|addsamples|clearall)(?:\:|)([0-9]+|)'  => '/plugin/'. GAL_C_CLASS. '/$1/$2',
@@ -71,4 +72,25 @@ function singularise($word)
     $word = preg_replace(array_keys($singularize_rules), array_values($singularize_rules), $word);
 
     return $word;
+}
+
+/**
+ * Filters string into url friendly slug
+ *
+ * @var string raw string
+ * 
+ * @return string filtered string
+ **/
+function url_slug($str, $replace=array(), $delimiter='-', $maxLength=200) {
+
+    if( !empty($replace) ) {
+        $str = str_replace((array)$replace, ' ', $str);
+    }
+
+    $clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+    $clean = preg_replace("%[^-/+|\w ]%", '', $clean);
+    $clean = strtolower(trim(substr($clean, 0, $maxLength), '-'));
+    $clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+
+    return $clean;
 }
