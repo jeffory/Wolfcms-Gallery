@@ -113,10 +113,11 @@ class GalleryController extends PluginController
      *
      * @return void
      **/
-    public function front_items_index()
+    public function front_items_index($category_id)
     {
         $items = GalleryItem::find(array(
-            'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name')
+            'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name'),
+            'where' => 'gallery_cat.id = '. $category_id
             ));
 
         $this->display(
@@ -157,6 +158,7 @@ class GalleryController extends PluginController
 
         if (isset($_POST) && !empty($data))
         {
+
             // Sort out uploading the files
             foreach ($_FILES as $field_name => $details)
             {
@@ -359,6 +361,11 @@ class GalleryController extends PluginController
 
         $total = GalleryCat::countRows();
 
+        foreach ($categories as $category)
+        {
+            $category->items_count = GalleryItemCat::countFrom('GalleryItemCat', 'category_id = '. $category->id);
+        }
+
         $this->display(
             basename(GAL_ROOT). "/views/categories-index",
             array(
@@ -380,13 +387,15 @@ class GalleryController extends PluginController
     {
         self::_checkPermission();
 
-        $items = GalleryCat::find();
+        $categories = GalleryCat::find();
+
+
 
         $this->display(
             basename(GAL_ROOT). "/views/front-categories-index",
             array(
                 'category_fields' => GalleryCat::getTableStructure(),
-                'categories' => $items
+                'categories' => $categories
                 )
             );
     }
@@ -458,8 +467,6 @@ class GalleryController extends PluginController
         $data = GalleryCat::find(array(
             'where' => 'gallery_cat.id = '. (int) $id
             ));
-
-        // TODO: Add code to capture POST data and edit item
 
         $cat_fields = GalleryCat::getTableStructure(GalleryItem::$table_name);
 
