@@ -99,8 +99,8 @@ if (!defined('IN_CMS')) { exit(); }
     <?php endif; ?>
 </div>
 <?php else: ?>
-<p style='text-align: center; clear: both;'>
-    No categories found.
+<p style='text-align: center; clear: both; color: #A1A1A1;'>
+    No categories found
 </p>
 <?php endif; ?>
 

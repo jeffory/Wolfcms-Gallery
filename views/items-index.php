@@ -102,8 +102,8 @@ if (!defined('IN_CMS')) { exit(); }
     <?php endif; ?>
 </div>
 <?php else: ?>
-<p style='text-align: center; clear: both;'>
-    No items found.
+<p style='text-align: center; clear: both; color: #A1A1A1;'>
+    No items found
 </p>
 <?php endif; ?>
 
