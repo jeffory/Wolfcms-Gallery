@@ -152,28 +152,88 @@ class GalleryController extends PluginController
     public function add()
     {
         self::_checkPermission();
-
-        $store_in_db = false;
         $data = $_POST;
 
         if (isset($_POST) && !empty($data))
         {
-
             // Sort out uploading the files
             foreach ($_FILES as $field_name => $details)
             {
-                if ($details['error'] == 0)
+                // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
+                if ($details['error'] == UPLOAD_ERR_OK && is_uploaded_file($details['tmp_name']))
                 {
-                    GalleryItem::query('SELECT COUNT(*) FROM gallery_item');
-                    //$ret = GalleryItem::query('SELECT LAST_INSERT_ID() as last_id FROM gallery_item');
-
-                    // if (!file_exists(  lastInsertId ))
-                    $data[$field_name] = file_get_contents($details['tmp_name']);
-
-                    // Pass extra information through to the model
+                    // Pass extra information through to the model if needed
                     $data[$field_name. '_name'] = $details['name'];
                     $data[$field_name. '_type'] = $details['type'];
                     $data[$field_name. '_size'] = $details['size'];
+
+                    // Are we handling items?
+                    if (in_array($details['type'], array('image/jpeg', 'image/png', 'image/gif')))
+                    {
+                        // Include PHP Image class
+                        //require_once('image.php');
+                    }
+
+                    // Storing image in database or file?
+                    if (GalleryItem::getTableStructure($field_name, 'storeindb') != true)
+                    {
+                        // Move file, store filepath
+
+                        // Need a non-existant filename
+                        $new_file = GAL_IMAGES_ROOT. DS. strtolower($details['name']);
+                        $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
+                        $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
+                        $i = 1;
+
+                        while (file_exists($new_file))
+                        {
+                            $new_file =  $pre_file. '_('. $i. ').'. $suf_file. "\n";
+                            
+                            if ($i > 1) break;
+                            $i++;
+                        }
+
+                        rename($details['tmp_name'], $new_file);
+                        chmod($new_file, 0755);
+                        $data[$field_name] = $new_file;
+                    }
+                    else
+                    {
+                        // Storing file in db often makes requests very slow
+                        $data[$field_name] = file_get_contents($details['tmp_name']);
+                        $new_file = $details['tmp_name'];
+                    }
+
+                    // Thumbnail?
+                    if (in_array($details['type'], array('image/jpeg', 'image/png', 'image/gif')))
+                    {
+                        // Divide the file path into parts
+                        $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
+                        $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
+                        $thumb_file = $pre_file. '_thumb.'. $suf_file;
+
+                        require_once(GAL_ROOT. DS. 'Image.php');
+
+                        if ($image = new Bedeabza\Image($new_file))
+                        {
+                            $image->resize(250, 250, $image->RESIZE_TYPE_RATIO);
+                            $image->save($thumb_file, 60);
+                        }
+
+                        // Store the thumbnail as a filepath or data?
+                        if (GalleryItem::getTableStructure($field_name, 'storeindb') != true)
+                        {
+                            $data[$field_name. '_thumb'] = $thumb_file;
+                        }
+                        else
+                        {
+                            $data[$field_name. '_thumb'] = file_get_contents($thumb_file);
+                        }
+                    }
+                }
+                else
+                {
+                    Flash::set('error', __('Bad file upload.'));
                 }
             }
 
@@ -190,7 +250,7 @@ class GalleryController extends PluginController
                 {
                     Flash::setNow('success', __('Added item successfully, but category could not be added!'));
                 }
-                
+
             }
             else
             {
@@ -200,7 +260,7 @@ class GalleryController extends PluginController
 
         $this->assignToLayout('sidebar', new View(GAL_ROOT. '/views/items-add-sidebar'));
 
-        $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+        $item_fields = GalleryItem::getTableStructure();
 
         $categories = '';
 
@@ -270,7 +330,7 @@ class GalleryController extends PluginController
             'select' => array('id', 'name', 'code', 'description', 'image', 'gallery_cat.category_name')
             ));
 
-        $item_fields = GalleryItem::getTableStructure(GalleryItem::$table_name);
+        $item_fields = GalleryItem::getTableStructure();
 
         // Add categories field
         $item_fields['category_name'] = array(
@@ -329,14 +389,30 @@ class GalleryController extends PluginController
      **/
     public function file($col, $id)
     {
-        $item = GalleryItem::find(array('where' => 'id = '. (int) $id));
-
-        if (isset($item[0]->$col_type) && !empty($item[0]->$col_type))
+        if ($item = GalleryItem::find(array('where' => 'gallery_item.id = '. (int) $id)))
         {
-            header('Content-Type: '. $item[0]->image_type);
-        }
+            // A thumbnail's going to have the same content type as it's original
+            $col_type = preg_replace('/\_thumb$/is', '', $col) .'_type';
 
-        echo $item[0]->$col;
+            if (@isset($item[0]->$col_type) && !empty($item[0]->$col_type))
+            {
+                header('Content-Type: '. $item[0]->image_type);
+            }
+
+            // Check if filename or data
+            if (GalleryItem::getTableStructure($col, 'storeindb') != true)
+            {
+                readfile($item[0]->$col);
+            }
+            else
+            {
+                echo $item[0]->$col;
+            }
+        }
+        else
+        {
+            header('HTTP/1.0 404 Not Found');
+        }
     }
 
 
@@ -388,11 +464,7 @@ class GalleryController extends PluginController
      **/
     public function front_category_index()
     {
-        self::_checkPermission();
-
         $categories = GalleryCat::find();
-
-
 
         $this->display(
             basename(GAL_ROOT). "/views/front-categories-index",
@@ -429,7 +501,7 @@ class GalleryController extends PluginController
             }
         }
 
-        $cat_fields = GalleryCat::getTableStructure(GalleryItem::$table_name);
+        $cat_fields = GalleryCat::getTableStructure();
 
         $this->display(
             basename(GAL_ROOT). "/views/categories-add",
@@ -471,7 +543,7 @@ class GalleryController extends PluginController
             'where' => 'gallery_cat.id = '. (int) $id
             ));
 
-        $cat_fields = GalleryCat::getTableStructure(GalleryItem::$table_name);
+        $cat_fields = GalleryCat::getTableStructure();
 
         $this->display(
             basename(GAL_ROOT). "/views/categories-add",
