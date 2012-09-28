@@ -12,12 +12,14 @@ if (!defined('IN_CMS')) { exit(); }
  */
 
 // Renaming this allows the Gallery to be used as say a products list or a download listing and so on...
-define('GAL_ID', 'gallery');                        // For the Plugin section in admin
-define('GAL_ROOT', PLUGINS_ROOT. DS. 'gallery');    // Directory root to the plugin
-define('GAL_C_CLASS', 'gallery');                   // Class names, (ie. gallery = GalleryController) Needs to be lowercase!
+define('GAL_ID', 'gallery');                            // For the Plugin section in admin
+define('GAL_ROOT', PLUGINS_ROOT. DS. 'gallery');        // Directory root to the plugin
+define('GAL_C_CLASS', 'gallery');                       // Class names, (ie. gallery = GalleryController) Needs to be lowercase!
 
-define('GAL_URL', 'products');                       // Base URL to use the plugin
-define('GAL_TITLE', 'Products');                     // Title of the plugin (for views and what not)
+define('GAL_URL', 'products');                          // Base URL to use the plugin
+define('GAL_TITLE', 'Products');                        // Title of the plugin (for views and what not)
+
+define('GAL_IMAGES_ROOT', CMS_ROOT. '/public/files');      // Directory where images not stored in the database will be stored
 
 Plugin::setInfos(array(
     'id'                    => GAL_ID,
@@ -36,7 +38,7 @@ AutoLoader::addFile('PluginRecord', GAL_ROOT. DS. 'PluginRecord.php');
 //AutoLoader::addFile('GalleryItem', GAL_ROOT. DS. 'models'. DS. 'GalleryItem.php');
 
 Plugin::addController(GAL_C_CLASS, __(GAL_TITLE), 'administrator', true);
-AutoLoader::addFolder(GAL_ROOT. DS. 'models');      // Sometimes doesn't load?
+AutoLoader::addFolder(GAL_ROOT. DS. 'models');      // Sometimes doesn't load? Problem with xampp it seems
 
 // A lot of the functions have to be re-routed to allow for different plugin names
 Dispatcher::addRoute(array(
@@ -51,7 +53,7 @@ Dispatcher::addRoute(array(
 
     '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                                          => '/plugin/'. GAL_C_CLASS. '/index/$1/$2',
     '/admin/plugin/'.GAL_URL. '/(add|edit|delete|addsamples|clearall)(?:\:|)([0-9]+|)'  => '/plugin/'. GAL_C_CLASS. '/$1/$2',
-    '/'. GAL_URL. '/file/([0-9a-z-]+)/([0-9]+)(.?(?:[a-z]+)|)'                          => '/plugin/'. GAL_C_CLASS. '/file/$1/$2',
+    '/'. GAL_URL. '/file/([0-9a-z-_]+)/([0-9]+)(.?(?:[a-z]+)|)'                          => '/plugin/'. GAL_C_CLASS. '/file/$1/$2',
 ));
 
 /**
