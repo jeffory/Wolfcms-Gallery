@@ -199,10 +199,41 @@ class PluginRecord extends Record
      *
      * @return void
      **/
-    public static function getTableStructure()
+    public static function getTableStructure($column = null, $row = null)
     {
         $model_class = get_called_class();
-        return $model_class::$table_structure;
+        $table_structure = $model_class::$table_structure;
+
+        if ($column != null && $row == null)
+        {
+            if (isset($table_structure[$column]))
+            {
+                return $table_structure[$column];
+            }
+            else
+            {
+                return false;
+            }
+        }
+        elseif ($column != null && $row != null)
+        {
+            if (isset($table_structure[$column][$row]))
+            {
+                return $table_structure[$column][$row];
+            }
+            else
+            {
+                return false;
+            }
+        }
+        elseif (isset($table_structure))
+        {
+            return $table_structure;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
