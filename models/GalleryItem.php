@@ -27,13 +27,14 @@ class GalleryItem extends PluginRecord
      * integer, string, text, file, datetime
      * 
      * Options:
-     *   validation - for validating form fields generated from table
-     *   allowempty - (true/false) null/not null, also if the field is optional in forms
-     *   maxlength - (number) table column size, form maxlength
-     *   userinput - (default: true, true/false) if the field allows user input, ie. if it shows in forms
-     *   pkey - primary key in table
-     *   special - currently reserved for the controller setting a value for the model
-     *   autoinc - Auto increment
+     *   validation  - for validating form fields generated from table
+     *   allowempty  - (true/false) null/not null, also if the field is optional in forms
+     *   maxlength   - (number) table column size, form maxlength
+     *   userinput   - (default: true, true/false) if the field allows user input, ie. if it shows in forms
+     *   pkey        - primary key in table
+     *   special     - currently reserved for the controller setting a value for the model
+     *   autoinc     - Auto increment
+     *   storeindb   - if type is file, it will store the filedata in the actual database
      *
      * TODO: Run this through a function to add default values, eg. strings: maxlength => 255
      * Then it can be used in forms and validation.
@@ -70,18 +71,21 @@ class GalleryItem extends PluginRecord
         'image' => array(
             'type' => 'file',
             'allowempty' => true,
-            'caption' => 'Image'
+            'caption' => 'Image',
+            'allowed_mimes' => array('image/jpeg', 'image/png', 'image/gif'),
+            'maxres' => 1280
+            ),
+        'image_thumb' => array(
+            'type' => 'file',
+            'allowempty' => true,
+            'userinput' => false,
+            'special' => true
             ),
         'image_type' => array(
             'type' => 'string',
             'allowempty' => true,
             'userinput' => false,
             'special' => true
-            ),
-        'thumbnail' => array(
-            'type' => 'file',
-            'allowempty' => true,
-            'userinput' => false
             ),
         'created' => array(
             'type' => 'datetime',
