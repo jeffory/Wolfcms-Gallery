@@ -20,6 +20,7 @@ class PluginRecord extends Record
         $model_class = get_called_class();
 
         $SQL = '';
+        $extra_SQL = '';
         $table_primary_keys = array();
 
         if ( isset($model_class::$table_name) && !empty($model_class::$table_name) )
@@ -45,8 +46,6 @@ class PluginRecord extends Record
                 $column_size = null;
                 $column_allow_empty = true;
                 $column_auto_increment = false;
-                $extra_SQL = '';
-
 
                 // die(print_r($column_details));
 
@@ -69,7 +68,14 @@ class PluginRecord extends Record
                         }
                         elseif ($column_value == 'file')
                         {
-                            $column_type = 'longblob';
+                            if (isset($column_details['storeindb']) && $column_details['storeindb'] == true)
+                            {
+                                $column_type = 'longblob';
+                            }
+                            else
+                            {
+                                $column_type = 'text';
+                            }
                         }
                     }
                     /* =============== Find: Extra column attributes =============== */
@@ -138,7 +144,7 @@ class PluginRecord extends Record
                 }
                 elseif ($column_name == 'modified')
                 {
-                    $extra_SQL .= "\nCREATE TRIGGER `{$table_name}_creation` BEFORE UPDATE ON `{$table_name}` FOR EACH ROW SET NEW.{$column_name} = NOW();";
+                    $extra_SQL .= "\nCREATE TRIGGER `{$table_name}_modified` BEFORE UPDATE ON `{$table_name}` FOR EACH ROW SET NEW.{$column_name} = NOW();";
                 }
 
                 $SQL = trim($SQL). ",";
@@ -165,7 +171,10 @@ class PluginRecord extends Record
                 $SQL .= trim($extra_SQL). "\n\n";
             }
 
+            // CREATE TRIGGER `gallery_item_modified` BEFORE UPDATE ON `gallery_item` FOR EACH ROW SET NEW.modified = NOW();
+            //die($SQL);
             $model_class::query($SQL);
+            // die();
         }
         else
         {
