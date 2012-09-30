@@ -106,4 +106,31 @@ class GalleryItem extends PluginRecord
         array('leftjoin' => array('gallery_item.id', 'gallery_item_cat.item_id')),
         array('leftjoin' => array('gallery_item_cat.category_id', 'gallery_cat.id')),
         );
+
+
+    /**
+     * As well as deleting the item we need to delete the category relation(s) to it, not the category itself
+     * 
+     * @var mixed Accepts either a single id, ids in an array or a where statement (array key needs to be where)
+     *
+     * @return boolean 
+     **/
+    public static function deleteRows($args)
+    {
+        if (is_array($args))
+        {
+            if (!isset($args['where']))
+            {
+                $ids = implode(",", $args);
+
+                GalleryItemCat::deleteRows(array('where' => '`item_id` IN ('. $ids. ')'));
+            }
+        }
+        elseif (preg_match('/^[0-9]+$/', $args))
+        {
+            GalleryItemCat::deleteRows(array('where' => '`item_id` = '. $args));
+        }
+
+        return parent::deleteRows($args);
+    }
 }
