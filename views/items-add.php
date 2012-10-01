@@ -55,7 +55,7 @@ if (!defined('IN_CMS')) { exit(); }
                 {
                     echo "<div class='form_content'>";
 
-                    if (isset($value))
+                    if (isset($value) && isset($data))
                     {
                         echo "<img src='". URL_PUBLIC. GAL_URL. "/file/". $field_id. "_thumb/". $data['id']. "'><br>";
                     }
