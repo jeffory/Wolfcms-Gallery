@@ -53,7 +53,14 @@ if (!defined('IN_CMS')) { exit(); }
                 }
                 elseif ($details['type'] == 'file')
                 {
-                    echo "<input name='{$field_id}' type='file'>";
+                    echo "<div class='form_content'>";
+
+                    if (isset($value))
+                    {
+                        echo "<img src='". URL_PUBLIC. GAL_URL. "/file/". $field_id. "_thumb/". $data['id']. "'><br>";
+                    }
+
+                    echo "<input name='{$field_id}' type='file'></div>";
                 }
                 elseif ($details['type'] == 'list')
                 {
