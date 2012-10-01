@@ -34,7 +34,7 @@ class GalleryItem extends PluginRecord
      *   pkey        - primary key in table
      *   special     - currently reserved for the controller setting a value for the model
      *   autoinc     - Auto increment
-     *   storeindb   - if type is file, it will store the filedata in the actual database
+     *   storeindb   - if type is file and is set to true it will store the filedata in the actual database
      *
      * TODO: Run this through a function to add default values, eg. strings: maxlength => 255
      * Then it can be used in forms and validation.
@@ -125,12 +125,16 @@ class GalleryItem extends PluginRecord
 
                 GalleryItemCat::deleteRows(array('where' => '`item_id` IN ('. $ids. ')'));
             }
+            else
+            {
+                GalleryItemCat::deleteRows(array('where' => $args['where']));
+            }
         }
         elseif (preg_match('/^[0-9]+$/', $args))
         {
             GalleryItemCat::deleteRows(array('where' => '`item_id` = '. $args));
         }
-
+        
         return parent::deleteRows($args);
     }
 }
