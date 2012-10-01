@@ -159,81 +159,17 @@ class GalleryController extends PluginController
             // Sort out uploading the files
             foreach ($_FILES as $field_name => $details)
             {
-                // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
-                if ($details['error'] == UPLOAD_ERR_OK && is_uploaded_file($details['tmp_name']))
-                {
-                    // Pass extra information through to the model if needed
-                    $data[$field_name. '_name'] = $details['name'];
-                    $data[$field_name. '_type'] = $details['type'];
-                    $data[$field_name. '_size'] = $details['size'];
-
-                    // Are we handling items?
-                    if (in_array($details['type'], array('image/jpeg', 'image/png', 'image/gif')))
+                if ($details['error'] != UPLOAD_ERR_NO_FILE)
                     {
-                        // Include PHP Image class
-                        //require_once('image.php');
-                    }
-
-                    // Storing image in database or file?
-                    if (GalleryItem::getTableStructure($field_name, 'storeindb') != true)
+                    // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
+                    if ($details['error'] == UPLOAD_ERR_OK && is_uploaded_file($details['tmp_name']))
                     {
-                        // Move file, store filepath
-
-                        // Need a non-existant filename
-                        $new_file = GAL_IMAGES_ROOT. DS. strtolower($details['name']);
-                        $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
-                        $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
-                        $i = 1;
-
-                        while (file_exists($new_file))
-                        {
-                            $new_file =  $pre_file. '_('. $i. ').'. $suf_file. "\n";
-                            
-                            if ($i > 1) break;
-                            $i++;
-                        }
-
-                        rename($details['tmp_name'], $new_file);
-                        chmod($new_file, 0755);
-                        $data[$field_name] = $new_file;
+                        $data = array_merge($data, GalleryItem::prepareFile($field_name, $details['tmp_name'], $details, GAL_IMAGES_ROOT));
                     }
                     else
                     {
-                        // Storing file in db often makes requests very slow
-                        $data[$field_name] = file_get_contents($details['tmp_name']);
-                        $new_file = $details['tmp_name'];
+                        Flash::set('error', __('Bad file upload.'));
                     }
-
-                    // Thumbnail?
-                    if (in_array($details['type'], array('image/jpeg', 'image/png', 'image/gif')))
-                    {
-                        // Divide the file path into parts
-                        $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
-                        $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
-                        $thumb_file = $pre_file. '_thumb.'. $suf_file;
-
-                        require_once(GAL_ROOT. DS. 'Image.php');
-
-                        if ($image = new Bedeabza\Image($new_file))
-                        {
-                            $image->resize(250, 250, $image->RESIZE_TYPE_RATIO);
-                            $image->save($thumb_file, 60);
-                        }
-
-                        // Store the thumbnail as a filepath or data?
-                        if (GalleryItem::getTableStructure($field_name, 'storeindb') != true)
-                        {
-                            $data[$field_name. '_thumb'] = $thumb_file;
-                        }
-                        else
-                        {
-                            $data[$field_name. '_thumb'] = file_get_contents($thumb_file);
-                        }
-                    }
-                }
-                else
-                {
-                    Flash::set('error', __('Bad file upload.'));
                 }
             }
 
@@ -296,13 +232,29 @@ class GalleryController extends PluginController
     {
         self::_checkPermission();
 
-
         $data = $_POST;
 
         if (isset($_POST) && !empty($data))
         {
             $categories = $data['category_name'];
             unset($data['category_name']);
+
+            // Sort out uploading the files
+            foreach ($_FILES as $field_name => $details)
+            {
+                if ($details['error'] != UPLOAD_ERR_NO_FILE)
+                {
+                    // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
+                    if ($details['error'] == UPLOAD_ERR_OK && is_uploaded_file($details['tmp_name']))
+                    {
+                        $data = array_merge($data, GalleryItem::prepareFile($field_name, $details['tmp_name'], $details, GAL_IMAGES_ROOT));
+                    }
+                    else
+                    {
+                        Flash::set('error', __('Bad file upload.'));
+                    }
+                }
+            }
 
             if (GalleryItem::update('GalleryItem', $data, 'id = '. $id))
             {
@@ -375,6 +327,7 @@ class GalleryController extends PluginController
         {
             Flash::set('error', __('Item# '. $id. ' could not be deleted!'));
         }
+        
         redirect(get_url('plugin/'. GAL_ID));
     }
 

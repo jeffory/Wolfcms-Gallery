@@ -47,8 +47,6 @@ class PluginRecord extends Record
                 $column_allow_empty = true;
                 $column_auto_increment = false;
 
-                // die(print_r($column_details));
-
                 foreach ($column_details as $column_option => $column_value)
                 {
                     if ($column_option == 'type')
@@ -171,10 +169,7 @@ class PluginRecord extends Record
                 $SQL .= trim($extra_SQL). "\n\n";
             }
 
-            // CREATE TRIGGER `gallery_item_modified` BEFORE UPDATE ON `gallery_item` FOR EACH ROW SET NEW.modified = NOW();
-            //die($SQL);
             $model_class::query($SQL);
-            // die();
         }
         else
         {
@@ -190,6 +185,8 @@ class PluginRecord extends Record
     public static function deleteTable()
     {
         $model_class = get_called_class();
+
+        // TODO: Delete all the files associated with items?
         if (isset($model_class::$table_name) && !empty($model_class::$table_name))
         {
             $table_name = TABLE_PREFIX. $model_class::$table_name;  // Add the table prefix, if any, to the table name
@@ -295,7 +292,6 @@ class PluginRecord extends Record
     public static function deleteRows($args)
     {
         $model_class = get_called_class();
-
         $where = '';
 
         if (is_array($args) && !empty($args['where']))
@@ -323,6 +319,21 @@ class PluginRecord extends Record
             {
                 $where .= '= ?;';
                 $sql_args = array($args);
+            }
+        }
+
+        // Clean up old associated files
+        foreach ($model_class::getTableStructure() as $column_name => $column_details)
+        {
+            if ((strcasecmp($column_details['type'], 'file') == 0) && (!isset($column_details['storeindb']) || $column_details['storeindb'] == false))
+            {
+                $del_SQL = 'SELECT `'. $column_name. '` FROM `'. TABLE_PREFIX. $model_class::$table_name. '` WHERE '. $where;
+                $ret = isset($sql_args) ? self::query($del_SQL, $sql_args) : self::query($del_SQL);
+
+                if (isset($ret[0]) && file_exists($ret[0]->$column_name))
+                {
+                    unlink($ret[0]->$column_name);
+                }
             }
         }
 
@@ -431,11 +442,9 @@ class PluginRecord extends Record
         }
 
         //echo $sql;
-
+        Record::logQuery($sql);
         $stmt = self::$__CONN__->prepare($sql);
         $stmt->execute();
-
-        Record::logQuery($sql);
 
         // Explode (into arrays) the Many2Many rows
         $explode_cols = function ($object, $columns, $seperator)
@@ -506,6 +515,102 @@ class PluginRecord extends Record
         {
             return false;
         }
+    }
+
+    /**
+     * Stores the file or path in the database
+     *
+     * @return array Database data to be added
+     **/
+    public static function prepareFile($field_name, $filepath, $details, $storepath)
+    {
+        $model_class = get_called_class();
+
+        // Pass extra information through to the model if needed
+        $data[$field_name. '_name'] = $details['name'];
+        $data[$field_name. '_type'] = $details['type'];
+        $data[$field_name. '_size'] = $details['size'];
+
+        // Storing image in database or file?
+        if ($model_class::getTableStructure($field_name, 'storeindb') != true)
+        {
+            // Move file, store filepath
+            $new_file = $storepath. DS. strtolower($details['name']);
+            $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
+            $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
+            $i = 1;
+
+            // Need a non-existant filename
+            while (file_exists($new_file))
+            {
+                $new_file =  $pre_file. ''. $i. '.'. $suf_file. "\n";
+                
+                if ($i > 1) break;
+                $i++;
+            }
+
+            // TODO: Delete previous associated file
+            rename($details['tmp_name'], $new_file);
+            chmod($new_file, 0755);
+            $data[$field_name] = $new_file;
+        }
+        else
+        {
+            // Storing file in db often makes requests very slow
+            $data[$field_name] = file_get_contents($details['tmp_name']);
+            $new_file = $details['tmp_name'];
+        }
+
+        // Thumbnail?
+        if (in_array($details['type'], array('image/jpeg', 'image/png', 'image/gif')))
+        {
+            // Divide the file path into parts
+            $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
+            $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
+            $thumb_file = $pre_file. '_thumb.'. $suf_file;
+
+            require_once(GAL_ROOT. DS. 'Image.php');
+
+            if ($image = new Bedeabza\Image($new_file))
+            {
+                $image->resize(250, 250, $image::RESIZE_TYPE_RATIO);
+                $image->save($thumb_file, 60);
+                chmod($thumb_file, 0755);
+            }
+
+            // Store the thumbnail as a filepath or data?
+            if ($model_class::getTableStructure($field_name, 'storeindb') != true)
+            {
+                $data[$field_name. '_thumb'] = $thumb_file;
+            }
+            else
+            {
+                $data[$field_name. '_thumb'] = file_get_contents($thumb_file);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Updates an existing record in the database. Modified to check columns first to see if they exist.
+     *
+     * @return array Database data to be added
+     **/
+    public static function update($class_name, $data, $where, $values = array())
+    {
+        $model_class = get_called_class();
+
+        // Remove any fields from update query that aren't in the table structure
+        foreach ($data as $column => $value)
+        {
+            if (!in_array($column, array_keys($model_class::getTableStructure())))
+            {
+                unset($data[$column]);
+            }
+        }
+
+        return parent::update($class_name, $data, $where, $values = array());
     }
 
     /**
