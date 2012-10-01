@@ -4,6 +4,7 @@
     #body_plugin_gallery label {
         display: inline-block;
         width: 160px;
+
         vertical-align: top;
     }
     #body_plugin_gallery textarea {
@@ -22,6 +23,10 @@
         border-radius: 5px;
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
+    }
+    #body_plugin_gallery .form_content {
+        display: inline-block;
+        width: 400px;
     }
     .datalist {
         display: inline-block;

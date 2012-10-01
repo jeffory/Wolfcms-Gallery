@@ -34,3 +34,9 @@
 	</tr>
 <?php endforeach; ?>
 </table>
+
+<style type="text/css">
+	.items_listing {
+		padding: 0 12px;
+	}
+</style>
