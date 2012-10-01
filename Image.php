@@ -153,7 +153,7 @@ class Image
 		imagecopyresampled($this->_workingImage, $this->_sourceImage, 0, 0, 0, 0, $width, $height, $this->_originalSize[0], $this->_originalSize[1]);
 		$this->_replaceAndReset($width, $height);
 
-		if($cropAfter)
+		if(isset($cropAfter) && $cropAfter)
 			$this->cropFromCenter($cropDimensions[0], $cropDimensions[1]);
 	}
 
