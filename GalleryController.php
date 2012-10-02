@@ -109,11 +109,33 @@ class GalleryController extends PluginController
     }
 
     /**
+     * Frontend item view
+     *
+     * @return void
+     **/
+    public function front_item($item_id)
+    {
+        $items = GalleryItem::find(array(
+            'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name'),
+            'where' => 'gallery_item.id = '. $item_id,
+            'limit' => 1
+            ));
+
+        $this->display(
+            basename(GAL_ROOT). "/views/front-item",
+            array(
+                'item_fields' => GalleryItem::getTableStructure(),
+                'item' => $items
+                )
+            );
+    }
+
+    /**
      * Frontend index view
      *
      * @return void
      **/
-    public function front_items_index($category_id)
+    public function front_items_index($category_id, $category_slug)
     {
         $items = GalleryItem::find(array(
             'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name'),
@@ -123,6 +145,8 @@ class GalleryController extends PluginController
         $this->display(
             basename(GAL_ROOT). "/views/front-items-index",
             array(
+                'cat_id' => $category_id,
+                'cat_slug' => $category_slug,
                 'item_fields' => GalleryItem::getTableStructure(),
                 'items' => $items
                 )
