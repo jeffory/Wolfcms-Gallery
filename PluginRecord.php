@@ -449,14 +449,17 @@ class PluginRecord extends Record
         // Explode (into arrays) the Many2Many rows
         $explode_cols = function ($object, $columns, $seperator)
             {
-                foreach ($object as $col => $val)
+                if (!empty($object))
                 {
-                    if (in_array($col, $columns))
+                    foreach ($object as $col => $val)
                     {
-                        $object->$col = explode($seperator, $val);
+                        if (in_array($col, $columns))
+                        {
+                            $object->$col = explode($seperator, $val);
+                        }
                     }
+                    return $object;
                 }
-                return $object;
             };
 
         // Run!
