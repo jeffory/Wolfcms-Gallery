@@ -222,7 +222,7 @@ class GalleryController extends PluginController
 
         $item_fields = GalleryItem::getTableStructure();
 
-        $categories = '';
+        $categories = array();
 
         foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
         {

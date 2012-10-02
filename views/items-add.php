@@ -102,7 +102,7 @@ if (!defined('IN_CMS')) { exit(); }
 <script>
     $(function(){
         $(".datalist_item").autocomplete({
-            source: [ <?php if (!isset($categories) && is_array($categories)) echo "'". @implode("', '", $categories). "'" ?> ],
+            source: [ <?php if (isset($categories) && is_array($categories)) echo "'". implode("', '", $categories). "'" ?> ],
             minLength: 0,
             delay: 0
         });
