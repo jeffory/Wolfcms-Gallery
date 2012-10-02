@@ -37,7 +37,7 @@ Plugin::setInfos(array(
 AutoLoader::addFile('PluginRecord', GAL_ROOT. DS. 'PluginRecord.php');
 //AutoLoader::addFile('GalleryItem', GAL_ROOT. DS. 'models'. DS. 'GalleryItem.php');
 
-Plugin::addController(GAL_C_CLASS, __(GAL_TITLE), 'administrator', true);
+Plugin::addController(GAL_C_CLASS, __(GAL_TITLE), 'admin_view', true);
 AutoLoader::addFolder(GAL_ROOT. DS. 'models');      // Sometimes doesn't load? Problem with xampp it seems
 
 // A lot of the functions have to be re-routed to allow for different plugin names

@@ -33,7 +33,7 @@ if (!defined('IN_CMS')) { exit(); }
     </p>
 </div>
 
-<?php if (DEBUG): ?>
+<?php if (DEBUG && AuthUser::hasPermission('Administrator')): ?>
 <div class="box">
     <h2>Debugging options:</h2>
 
