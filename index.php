@@ -26,7 +26,7 @@ Plugin::setInfos(array(
     'title'                 => __(GAL_TITLE),
     'description'           => __('Adds a simple and easy to use'). ' '. __(GAL_TITLE). '.',
     'version'               => '1.0',
-   	'license'               => 'GNU GPL 3.0',
+   	'license'               => 'GPLv3',
 	'author'                => 'Keith McGahey',
     'website'               => 'http://www.keithmcgahey.com/',
     // 'update_url'         => 'http://www.keithmcgahey.com/',
