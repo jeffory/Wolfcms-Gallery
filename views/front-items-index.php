@@ -21,8 +21,7 @@
 
 		<td>
 			<p>
-				<strong><a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $cat_id. '/'. $cat_slug. '/'. $item->id. '/'. url_slug($item->name) ?>"><?php echo $item->name ?></a></strong><br>
-				<?php echo $item->code ?>
+				<strong><a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $cat_id. '/'. $cat_slug. '/'. $item->id. '/'. url_slug($item->name) ?>"><?php echo $item->name ?></a></strong>
 			</p>
 		</td>
 
