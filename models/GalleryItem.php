@@ -56,13 +56,6 @@ class GalleryItem extends PluginRecord
             'allowempty' => false,
             'caption' => 'Item name'
             ),
-        'code' => array(
-            'type' => 'string',
-            'validation' => '',
-            'allowempty' => false,
-            'maxlength' => 8,
-            'caption' => 'Product code'
-            ),
         'description' => array(
             'type' => 'text',
             'allowempty' => true,

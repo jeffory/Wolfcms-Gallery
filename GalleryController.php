@@ -90,7 +90,7 @@ class GalleryController extends PluginController
         }
 
         $items = GalleryItem::find(array(
-            'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.code', 'gallery_item.description', 'gallery_cat.category_name'),
+            'select' => array('gallery_item.id', 'gallery_item.name', 'gallery_item.description', 'gallery_cat.category_name'),
             'limit' => $limit,
             'offset' => ($page - 1) * $limit
             ));
@@ -116,7 +116,7 @@ class GalleryController extends PluginController
     public function front_item($item_id)
     {
         $items = GalleryItem::find(array(
-            'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name'),
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name'),
             'where' => 'gallery_item.id = '. $item_id,
             'limit' => 1
             ));
@@ -138,7 +138,7 @@ class GalleryController extends PluginController
     public function front_items_index($category_id, $category_slug)
     {
         $items = GalleryItem::find(array(
-            'select' => array('id', 'name', 'code', 'description', 'gallery_cat.category_name'),
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name'),
             'where' => 'gallery_cat.id = '. $category_id
             ));
 
