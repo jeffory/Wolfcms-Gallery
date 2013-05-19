@@ -9,12 +9,9 @@
  */
 ?>
 <div style='width: 550px; text-align: center; margin: 0 auto;'>
-	<h2 style='text-align: left'>Our Products</h2>
+	<h2 style='text-align: left'><?php echo __('Gallery') ?></h2>
 
 	<?php foreach ($categories as $category): ?>
-		<a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $category->id. '/'. url_slug($category->category_name) ?>" class="funky_button"><?php echo $category->category_name ?></a>
+		<a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $category->id. '/'. url_slug($category->category_name) ?>"><?php echo $category->category_name ?></a>
 	<?php endforeach; ?>
-	<p>
-		If we don't have a product that you are after please contact us and we will see if we are able to procure it for you.
-	</p>
 </div>

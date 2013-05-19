@@ -20,11 +20,11 @@ if (!defined('IN_CMS')) { exit(); }
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Code</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Modify</th>
+                <th><?php echo __('Name') ?></th>
+                <th><?php echo __('Code') ?></th>
+                <th><?php echo __('Description') ?></th>
+                <th><?php echo __('Category') ?></th>
+                <th><?php echo __('Modify') ?></th>
             </tr>
         </thead>
 
@@ -81,7 +81,7 @@ if (!defined('IN_CMS')) { exit(); }
 
 <?php if ($page_total > 0): ?>
 <div class="hidden_options">
-    Options: <input type="button" value="Select all" class="select_all"> <span class="selection_options"><input type="submit" value="Delete selected"></span>
+    <?php echo __('Options') ?>: <input type="button" value="Select all" class="select_all"> <span class="selection_options"><input type="submit" value="Delete selected"></span>
 </div>
 <?php endif; ?>
 </form>
@@ -94,7 +94,7 @@ if (!defined('IN_CMS')) { exit(); }
     <?php endif; ?>
 
     <span style='display: inline-block; margin-left: 30px; margin-right: 30px;'>
-        Page <input type='text' value='<?php echo $page ?>' class='pagination_curpage'> of <span class='pagination_total'><?php echo $page_total ?></span>
+        <?php echo __('Page') ?> <input type='text' value='<?php echo $page ?>' class='pagination_curpage'> <?php echo __('of') ?> <span class='pagination_total'><?php echo $page_total ?></span>
     </span>
 
     <?php if ($page * $limit < $total): ?>
@@ -103,7 +103,7 @@ if (!defined('IN_CMS')) { exit(); }
 </div>
 <?php else: ?>
 <p style='text-align: center; clear: both; color: #A1A1A1;'>
-    No items found
+    <?php echo __('No items found') ?>
 </p>
 <?php endif; ?>
 

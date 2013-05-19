@@ -16,15 +16,15 @@ define('GAL_ID', 'gallery');                            // For the Plugin sectio
 define('GAL_ROOT', PLUGINS_ROOT. DS. 'gallery');        // Directory root to the plugin
 define('GAL_C_CLASS', 'gallery');                       // Class names, (ie. gallery = GalleryController) Needs to be lowercase!
 
-define('GAL_URL', 'products');                          // Base URL to use the plugin
-define('GAL_TITLE', 'Products');                        // Title of the plugin (for views and what not)
+define('GAL_URL', 'gallery');                          // Base URL to use the plugin
+define('GAL_TITLE', 'Gallery');                        // Title of the plugin (for views and what not)
 
 define('GAL_IMAGES_ROOT', CMS_ROOT. '/public/files');      // Directory where images not stored in the database will be stored
 
 Plugin::setInfos(array(
     'id'                    => GAL_ID,
     'title'                 => __(GAL_TITLE),
-    'description'           => __('Adds a simple and easy to manipulate/use '. __(GAL_TITLE). '.'),
+    'description'           => __('Adds a simple and easy to use'). ' '. __(GAL_TITLE). '.',
     'version'               => '1.0',
    	'license'               => 'Commerical',
 	'author'                => 'Keith McGahey',

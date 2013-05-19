@@ -20,9 +20,9 @@ if (!defined('IN_CMS')) { exit(); }
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Item count</th>
-                <th>Modify</th>
+                <th><?php echo __('Name') ?></th>
+                <th><?php echo __('Item count') ?></th>
+                <th><?php echo __('Modify') ?></th>
             </tr>
         </thead>
 
@@ -69,7 +69,7 @@ if (!defined('IN_CMS')) { exit(); }
                 $i++;
             }
 
-            echo '<td class="modify-options"><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/delete:'. $id. '" onclick="return confirm(\'Are you sure you wish to delete?\');"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete category icon" title="Delete category"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
+            echo '<td class="modify-options"><div class="item_options"><a class="remove" href="' .URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories/delete:'. $id. '" onclick="return confirm(\''. __('Are you sure you wish to delete?'). ')\';"><img src="'. URL_PUBLIC. 'wolf/admin/images/icon-remove.gif" alt="delete category icon" title="'. __('Delete category'). '"></a> <input name="remove[]" class="ck_remove" type="checkbox" value="'. $id. '"></div></td>';
             echo '</tr>';
         }
         ?>

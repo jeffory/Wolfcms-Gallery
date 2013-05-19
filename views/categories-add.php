@@ -83,7 +83,7 @@ if (!defined('IN_CMS')) { exit(); }
         }
     	?>
         <p class='form_controls'>
-            <input type="submit" name="" value="Save item"> or <a href="./">Cancel</a>
+            <input type="submit" name="" value="<?php echo __('Save item') ?>"> or <a href="./"><?php echo __('Cancel') ?></a>
         </p>
     </ul>
 </form>
