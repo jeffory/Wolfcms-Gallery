@@ -14,13 +14,13 @@ if (!defined('IN_CMS')) { exit(); }
 
 <p class='button'>
     <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/add">
-        <img src='<?php echo URI_PUBLIC ?>/wolf/icons/action-add-32-ns.png' align="middle" alt="snippet icon">
+        <img src='<?php echo rtrim(URI_PUBLIC, '/') ?>/wolf/icons/action-add-32-ns.png' align="middle" alt="snippet icon">
         <?php echo __('Add Item') ?>
     </a>
 </p>
 
 <p class='button' style='height: 34px;'>
-    <img src='<?php echo URI_PUBLIC ?>/wolf/icons/file-folder-32.png' align="middle" alt="snippet icon">
+    <img src='<?php echo rtrim(URI_PUBLIC, '/') ?>/wolf/icons/file-folder-32.png' align="middle" alt="snippet icon">
     <a href='<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL. '/categories' ?>'>
         <?php echo __('Edit categories') ?>
     </a>
@@ -41,14 +41,14 @@ if (!defined('IN_CMS')) { exit(); }
 
     <p class='button'>
         <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/addsamples">
-            <img src='<?php echo URI_PUBLIC ?>/wolf/icons/action-open-32-ns.png' align="middle" alt="snippet icon">
+            <img src='<?php echo rtrim(URI_PUBLIC, '/') ?>/wolf/icons/action-open-32-ns.png' align="middle" alt="snippet icon">
             Add randomized sample data
         </a>
     </p>
 
     <p class='button'>
         <a href="<?php echo BASE_URI. 'plugin/'. GAL_URL ?>/clearall" onclick="return confirm('Are you sure you wish to delete all the data in the gallery?');">
-            <img src='<?php echo URI_PUBLIC ?>/wolf/icons/action-delete-32-ns.png' align="middle" alt="snippet icon">
+            <img src='<?php echo rtrim(URI_PUBLIC, '/') ?>/wolf/icons/action-delete-32-ns.png' align="middle" alt="snippet icon">
             Clear all data!
         </a>
     </p>
