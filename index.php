@@ -21,6 +21,8 @@ define('GAL_TITLE', 'Gallery');                        // Title of the plugin (f
 
 define('GAL_IMAGES_ROOT', CMS_ROOT. '/public/files');      // Directory where images not stored in the database will be stored
 
+define('GAL_LAYOUT', 'Wolf');
+
 Plugin::setInfos(array(
     'id'                    => GAL_ID,
     'title'                 => __(GAL_TITLE),

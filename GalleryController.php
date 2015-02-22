@@ -41,8 +41,7 @@ class GalleryController extends PluginController
         }
         else
         {
-            // TODO: Should be the name of the layout going to be used
-            $this->setLayout('Hamlins');
+            $this->setLayout(GAL_LAYOUT);
         }
     }
 
