@@ -10,7 +10,7 @@
     #body_plugin_gallery textarea {
         display: inline-block;
         width: 500px !important;
-        height: 3.2em;
+        height: 4.2em;
     }
     #body_plugin_gallery .form_line {
         margin-bottom: 5px;
@@ -42,6 +42,9 @@
     .datalist_line {
         display: block;
         clear: both;
+    }
+    .datalist_line .ui-helper-hidden-accessible {
+        display: none;
     }
     /* Autocomplete */
     .ui-autocomplete { position: absolute; cursor: default; }   

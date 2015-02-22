@@ -95,17 +95,9 @@ if (!defined('IN_CMS')) { exit(); }
     </p>
 </form>
 
-<style type="text/css">
-    <?php if (file_exists(GAL_ROOT. '/css/add.css')) require(GAL_ROOT. '/css/add.css') ?>
-</style>
-
 <script>
     $(function(){
-        $(".datalist_item[name='category_name[]']").autocomplete({
-            source: [ <?php if (isset($categories) && is_array($categories)) echo "'". implode("', '", $categories). "'" ?> ],
-            minLength: 0,
-            delay: 0
-        });
+        $('head').append('<link href="/wolf/plugins/<?php echo basename(GAL_ROOT)?>/css/add.css" media="screen" rel="Stylesheet" type="text/css" />');
 
         $('.datalist_add').click(function(){
             field = $(this).parent('.datalist').attr('data-col');
@@ -125,6 +117,13 @@ if (!defined('IN_CMS')) { exit(); }
 
         $('.datalist').on("click", ".datalist_delete", function(){
             $(this).parent('.datalist_line').remove();
+        });
+
+        // Autocomplete for Categories
+        $(".datalist_item[name='category_name[]']").autocomplete({
+            source: [ <?php if (isset($categories) && is_array($categories)) echo "'". implode("', '", $categories). "'" ?> ],
+            minLength: 0,
+            delay: 0
         });
     });
 </script>
