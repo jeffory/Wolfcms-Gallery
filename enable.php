@@ -11,6 +11,7 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 
-@require_once('index.php');
+require_once('index.php');
 GalleryController::enable();
+mkdir(GAL_IMAGES_ROOT);
 exit();
