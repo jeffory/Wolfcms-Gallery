@@ -36,7 +36,5 @@ return array(
     'Only use these functions if you are you know what you are doing.' => 'Only use these functions if you are you know what you are doing.',
     'Gallery items' => 'Gallery items',
     'No items found' => 'No items found',
-    '' => '',
-    '' => '',
-    '' => ''
+    'Settings' => 'Settings'
 );
