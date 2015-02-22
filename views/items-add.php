@@ -65,7 +65,7 @@ if (!defined('IN_CMS')) { exit(); }
                 elseif ($details['type'] == 'list')
                 {
                     echo "<div class='datalist' data-col='{$field_id}'>";
-                    echo "<input class='datalist_add' type='button' value='Add category'>";
+                    echo "<input class='datalist_add' type='button' value='Add'>";
 
                     if (!is_array($value)) $value = array($value);
 
@@ -101,7 +101,7 @@ if (!defined('IN_CMS')) { exit(); }
 
 <script>
     $(function(){
-        $(".datalist_item").autocomplete({
+        $(".datalist_item[name='category_name[]']").autocomplete({
             source: [ <?php if (isset($categories) && is_array($categories)) echo "'". implode("', '", $categories). "'" ?> ],
             minLength: 0,
             delay: 0
@@ -123,7 +123,7 @@ if (!defined('IN_CMS')) { exit(); }
             });
         });
 
-        $('.datalist_delete').click(function(){
+        $('.datalist').on("click", ".datalist_delete", function(){
             $(this).parent('.datalist_line').remove();
         });
     });
