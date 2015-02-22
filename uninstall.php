@@ -11,6 +11,7 @@ if (!defined('IN_CMS')) { exit(); }
  * @author Keith McGahey
  */
 
-@require_once('index.php');
+require_once(rtrim(dirname($file), '/'). '/index.php');
 GalleryController::uninstall();
+if (count(glob(GAL_IMAGES_ROOT.  "/*")) === 0) @rmdir(GAL_IMAGES_ROOT);
 exit();
