@@ -223,7 +223,8 @@ class GalleryController extends PluginController
 
         $categories = array();
 
-        foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
+        // For autocomplete
+        foreach (GalleryCat::find(array('select' => 'category_name')) as $category)
         {
             $categories[] = $category->category_name;
         }
@@ -504,13 +505,11 @@ class GalleryController extends PluginController
         {
             if (GalleryCat::update('GalleryCat', $data, 'id = '. $id))
             {
-                echo 'sup';
                 Flash::set('success', __('Edited successfully!'));
                 redirect(get_url('plugin/'. GAL_URL. '/categories'));
             }
             else
             {
-                echo 'sup';
                 Flash::setNow('error', __('There appears to be a problem editing the item!'));
             }
         }
@@ -583,7 +582,6 @@ class GalleryController extends PluginController
             $rand2 = mt_rand(1,1897897);
             GalleryItem::insertRow(array(
                 'name' => 'test item '. $rand,
-                'code' => 'K'. $rand2,
                 'description' => 'This is the description for item #'. $rand. '.'
                 ));
 
