@@ -302,7 +302,7 @@ class GalleryController extends PluginController
 
         $data = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
-            'select' => array('id', 'name', 'code', 'description', 'image', 'gallery_cat.category_name')
+            'select' => array('id', 'name', 'description', 'image', 'gallery_cat.category_name')
             ));
 
         $item_fields = GalleryItem::getTableStructure();

@@ -21,7 +21,6 @@ if (!defined('IN_CMS')) { exit(); }
         <thead>
             <tr>
                 <th><?php echo __('Name') ?></th>
-                <th><?php echo __('Code') ?></th>
                 <th><?php echo __('Description') ?></th>
                 <th><?php echo __('Category') ?></th>
                 <th><?php echo __('Modify') ?></th>
