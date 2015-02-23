@@ -17,7 +17,7 @@ if (!defined('IN_CMS')) { exit(); }
 
 <form method="post">
 <p>
-    <table>
+    <table class="index">
         <thead>
             <tr>
                 <th><?php echo __('Name') ?></th>
@@ -54,7 +54,7 @@ if (!defined('IN_CMS')) { exit(); }
                         echo '<ul class="listing">';
                         foreach ($detail as $category)
                         {
-                            echo '<li>'. $category. '</li>';
+                            echo '<li style="border-top: 0;">'. $category. '</li>';
                         }
                         echo '</ul>';
                         
