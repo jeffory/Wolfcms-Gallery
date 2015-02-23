@@ -106,13 +106,11 @@ if (!defined('IN_CMS')) { exit(); }
 </p>
 <?php endif; ?>
 
-<style>
-    <?php require(GAL_ROOT. '/css/listing.css') ?>
-</style>
-
 <script type="text/javascript">
     var baseurl = '<?php echo URL_PUBLIC. 'admin/plugin/'. GAL_URL ?>';
     var curpage = <?php echo $page ?>;
+
+    $('head').append('<link href="/wolf/plugins/<?php echo basename(GAL_ROOT)?>/css/listing.css" media="screen" rel="Stylesheet" type="text/css" />');
 
     <?php require(GAL_ROOT. '/js/listing.js') ?>
 </script>
