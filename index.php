@@ -31,7 +31,7 @@ Plugin::setInfos(array(
    	'license'               => 'GPLv3',
 	'author'                => 'Keith McGahey',
     'website'               => 'http://www.keithmcgahey.com/',
-    // 'update_url'         => 'http://www.keithmcgahey.com/',
+    'update_url'            => 'https://raw.githubusercontent.com/jeffory/Wolfcms-Gallery/master/plugin_version.xml',
     'require_wolf_version'  => '0.7.3',
     'type'                  => 'both',
 ));
