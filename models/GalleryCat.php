@@ -104,24 +104,6 @@ class GalleryCat extends PluginRecord
         // Combine the two seperate arrays (must have something to do with them being from different tables)
         $current_categories = array_combine($current_categories[0]->id,  $current_categories[0]->category_name);
 
-
-        // START FUNCTIONS: Case insensitive version of in_array
-        function in_iarray ($needle, $haystack) {
-            foreach ($haystack as $haystack_item)
-            {
-                foreach ((!is_array($needle) ? array($needle) : $needle) as $needle_item)
-                {
-                    if (strcasecmp($needle_item, $haystack_item) == 0)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        // END FUNCTIONS
-
-
         // Check for new categories
         foreach ((!is_array($categories) ? array($categories) : $categories) as $category)
         {
