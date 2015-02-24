@@ -391,7 +391,7 @@ class PluginRecord extends Record
                         $mm_cols[] = (!empty($alias)) ? $alias : $matches[2];
                         $mm_sep = (isset($mm_sep)) ? $mm_sep : ',';
 
-                        $col = 'GROUP_CONCAT('. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $alias;
+                        $col = 'GROUP_CONCAT(DISTINCT '. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $alias;
                         $group_by_string = 'GROUP BY '. $table_name. '.id';
                     }
                 }
@@ -450,7 +450,7 @@ class PluginRecord extends Record
             $sql = "SELECT $select FROM $table_name $join_string " .
                 "$group_by_string $order_by_string $limit_string $offset_string";
         }
-        
+
         Record::logQuery($sql);
         $stmt = self::$__CONN__->prepare($sql);
         $stmt->execute();
