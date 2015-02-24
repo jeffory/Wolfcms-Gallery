@@ -116,7 +116,7 @@ class GalleryController extends PluginController
     public function front_item($item_id)
     {
         $items = GalleryItem::find(array(
-            'select' => array('id', 'name', 'description', 'gallery_cat.category_name'),
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id AS image_id'),
             'where' => 'gallery_item.id = '. $item_id,
             'limit' => 1
             ));
@@ -138,7 +138,7 @@ class GalleryController extends PluginController
     public function front_items_index($category_id, $category_slug)
     {
         $items = GalleryItem::find(array(
-            'select' => array('id', 'name', 'description', 'gallery_cat.category_name'),
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id AS image_id'),
             'where' => 'gallery_cat.id = '. $category_id
             ));
 
