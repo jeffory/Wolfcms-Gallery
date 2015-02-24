@@ -11,19 +11,22 @@
 <h2></h2>
 
 <p class='item_image'>
-	<img src='<?php echo URL_PUBLIC. GAL_URL. '/file/image/'. $item->id ?>' style='max-width: 100%'>
+	<img src='<?php echo URL_PUBLIC. GAL_URL. '/file/image/'. $item->image_id[0] ?>' style='max-width: 100%'>
 </p>
 
 <p class='item_info'>
+	<div class='thumbs'>
+		<?php foreach ($item->image_id as $image_id): ?>
+			<img src='<?php echo URL_PUBLIC. GAL_URL. '/file/image_thumb/'. $image_id ?>' style='max-width: 100%'>
+		<?php endforeach; ?>
+	</div>
+	
 	<dl>
 		<dt>Product name</dt>
 		<dd><?php echo $item->name ?></dd>
 
 		<dt>Description</dt>
 		<dd><?php echo $item->description ?></dd>
-
-		<dt>Code</dt>
-		<dd><?php echo $item->code ?></dd>
 
 		<dt>Categories</dt>
 		<dd><?php echo implode(',', $item->category_name) ?></dd>
