@@ -75,4 +75,63 @@ class GalleryImage extends PluginRecord
             'userinput' => false
             ),
         );
+
+    /**
+     * Set the images for an item
+     *
+     * @var integer Item ID
+     * @var mixed String/Array Images for the item to be added to
+     * @var boolean Remove any Images not specified in previous array
+     * 
+     * @return void
+     **/
+    public static function setItemImages($item_id, $images, $remove_old = false)
+    {
+        $model_class = get_called_class();
+        error_reporting(E_ALL);
+
+        // Get the current images associated with the item
+        $current_images = GalleryItem::find(array(
+            'where' => 'gallery_item.id = '. (int) $item_id,
+            'select' => array('gallery_image.image')
+            ));
+
+        // Check for new images
+        foreach ((!is_array($images) ? array($images) : $images) as $image)
+        {
+            if (!in_iarray($image['image'], $current_images[0]))
+            {
+                // Create the image and the link
+                GalleryImage::insertRow(array(
+                    'item_id' => $item_id,
+                    'image' => $image['image'],
+                    'image_type' => $image['image_type'],
+                    'image_thumb' => $image['image_thumb']
+                    ));
+
+                // $cat_id = GalleryCat::lastInsertId();
+                    
+                // $new_categories[] = $image;
+            }
+        }
+
+        // // Delete old ones?
+        // if ($remove_old == true)
+        // {
+        //     foreach ($current_categories as $current_category_id => $current_category)
+        //     {
+        //         foreach ((!is_array($categories) ? array($categories) : $categories) as $category)
+        //         {
+        //             // Remove categories not specified
+        //             if (!in_iarray($current_category, $categories))
+        //             {
+        //                 //GalleryItemCat::delete(GalleryItemCat::$table_name, '');
+        //                 self::deleteWhere('GalleryItemCat', 'item_id = ? AND category_id = ?', array($item_id, $current_category_id));
+        //             }
+        //         }
+        //     }
+        // }
+
+        return true;
+    }
 }
