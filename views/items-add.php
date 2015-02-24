@@ -79,6 +79,22 @@ if (!defined('IN_CMS')) { exit(); }
 
                     echo "</div>";
                 }
+                elseif ($details['type'] == 'filelist')
+                {
+                    echo "<div class='filelist' data-col='{$field_id}'>";
+                    echo "<input class='filelist_add' type='button' value='Add more'><br><br>";
+
+                    if (!is_array($value)) $value = array($value);
+
+                    foreach ($value as $val)
+                    {
+                        echo "<span class='datalist_line'>";
+                        echo "<input name='{$field_id}[]' class='datalist_item' type='file' value='{$val}' multiple>";
+                        echo "</span>";
+                    }
+
+                    echo "</div>";
+                }
 
                 // Check if optional
                 if (isset($details['allowEmpty']) && $details['allowEmpty'] === true)
