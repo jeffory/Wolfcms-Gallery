@@ -535,7 +535,7 @@ class PluginRecord extends Record
         $data[$field_name. '_size'] = $details['size'];
 
         // Storing image in database or file?
-        if ($model_class::getTableStructure($field_name, 'storeindb') != true)
+        if ($model_class::getTableStructure($field_name, 'storeindb') !== true)
         {
             // Move file, store filepath
             $new_file = $storepath. DS. strtolower($details['name']);
