@@ -413,7 +413,7 @@ class GalleryController extends PluginController
      **/
     public function file($col, $id)
     {
-        if ($item = GalleryItem::find(array('where' => 'gallery_item.id = '. (int) $id)))
+        if ($item = GalleryImage::find(array('where' => 'gallery_image.id = '. (int) $id)))
         {
             // A thumbnail's going to have the same content type as it's original
             $col_type = preg_replace('/\_thumb$/is', '', $col) .'_type';
