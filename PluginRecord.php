@@ -369,6 +369,14 @@ class PluginRecord extends Record
 
             foreach ($args['select'] as $col)
             {
+                $alias = '';
+
+                // if an alias is specified
+                if (preg_match('#([a-z0-9-_\.]+) AS ([a-z0-9-_\.]+)$#i', $col, $matches)) {
+                    $alias = $matches[2];
+                    $col = $matches[1];
+                }
+
                 // Is there NOT a table name for the columns
                 if (!preg_match('#([a-z0-9-_]+)\.([a-z0-9-_]+)#i', $col, $matches))
                 {
@@ -379,9 +387,11 @@ class PluginRecord extends Record
                     // If not the current table
                     if (strcasecmp($table_name, $matches[1]) != 0)
                     {
-                        $mm_cols[] = $matches[2];
+                        $alias = (!empty($alias)) ? $alias : $matches[2];
+                        $mm_cols[] = (!empty($alias)) ? $alias : $matches[2];
                         $mm_sep = (isset($mm_sep)) ? $mm_sep : ',';
-                        $col = 'GROUP_CONCAT('. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $matches[2];
+
+                        $col = 'GROUP_CONCAT('. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $alias;
                         $group_by_string = 'GROUP BY '. $table_name. '.id';
                     }
                 }
@@ -440,8 +450,7 @@ class PluginRecord extends Record
             $sql = "SELECT $select FROM $table_name $join_string " .
                 "$group_by_string $order_by_string $limit_string $offset_string";
         }
-
-        //echo $sql;
+        
         Record::logQuery($sql);
         $stmt = self::$__CONN__->prepare($sql);
         $stmt->execute();
@@ -463,7 +472,7 @@ class PluginRecord extends Record
             };
 
         // Run!
-        if ($limit == 1)
+        if ($limit === 1)
         {
             $objects = $stmt->fetchObject($model_class);
             $objects = $explode_cols($objects, $mm_cols, $mm_sep);
@@ -471,6 +480,7 @@ class PluginRecord extends Record
         else
         {
             $objects = array();
+
             while ($object = $stmt->fetchObject($model_class))
                 $objects[] = $object;
 
