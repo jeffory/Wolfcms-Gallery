@@ -61,25 +61,6 @@ class GalleryItem extends PluginRecord
             'allowempty' => true,
             'caption' => 'Description'
             ),
-        'image' => array(
-            'type' => 'file',
-            'allowempty' => true,
-            'caption' => 'Image',
-            'allowed_mimes' => array('image/jpeg', 'image/png', 'image/gif'),
-            'maxres' => 1280
-            ),
-        'image_thumb' => array(
-            'type' => 'file',
-            'allowempty' => true,
-            'userinput' => false,
-            'special' => true
-            ),
-        'image_type' => array(
-            'type' => 'string',
-            'allowempty' => true,
-            'userinput' => false,
-            'special' => true
-            ),
         'created' => array(
             'type' => 'datetime',
             'userinput' => false
@@ -87,7 +68,11 @@ class GalleryItem extends PluginRecord
         'modified' => array(
             'type' => 'datetime',
             'userinput' => false
-            )
+            ),
+        'order' => array(
+            'type' => 'integer',
+            'userinput' => false
+            ),
         );
     
     /**
@@ -98,6 +83,7 @@ class GalleryItem extends PluginRecord
     public static $table_joins = array(
         array('leftjoin' => array('gallery_item.id', 'gallery_item_cat.item_id')),
         array('leftjoin' => array('gallery_item_cat.category_id', 'gallery_cat.id')),
+        array('leftjoin' => array('gallery_item.id', 'gallery_image.item_id')),
         );
 
 

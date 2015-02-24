@@ -59,6 +59,7 @@ class GalleryController extends PluginController
         GalleryItem::createTable();
         GalleryItemCat::createTable();
         GalleryCat::createTable();
+        GalleryImage::createTable();
     }
 
     /**
@@ -180,21 +181,37 @@ class GalleryController extends PluginController
         if (isset($_POST) && !empty($data))
         {
             // Sort out uploading the files
-            foreach ($_FILES as $field_name => $details)
+            $files = array();
+
+            foreach ($_FILES as $field_name => $cur_files)
             {
-                if ($details['error'] != UPLOAD_ERR_NO_FILE)
+                for ($i = 0; $i < count($cur_files['name']); $i++)
+                {
+                    $upload = array(
+                                'name' => $cur_files['name'][$i],
+                                'type' => $cur_files['type'][$i],
+                                'tmp_name' => $cur_files['tmp_name'][$i],
+                                'error' => $cur_files['error'][$i],
+                                'size' => $cur_files['size'][$i]
+                                );
+
+                    if ($upload['error'] != UPLOAD_ERR_NO_FILE)
                     {
-                    // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
-                    if ($details['error'] == UPLOAD_ERR_OK && is_uploaded_file($details['tmp_name']))
-                    {
-                        $data = array_merge($data, GalleryItem::prepareFile($field_name, $details['tmp_name'], $details, GAL_IMAGES_ROOT));
-                    }
-                    else
-                    {
-                        Flash::set('error', __('Bad file upload.'));
+                        // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
+                        if ($upload['error'] == UPLOAD_ERR_OK && is_uploaded_file($upload['tmp_name']))
+                        {
+                            $files['files'] = GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT);
+                            //$data = array_merge($data, GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT));
+                        }
+                        else
+                        {
+                            Flash::set('error', __('Bad file upload.'));
+                        }
                     }
                 }
             }
+
+            $data = array_merge($data, $files);
 
             if (GalleryItem::insertRow($data))
             {
@@ -228,6 +245,13 @@ class GalleryController extends PluginController
         {
             $categories[] = $category->category_name;
         }
+
+        // Add image fields
+        $item_fields['image'] = array(
+            'type' => 'filelist',
+            'allowempty' => 1,
+            'caption' => 'Images'
+            );
 
         // Add categories field
         $item_fields['category_name'] = array(
@@ -264,25 +288,41 @@ class GalleryController extends PluginController
             unset($data['category_name']);
 
             // Sort out uploading the files
-            foreach ($_FILES as $field_name => $details)
+            $files = array();
+
+            foreach ($_FILES as $field_name => $cur_files)
             {
-                if ($details['error'] != UPLOAD_ERR_NO_FILE)
+                for ($i = 0; $i < count($cur_files['name']); $i++)
                 {
-                    // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
-                    if ($details['error'] == UPLOAD_ERR_OK && is_uploaded_file($details['tmp_name']))
+                    $upload = array(
+                                'name' => $cur_files['name'][$i],
+                                'type' => $cur_files['type'][$i],
+                                'tmp_name' => $cur_files['tmp_name'][$i],
+                                'error' => $cur_files['error'][$i],
+                                'size' => $cur_files['size'][$i]
+                                );
+
+                    if ($upload['error'] != UPLOAD_ERR_NO_FILE)
                     {
-                        $data = array_merge($data, GalleryItem::prepareFile($field_name, $details['tmp_name'], $details, GAL_IMAGES_ROOT));
-                    }
-                    else
-                    {
-                        Flash::set('error', __('Bad file upload.'));
+                        // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
+                        if ($upload['error'] == UPLOAD_ERR_OK && is_uploaded_file($upload['tmp_name']))
+                        {
+                            $images = GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT);
+                            //$data = array_merge($data, GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT));
+                        }
+                        else
+                        {
+                            Flash::set('error', __('Bad file upload.'));
+                        }
                     }
                 }
             }
 
+            // $data = array_merge($data, $files);
+
             if (GalleryItem::update('GalleryItem', $data, 'id = '. $id))
             {
-                if (GalleryCat::setItemCategories($id, $categories, true))
+                if (GalleryCat::setItemCategories($id, $categories, true) && GalleryImage::setItemImages($id, $images, true))
                 {
                     Flash::set('success', __('Edited item successfully!'));
                     redirect(get_url('plugin/'. GAL_URL));
@@ -303,10 +343,17 @@ class GalleryController extends PluginController
 
         $data = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
-            'select' => array('id', 'name', 'description', 'image', 'gallery_cat.category_name')
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name')
             ));
 
         $item_fields = GalleryItem::getTableStructure();
+
+        // Add image fields
+        $item_fields['image'] = array(
+            'type' => 'filelist',
+            'allowempty' => 1,
+            'caption' => 'Images'
+            );
 
         // Add categories field
         $item_fields['category_name'] = array(
@@ -620,6 +667,7 @@ class GalleryController extends PluginController
         GalleryItem::deleteTable();
         GalleryItemCat::deleteTable();
         GalleryCat::deleteTable();
+        GalleryImage::deleteTable();
     }
 
     /**
