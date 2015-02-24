@@ -36,5 +36,8 @@ return array(
     'Only use these functions if you are you know what you are doing.' => 'Only use these functions if you are you know what you are doing.',
     'Gallery items' => 'Gallery items',
     'No items found' => 'No items found',
-    'Settings' => 'Settings'
+    'Settings' => 'Settings',
+    'Bad file upload.' => 'Bad file upload.',
+    'Added item successfully, but category could not be added!' => 'Added item successfully, but category could not be added!',
+    'Added successfully!' => 'Added successfully!'
 );
