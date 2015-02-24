@@ -288,7 +288,7 @@ class GalleryController extends PluginController
             unset($data['category_name']);
 
             // Sort out uploading the files
-            $files = array();
+            $images = array();
 
             foreach ($_FILES as $field_name => $cur_files)
             {
@@ -307,7 +307,7 @@ class GalleryController extends PluginController
                         // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
                         if ($upload['error'] == UPLOAD_ERR_OK && is_uploaded_file($upload['tmp_name']))
                         {
-                            $images = GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT);
+                            $images[] = GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT);
                             //$data = array_merge($data, GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT));
                         }
                         else
