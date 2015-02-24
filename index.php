@@ -99,3 +99,15 @@ function url_slug($str, $replace=array(), $delimiter='-', $maxLength=200) {
 
     return $clean;
 }
+
+/**
+ * Case insensitive version of in_array
+ *
+ * @var string the searched value
+ * @var array the array to search
+ * 
+ * @return boolean if needle found in array
+ **/
+function in_iarray($needle, $haystack) {
+    return in_array(strtolower($needle), array_map('strtolower', $haystack));
+}
