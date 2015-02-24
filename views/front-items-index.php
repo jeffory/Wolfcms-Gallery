@@ -15,7 +15,7 @@
 	<tr>
 		<td>
 			<div class="thumb_container">
-				<img src="<?php echo URL_PUBLIC. GAL_URL. '/file/image_thumb/'. $item->id ?>">
+				<img src="<?php echo URL_PUBLIC. GAL_URL. '/file/image_thumb/'. $item->image_id[0] ?>">
 			</div>
 		</td>
 
