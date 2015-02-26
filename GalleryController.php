@@ -12,6 +12,9 @@ if (!defined('IN_CMS')) { exit(); }
  */
 class GalleryController extends PluginController
 {
+    var $layout_headers;
+    var $slug = GAL_SLUG;
+
     /**
      * Checks if a user is logged in (used in backend functions), if not redirects them to the login screen
      *
@@ -115,17 +118,31 @@ class GalleryController extends PluginController
      **/
     public function front_item($item_id)
     {
-        $items = GalleryItem::find(array(
+        $item = GalleryItem::find(array(
             'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id AS image_id'),
             'where' => 'gallery_item.id = '. $item_id,
             'limit' => 1
             ));
 
+        set_layout_header($this, array(
+                array(
+                'tag' => 'meta',
+                'property' => 'og:image',
+                'content' => URL_PUBLIC. GAL_URL. '/file/image/1'
+                ),
+            array(
+                'tag' => 'meta',
+                'property' => 'og:description',
+                'content' => $item->description
+                ),
+            )
+        );
+
         $this->display(
             basename(GAL_ROOT). "/views/front-item",
             array(
                 'item_fields' => GalleryItem::getTableStructure(),
-                'item' => $items
+                'item' => $item
                 )
             );
     }
