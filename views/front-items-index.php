@@ -8,7 +8,6 @@
  * @author Keith McGahey
  */
 ?>
-<h2><?php echo GAL_TITLE ?></h2>
 
 <table class="items_listing">
 <?php foreach ($items as $item): ?>
