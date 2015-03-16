@@ -13,9 +13,7 @@ if (!defined('IN_CMS')) { exit(); }
 ?>
 <h1><?php echo __('Add/Edit item'); ?></h1>
 
-<p>
-
-</p>
+<br><br>
 
 <form id='addItem' method='post' enctype="multipart/form-data">
     <ul>
@@ -81,19 +79,27 @@ if (!defined('IN_CMS')) { exit(); }
                 }
                 elseif ($details['type'] == 'filelist')
                 {
-                    echo "<div class='filelist' data-col='{$field_id}'>";
-                    echo "<input class='filelist_add' type='button' value='Add more'><br><br>";
+                    echo "<ul class='filelist' data-col='{$field_id}'>";
+                    // echo "<input class='filelist_add' type='button' value='Add more'><br><br>";
 
                     if (!is_array($value)) $value = array($value);
 
                     foreach ($value as $val)
                     {
-                        echo "<span class='datalist_line'>";
-                        echo "<input name='{$field_id}[]' class='datalist_item' type='file' value='{$val}' multiple>";
-                        echo "</span>";
+                        if (!empty($val))
+                        {
+                            echo "<li class='filelist_item'><img src='". URL_PUBLIC. GAL_URL. '/file/image_thumb/'. $val. "'>";
+                            echo "<input name='{$field_id}_keep[]' value='{$val}' type='hidden'>";
+                            echo "<input class='filelist_remove' type='button' value='Delete'>";
+                            echo "</li>";
+                            echo "<input name='{$field_id}_org[]' value='{$val}' type='hidden'>";
+                        }
                     }
+                    echo "<li class='preview'></li>";
 
-                    echo "</div>";
+                    echo "<br><input name='{$field_id}[]' class='datalist_item' type='file' multiple>";
+
+                    echo "</ul>";
                 }
 
                 // Check if optional
@@ -135,12 +141,36 @@ if (!defined('IN_CMS')) { exit(); }
             $(this).parent('.datalist_line').remove();
         });
 
+        $('.filelist').on("click", ".filelist_remove", function(){
+            $(this).parent('.filelist_item').remove();
+        });
         // Autocomplete for Categories
         $(".datalist_item[name='category_name[]']").autocomplete({
             source: [ <?php if (isset($categories) && is_array($categories)) echo "'". implode("', '", $categories). "'" ?> ],
             minLength: 0,
             delay: 0
         });
+
+        // Show image previews
+        $("input[type='file']").on("change", function () {
+            $('.preview').empty();
+
+            $.each($(this).get(0).files, function(index, file){
+                var fr = new FileReader();
+                console.log(file);
+                if (file.type == 'image/jpeg') {
+                    fr.readAsDataURL(file);
+                    
+                    fr.onload = function (e) {
+
+                        $('.preview').append( '<span><img src="' + e.target.result + '"></span>' );
+                    };
+                }
+            });
+        });
+
+        $( ".filelist" ).sortable();
+        $( ".filelist" ).disableSelection();
     });
 </script>
 
