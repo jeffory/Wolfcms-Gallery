@@ -11,6 +11,9 @@
 
 <table class="items_listing">
 <?php foreach ($items as $item): ?>
+
+	<a href="<?php echo URL_PUBLIC. GAL_URL. URL_SUFFIX ?>">Back</a>
+	<!--<?php print_r($item) ?>-->
 	<tr>
 		<td>
 			<div class="thumb_container">
@@ -20,7 +23,7 @@
 
 		<td>
 			<p>
-				<strong><a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $cat_id. '/'. $cat_slug. '/'. $item->id. '/'. url_slug($item->name) ?>"><?php echo $item->name ?></a></strong>
+				<strong><a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $cat_id. '/'. $cat_slug. '/'. $item->id. '/'. Node::toSlug($item->name). URL_SUFFIX ?>"><?php echo $item->name ?></a></strong>
 			</p>
 		</td>
 
