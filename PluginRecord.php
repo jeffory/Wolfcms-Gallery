@@ -367,14 +367,26 @@ class PluginRecord extends Record
             // String -> Array
             if (!is_array($args['select'])) $args['select'] = array($args['select']);
 
-            foreach ($args['select'] as $col)
+            foreach ($args['select'] as $col_details)
             {
                 $alias = '';
 
-                // if an alias is specified
-                if (preg_match('#([a-z0-9-_\.]+) AS ([a-z0-9-_\.]+)$#i', $col, $matches)) {
-                    $alias = $matches[2];
+                // get the column name
+                if (preg_match('#^([a-z0-9-_\.]+)#i', $col_details, $matches))
+                {
                     $col = $matches[1];
+                }
+
+                // get an alias if specified
+                if (preg_match('#AS ([a-z0-9-_\.]+)#i', $col_details, $matches))
+                {
+                    $alias = $matches[1];
+                }
+
+                // get an alias if specified
+                if (preg_match('#ORDER BY ([a-z0-9-_\.]+)(\sASC|\sDESC|)#i', $col_details, $matches))
+                {
+                    $order = ' ORDER BY '. $matches[1]. $matches[2];
                 }
 
                 // Is there NOT a table name for the columns
@@ -391,7 +403,7 @@ class PluginRecord extends Record
                         $mm_cols[] = (!empty($alias)) ? $alias : $matches[2];
                         $mm_sep = (isset($mm_sep)) ? $mm_sep : ',';
 
-                        $col = 'GROUP_CONCAT(DISTINCT '. $col. ' SEPARATOR "'. $mm_sep. '") AS '. $alias;
+                        $col = 'GROUP_CONCAT(DISTINCT '. $col. $order. ' SEPARATOR "'. $mm_sep. '") AS '. $alias;
                         $group_by_string = 'GROUP BY '. $table_name. '.id';
                     }
                 }
@@ -408,17 +420,26 @@ class PluginRecord extends Record
 
         // Collect attributes...
         $where = isset($args['where']) ? trim($args['where']) : '';
+        $order_by = '';
 
         if (isset($args['order']))
         {
-            $order_by = trim($args['order']);
+            if (!is_array($args['order']))
+                $args['order'] = array($args['order']);
+
+            foreach ($args['order'] as $index => $column)
+            {
+                $order_by .= preg_replace('/^([^\s]+)\s(.+)$/is', '`$1` $2', $column). ', ';
+            }
+
+            $order_by =  preg_replace('/,\s+$/', '', $order_by);
         }
         else
         {
             // Table has joins?
             if (isset($model_class::$table_joins))
             {
-                $order_by = $model_class::$table_name. '.id ASC';
+                $order_by = ''. $model_class::$table_name. '.id ASC';
             }
             else
             {
@@ -548,7 +569,7 @@ class PluginRecord extends Record
         if ($model_class::getTableStructure($field_name, 'storeindb') !== true)
         {
             // Move file, store filepath
-            $new_file = $storepath. DS. strtolower($details['name']);
+            $new_file = $storepath. DS. md5(strtolower($details['name']) . date()). '.'. pathinfo($details['name'], PATHINFO_EXTENSION);
             $pre_file = pathinfo($new_file, PATHINFO_DIRNAME). DS. pathinfo($new_file, PATHINFO_FILENAME);
             $suf_file = pathinfo($new_file, PATHINFO_EXTENSION);
             $i = 1;
@@ -565,7 +586,7 @@ class PluginRecord extends Record
             // TODO: Delete previous associated file
             rename($details['tmp_name'], $new_file);
             chmod($new_file, 0755);
-            $data[$field_name] = $new_file;
+            $data[$field_name] = str_replace($storepath, '', $new_file);
         }
         else
         {
@@ -594,7 +615,7 @@ class PluginRecord extends Record
             // Store the thumbnail as a filepath or data?
             if ($model_class::getTableStructure($field_name, 'storeindb') != true)
             {
-                $data[$field_name. '_thumb'] = $thumb_file;
+                $data[$field_name. '_thumb'] = str_replace($storepath, '', $thumb_file);
             }
             else
             {
