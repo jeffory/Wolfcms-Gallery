@@ -360,6 +360,8 @@ class PluginRecord extends Record
         $mm_sep = "|";       // Seperator for MYSQL returning multiple rows, originally a comma.
         $mm_cols = array();
 
+        $order = '';
+
         $group_by_string = '';
 
         if (isset($args['select']))
