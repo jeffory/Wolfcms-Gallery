@@ -116,7 +116,7 @@ class GalleryController extends PluginController
      *
      * @return void
      **/
-    public function front_item($item_id)
+    public function front_item($item_id, $category_id)
     {
         $item = GalleryItem::find(array(
             'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id ORDER BY gallery_image.order AS image_id'),
@@ -143,11 +143,20 @@ class GalleryController extends PluginController
             )
         );
 
+        $cat_name = GalleryCat::find(array(
+            'select' => array('category_name AS name'),
+            'where' => 'id = '. $category_id,
+            'limit' => 1
+            ));
+
         $this->display(
             basename(GAL_ROOT). "/views/front-item",
             array(
                 'item_fields' => GalleryItem::getTableStructure(),
-                'item' => $item
+                'item' => $item,
+                'cat_id' => $category_id,
+                'cat_name' => $cat_name->category_name,
+                'cat_slug' => Node::toSlug($cat_name->category_name)
                 )
             );
     }
@@ -474,7 +483,7 @@ class GalleryController extends PluginController
             $col_type = preg_replace('/\_thumb$/is', '', $col) .'_type';
             @$modified = filemtime($item[0]->$col);
             @$filesize = filesize($item[0]->$col);
-            $etag = md5($modified);
+            @$etag = md5($modified);
 
             if (@isset($item[0]->$col_type) && !empty($item[0]->$col_type))
                 $content_type = $item[0]->image_type;
@@ -490,11 +499,11 @@ class GalleryController extends PluginController
             }
             else
             {
-                header("Content-Length: ". $filesize);
+                if (isset($filesize) && !empty($filesize)) header("Content-Length: ". $filesize);
                 header("Cache-Control: public");
                 if (isset($content_type)) header("Content-Type: ". $content_type);
-                header("Last-Modified: ". gmstrftime("%a, %d %b %Y %T %Z", $modified));
-                header('ETag: '. $etag);
+                if (isset($modified) && !empty($modified)) header("Last-Modified: ". gmstrftime("%a, %d %b %Y %T %Z", $modified));
+                if (isset($etag) && !empty($etag)) header('ETag: '. $etag);
 
                 // Check if filename or data
                 if (GalleryItem::getTableStructure($col, 'storeindb') != true)
