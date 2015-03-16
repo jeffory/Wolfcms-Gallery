@@ -119,7 +119,7 @@ class GalleryController extends PluginController
     public function front_item($item_id)
     {
         $item = GalleryItem::find(array(
-            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id AS image_id'),
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id ORDER BY gallery_image.order AS image_id'),
             'where' => 'gallery_item.id = '. $item_id,
             'limit' => 1
             ));
@@ -127,8 +127,13 @@ class GalleryController extends PluginController
         set_layout_header($this, array(
                 array(
                 'tag' => 'meta',
+                'property' => 'og:title',
+                'content' => $item->name. ' | Turbo Finance'
+                ),
+                array(
+                'tag' => 'meta',
                 'property' => 'og:image',
-                'content' => URL_PUBLIC. GAL_URL. '/file/image/1'
+                'content' => URL_PUBLIC. GAL_URL. '/file/image/'. $item->image_id[0]
                 ),
             array(
                 'tag' => 'meta',
@@ -155,7 +160,7 @@ class GalleryController extends PluginController
     public function front_items_index($category_id, $category_slug)
     {
         $items = GalleryItem::find(array(
-            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id AS image_id'),
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id  ORDER BY gallery_image.order AS image_id'),
             'where' => 'gallery_cat.id = '. $category_id
             ));
 
@@ -193,12 +198,16 @@ class GalleryController extends PluginController
     public function add()
     {
         self::_checkPermission();
+
         $data = $_POST;
 
-        if (isset($_POST) && !empty($data))
+        if (isset($data) && !empty($data))
         {
+            $categories = $data['category_name'];
+            unset($data['category_name']);
+
             // Sort out uploading the files
-            $files = array();
+            $images = array();
 
             foreach ($_FILES as $field_name => $cur_files)
             {
@@ -217,7 +226,7 @@ class GalleryController extends PluginController
                         // Security check, see: http://php.net/manual/en/function.is-uploaded-file.php
                         if ($upload['error'] == UPLOAD_ERR_OK && is_uploaded_file($upload['tmp_name']))
                         {
-                            $files['files'] = GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT);
+                            $images[] = GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT);
                             //$data = array_merge($data, GalleryItem::prepareFile($field_name, $upload['tmp_name'], $upload, GAL_IMAGES_ROOT));
                         }
                         else
@@ -228,13 +237,13 @@ class GalleryController extends PluginController
                 }
             }
 
-            $data = array_merge($data, $files);
+            // $data = array_merge($data, $files);
 
             if (GalleryItem::insertRow($data))
             {
-                $item_id = GalleryItem::lastInsertId();
+                $id = GalleryItem::lastInsertId();
 
-                if (GalleryCat::setItemCategories($item_id, $data['category_name'], true))
+                if (GalleryCat::setItemCategories($id, $categories, true) && GalleryImage::setItemImages($id, $images, true))
                 {
                     Flash::set('success', __('Added successfully!'));
                     redirect(get_url('plugin/'. GAL_URL));
@@ -260,7 +269,7 @@ class GalleryController extends PluginController
         // For autocomplete
         foreach (GalleryCat::find(array('select' => 'category_name')) as $category)
         {
-            $categories[] = $category->category_name;
+            $categories[] = htmlspecialchars($category->category_name, ENT_QUOTES);
         }
 
         // Add image fields
@@ -299,7 +308,7 @@ class GalleryController extends PluginController
 
         $data = $_POST;
 
-        if (isset($_POST) && !empty($data))
+        if (isset($data) && !empty($data))
         {
             $categories = $data['category_name'];
             unset($data['category_name']);
@@ -335,8 +344,30 @@ class GalleryController extends PluginController
                 }
             }
 
-            // $data = array_merge($data, $files);
 
+            // Check for removed images
+            $cur_images = GalleryItem::find(array(
+                'where' => 'gallery_item.id = '. (int) $id,
+                'select' => array('gallery_image.id AS image')
+            ));
+
+            if (!empty($cur_images)){
+                foreach ($cur_images[0]->image as $image_id)
+                {
+                    if (!in_array($image_id, $data['image_keep']) && in_array($image_id, $data['image_org']))
+                    {
+                        GalleryImage::deleteRows($image_id);
+                    }
+                }
+            }
+
+            // Update image order
+            foreach ($data['image_keep'] as $index => $image_id) {
+                // GalleryItem::update('GalleryImage', array('order' => $index), 'id = '. $image_id);
+                GalleryItem::query('UPDATE `gallery_image` SET `order` = :order WHERE `id` = :id', array('order' => $index, 'id' => $image_id));
+            }
+
+            // Update item
             if (GalleryItem::update('GalleryItem', $data, 'id = '. $id))
             {
                 if (GalleryCat::setItemCategories($id, $categories, true) && GalleryImage::setItemImages($id, $images, true))
@@ -360,8 +391,13 @@ class GalleryController extends PluginController
 
         $data = GalleryItem::find(array(
             'where' => 'gallery_item.id = '. (int) $id,
-            'select' => array('id', 'name', 'description', 'gallery_cat.category_name')
+            'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id ORDER BY gallery_image.order ASC AS image')
             ));
+
+        echo '<!--';
+        print_r(Record::getQueryLog());
+        echo '-->';
+        // die();
 
         $item_fields = GalleryItem::getTableStructure();
 
@@ -383,7 +419,7 @@ class GalleryController extends PluginController
 
         foreach ( GalleryCat::find(array('select' => 'category_name')) as $category )
         {
-            $categories[] = $category->category_name;
+            $categories[] = htmlspecialchars($category->category_name, ENT_QUOTES);
         }
 
         $this->display(
@@ -432,22 +468,51 @@ class GalleryController extends PluginController
     {
         if ($item = GalleryImage::find(array('where' => 'gallery_image.id = '. (int) $id)))
         {
+            $headers = apache_request_headers();
+
             // A thumbnail's going to have the same content type as it's original
             $col_type = preg_replace('/\_thumb$/is', '', $col) .'_type';
+            @$modified = filemtime($item[0]->$col);
+            @$filesize = filesize($item[0]->$col);
+            $etag = md5($modified);
 
             if (@isset($item[0]->$col_type) && !empty($item[0]->$col_type))
-            {
-                header('Content-Type: '. $item[0]->image_type);
-            }
+                $content_type = $item[0]->image_type;
 
-            // Check if filename or data
-            if (GalleryItem::getTableStructure($col, 'storeindb') != true)
+            // Check if image is in browser cache...
+            if (isset($headers['If-None-Match']) && $headers['If-None-Match'] == $etag && gmstrftime("%a, %d %b %Y %T %Z", $modified) == $headers['If-Modified-Since'])
             {
-                readfile($item[0]->$col);
+                header('HTTP/1.1 304 Not Modified');
+                header("Cache-Control: public");
+                if (isset($content_type)) header("Content-Type: ". $content_type);
+                header('ETag: "asset-'. $etag. '"');
+                exit();
             }
             else
             {
-                echo $item[0]->$col;
+                header("Content-Length: ". $filesize);
+                header("Cache-Control: public");
+                if (isset($content_type)) header("Content-Type: ". $content_type);
+                header("Last-Modified: ". gmstrftime("%a, %d %b %Y %T %Z", $modified));
+                header('ETag: '. $etag);
+                flush();
+
+                // Check if filename or data
+                if (GalleryItem::getTableStructure($col, 'storeindb') != true)
+                {
+                    if (file_exists($item[0]->$col))
+                    {
+                        readfile($item[0]->$col);
+                    }
+                    elseif (file_exists(GAL_IMAGES_ROOT. $item[0]->$col))
+                    {
+                        readfile(GAL_IMAGES_ROOT. $item[0]->$col);
+                    }
+                }
+                else
+                {
+                    echo $item[0]->$col;
+                }
             }
         }
         else
