@@ -23,6 +23,8 @@ return array(
     'Gallery categories' => 'Gallery categories',
     'All the categories are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.' => 'All the categories are listed here for editing and browsing. Holding <strong>CTRL</strong> brings up more advanced manupulation options if needed.',
     'Added successfully!' => 'Added successfully!',
+    'Edited item successfully!' => 'Edited item successfully!',
+    'Edited item successfully, but category could not be edited!' => 'Edited item successfully, but category could not be edited!',
     'Name' => 'Name',
     'Item count' => 'Item count',
     'Code' => 'Code',
