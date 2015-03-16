@@ -495,7 +495,6 @@ class GalleryController extends PluginController
                 if (isset($content_type)) header("Content-Type: ". $content_type);
                 header("Last-Modified: ". gmstrftime("%a, %d %b %Y %T %Z", $modified));
                 header('ETag: '. $etag);
-                flush();
 
                 // Check if filename or data
                 if (GalleryItem::getTableStructure($col, 'storeindb') != true)
@@ -507,6 +506,10 @@ class GalleryController extends PluginController
                     elseif (file_exists(GAL_IMAGES_ROOT. $item[0]->$col))
                     {
                         readfile(GAL_IMAGES_ROOT. $item[0]->$col);
+                    }
+                    else
+                    {
+                        header('HTTP/1.0 404 Not Found');
                     }
                 }
                 else
