@@ -18,6 +18,7 @@ define('GAL_C_CLASS', 'gallery');                       // Class names, (ie. gal
 
 define('GAL_URL', 'gallery');                          // Base URL to use the plugin
 define('GAL_TITLE', 'Gallery');                        // Title of the plugin (for views and what not)
+define('GAL_SLUG', Node::toSlug(GAL_TITLE));
 
 define('GAL_IMAGES_ROOT', CMS_ROOT. '/public/files');      // Directory where images not stored in the database will be stored
 
@@ -47,14 +48,10 @@ Dispatcher::addRoute(array(
     '/'. GAL_URL. '(|/)'                                                                => '/plugin/'. GAL_C_CLASS. '/front_category_index',
     '/'. GAL_URL. '/([0-9]+)(|/[a-z0-9-]+)'                                             => '/plugin/'. GAL_C_CLASS. '/front_items_index/$1/$2',
     '/'. GAL_URL. '/(?:[0-9]+)(?:|/[a-z0-9-]+)/([0-9]+)(?:|/[a-z0-9-]+)'                => '/plugin/'. GAL_C_CLASS. '/front_item/$1',
-
     '/admin/plugin/'.GAL_URL . '(|/)'                                                   => '/plugin/'. GAL_C_CLASS. '/index',
-
     '/admin/plugin/'.GAL_URL. '/categories(|/)(?:|)(|page)(|/[0-9]+)'                   => '/plugin/'. GAL_C_CLASS. '/category_index$1$2',
     '/admin/plugin/'.GAL_URL. '/categories/page:([0-9]+)'                               => '/plugin/'. GAL_C_CLASS. '/category_index/$1',
-
     '/admin/plugin/'.GAL_URL. '/categories/(add|delete|edit)(?:\:|)([0-9]+|)'           => '/plugin/'. GAL_C_CLASS. '/category_$1/$2',
-
     '/admin/plugin/'.GAL_URL. '/page:([0-9]+)'                                          => '/plugin/'. GAL_C_CLASS. '/index/$1/$2',
     '/admin/plugin/'.GAL_URL. '/(add|edit|delete|addsamples|clearall)(?:\:|)([0-9]+|)'  => '/plugin/'. GAL_C_CLASS. '/$1/$2',
     '/'. GAL_URL. '/file/([0-9a-z-_]+)/([0-9]+)(.?(?:[a-z]+)|)'                         => '/plugin/'. GAL_C_CLASS. '/file/$1/$2',
@@ -80,27 +77,6 @@ function singularise($word)
 }
 
 /**
- * Filters string into url friendly slug
- *
- * @var string raw string
- * 
- * @return string filtered string
- **/
-function url_slug($str, $replace=array(), $delimiter='-', $maxLength=200) {
-
-    if( !empty($replace) ) {
-        $str = str_replace((array)$replace, ' ', $str);
-    }
-
-    $clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
-    $clean = preg_replace("%[^-/+|\w ]%", '', $clean);
-    $clean = strtolower(trim(substr($clean, 0, $maxLength), '-'));
-    $clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
-
-    return $clean;
-}
-
-/**
  * Case insensitive version of in_array
  *
  * @var string the searched value
@@ -110,4 +86,33 @@ function url_slug($str, $replace=array(), $delimiter='-', $maxLength=200) {
  **/
 function in_iarray($needle, $haystack) {
     return in_array(strtolower($needle), array_map('strtolower', $haystack));
+}
+
+function get_layout_headers($class)
+{
+    return $class->layout_headers;
+}
+
+function set_layout_header($class, $contents)
+{
+    foreach ($contents as $content)
+    {
+        $class->layout_headers[] = $content;
+    }
+}
+
+function dump_layout_headers($class) {
+    $headers = '';
+
+    foreach ($class->layout_headers as $index => $tag) {
+        $headers .= '<'. $tag['tag']. ' ';
+        unset($tag['tag']);
+
+        foreach ($tag as $tag_attribute => $tag_value) {
+            $headers .= $tag_attribute. '="'. str_replace("\n", "", $tag_value). '" ';
+        }
+        $headers = trim($headers). ">\n";
+    }
+
+    return $headers;
 }
