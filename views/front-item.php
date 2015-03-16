@@ -8,7 +8,11 @@
  * @author Keith McGahey
  */
 ?>
-<h2></h2>
+
+<nav class="gallery_nav">
+	<a href="<?php echo URL_PUBLIC. GAL_URL. URL_SUFFIX ?>"><?php echo GAL_TITLE ?></a>/
+	<a href="<?php echo URL_PUBLIC. GAL_URL. '/'. $cat_id. '/'. $cat_slug. URL_SUFFIX ?>"><?php echo $cat_name ?></a>
+</nav>
 
 <p class='item_image'>
 	<img src='<?php echo URL_PUBLIC. GAL_URL. '/file/image/'. $item->image_id[0] ?>' style='max-width: 100%'>
@@ -31,10 +35,6 @@
 		<dt>Categories</dt>
 		<dd><?php echo implode(',', $item->category_name) ?></dd>
 	</dl>
-</p>
-
-<p class='item_footer'>
-	<a href="javascript:history.go(-1)">Go back</a>
 </p>
 
 <style type="text/css">

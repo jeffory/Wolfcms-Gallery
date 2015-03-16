@@ -12,7 +12,10 @@
 <table class="items_listing">
 <?php foreach ($items as $item): ?>
 
-	<a href="<?php echo URL_PUBLIC. GAL_URL. URL_SUFFIX ?>">Back</a>
+	<nav class="gallery_nav">
+		<a href="<?php echo URL_PUBLIC. GAL_URL. URL_SUFFIX ?>"><?php echo GAL_TITLE ?>/</a>
+	</nav>
+
 	<!--<?php print_r($item) ?>-->
 	<tr>
 		<td>
