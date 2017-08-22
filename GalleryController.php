@@ -403,11 +403,6 @@ class GalleryController extends PluginController
             'select' => array('id', 'name', 'description', 'gallery_cat.category_name', 'gallery_image.id ORDER BY gallery_image.order ASC AS image')
             ));
 
-        echo '<!--';
-        print_r(Record::getQueryLog());
-        echo '-->';
-        // die();
-
         $item_fields = GalleryItem::getTableStructure();
 
         // Add image fields
